@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg"
-    android:backgroundTint="@color/white_transparent">
+    android:background="@drawable/bg">
 
     <ImageView
         android:id="@+id/logo"
@@ -19,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/login_btn"
+        android:id="@+id/scan_btn"
         android:layout_width="140dp"
         android:layout_height="60dp"
         android:layout_marginStart="20dp"
