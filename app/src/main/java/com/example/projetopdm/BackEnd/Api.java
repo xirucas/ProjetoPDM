@@ -22,4 +22,9 @@ public interface Api {
 
     @GET("GetRMASByFuncionario")
     Call<JsonObject> GetRMASByFuncionario(@Query("GUID") String GUID);
+
+    @GET("GetAllGUID")
+    Call<JsonObject> GetAllGUID();
+    @GET("GetFuncionarioByGUID")
+    Call<JsonObject> GetFuncionarioByGUID(@Query("GUID") String GUID);
 }

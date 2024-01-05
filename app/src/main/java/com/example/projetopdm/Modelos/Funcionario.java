@@ -7,14 +7,15 @@ public class Funcionario {
     String Email;
     String Contacto;
     String Pin;
-    int ImagemFuncionario;
+
+    String ImagemFuncionario;
 
 
     public Funcionario() {
 
     }
 
-    public Funcionario(int id, String GUID, String nome, String email, String contacto, String pin, int imagemFuncionario) {
+    public Funcionario(int id, String GUID, String nome, String email, String contacto, String pin, String imagemFuncionario) {
         Id = id;
         this.GUID = GUID;
         Nome = nome;
@@ -24,7 +25,7 @@ public class Funcionario {
         ImagemFuncionario = imagemFuncionario;
     }
 
-    public Funcionario(String GUID, String nome, String email, String contacto, String pin, int imagemFuncionario) {
+    public Funcionario(String GUID, String nome, String email, String contacto, String pin, String imagemFuncionario) {
         this.GUID = GUID;
         Nome = nome;
         Email = email;
@@ -81,11 +82,11 @@ public class Funcionario {
         Pin = pin;
     }
 
-    public int getImagemFuncionario() {
+    public String getImagemFuncionario() {
         return ImagemFuncionario;
     }
 
-    public void setImagemFuncionario(int imagemFuncionario) {
+    public void setImagemFuncionario(String imagemFuncionario) {
         ImagemFuncionario = imagemFuncionario;
     }
 
