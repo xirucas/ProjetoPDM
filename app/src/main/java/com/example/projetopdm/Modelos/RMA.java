@@ -4,6 +4,7 @@ public class RMA {
     int Id;
     String RMA;
     String DescricaoCliente;
+    String DataCriacao;
     String DataAbertura;
     String DataFecho;
     String EstadoRMA;
@@ -14,10 +15,11 @@ public class RMA {
 
     }
 
-    public RMA(int id, String rma, String descricaoCliente, String dataAbertura, String dataFecho, String estadoRMA, int estadoRMAId, int funicionarioId) {
+    public RMA(int id, String rma, String descricaoCliente,String dataCriacao , String dataAbertura, String dataFecho, String estadoRMA, int estadoRMAId, int funicionarioId) {
         Id = id;
         RMA = rma;
         DescricaoCliente = descricaoCliente;
+        DataCriacao = dataCriacao;
         DataAbertura = dataAbertura;
         DataFecho = dataFecho;
         EstadoRMA = estadoRMA;
@@ -25,9 +27,10 @@ public class RMA {
         FuncionarioId = funicionarioId;
     }
 
-    public RMA(String rma, String descricaoCliente, String dataAbertura, String dataFecho, String estadoRMA, int estadoRMAId, int funicionarioId) {
+    public RMA(String rma, String descricaoCliente,String dataCriacao , String dataAbertura, String dataFecho, String estadoRMA, int estadoRMAId, int funicionarioId) {
         RMA = rma;
         DescricaoCliente = descricaoCliente;
+        DataCriacao = dataCriacao;
         DataAbertura = dataAbertura;
         DataFecho = dataFecho;
         EstadoRMA = estadoRMA;
@@ -57,6 +60,14 @@ public class RMA {
 
     public void setDescricaoCliente(String descricaoCliente) {
         DescricaoCliente = descricaoCliente;
+    }
+
+    public String getDataCriacao() {
+        return DataCriacao;
+    }
+
+    public void setDataCriacao(String dataCriacao) {
+        DataCriacao = dataCriacao;
     }
 
     public String getDataAbertura() {

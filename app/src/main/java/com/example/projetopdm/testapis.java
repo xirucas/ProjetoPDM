@@ -50,7 +50,7 @@ public class testapis extends AppCompatActivity {
                             rma.setFuncionarioId(rmaObj.get("FuncionarioId").getAsInt());
                             rmaList.add(rma);
                         }
-                        ListView listView = findViewById(R.id.listRMA);
+                        ListView listView = findViewById(R.id.listASRWS);
                         ArrayAdapter<RMA> adapter = new ArrayAdapter<RMA>(testapis.this, android.R.layout.simple_list_item_1, rmaList);
                         listView.setAdapter(adapter);
 

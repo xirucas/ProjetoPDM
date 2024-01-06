@@ -4,6 +4,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg"
+    android:backgroundTint="@color/main_blue"
+    android:paddingHorizontal="24dp"
+    android:paddingVertical="48dp"
     tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/HelloContainer"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/Hello"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Bem vindo, Xavier"
+            android:gravity="center_vertical"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/btnEncerrar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="Encerrar" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/listRMA"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="16sp"
+        android:layout_weight="1"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="10.0sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/HelloContainer"
+        tools:listitem="@layout/list_rma" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
