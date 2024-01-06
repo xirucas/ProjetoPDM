@@ -5,46 +5,69 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg"
-    android:backgroundTint="@color/main_blue"
-    android:paddingHorizontal="24dp"
-    android:paddingVertical="48dp"
     tools:context=".MainActivity">
 
     <LinearLayout
-        android:id="@+id/HelloContainer"
+        android:id="@+id/menu"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/menu_bottom_round_corners"
+        android:backgroundTint="@color/menu"
         android:orientation="horizontal"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/Hello"
-            android:layout_width="0dp"
+            android:id="@+id/ticketsTitle"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="Bem vindo, Xavier"
-            android:gravity="center_vertical"
+            android:fontFamily="@font/extrabold"
+            android:gravity="left|center_vertical"
+            android:text="Tickets"
+            android:textColor="@color/black"
             android:textSize="24sp" />
 
-        <Button
-            android:id="@+id/btnEncerrar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="Encerrar" />
+        <androidx.cardview.widget.CardView
+            android:id="@+id/user"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            app:cardBackgroundColor="@color/transparent"
+            app:cardCornerRadius="250dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/imagemFuncionario"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/user" />
+        </androidx.cardview.widget.CardView>
+
     </LinearLayout>
 
     <ListView
         android:id="@+id/listRMA"
+        style="@style/Widget.AppCompat.ListView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="16sp"
+        android:layout_marginEnd="20dp"
         android:layout_weight="1"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="10.0sp"
+        android:divider="#00FFFFFF"
+        android:dividerHeight="5dp"
+        android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/HelloContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/menu"
         tools:listitem="@layout/list_rma" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

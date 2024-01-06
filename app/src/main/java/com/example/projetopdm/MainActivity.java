@@ -9,6 +9,8 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -40,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-       setContentView(binding.getRoot()); // Set the root view of the binding object
+        setContentView(binding.getRoot()); // Set the root view of the binding object
         int Id = getIntent().getIntExtra("Id", 0);
         String nome = getIntent().getStringExtra("Nome");
         String email = getIntent().getStringExtra("Email");
@@ -51,15 +53,9 @@ public class MainActivity extends AppCompatActivity {
 
         funcionario = new Funcionario(Id, GUID, nome, email, contacto, pin, imagemFuncionario);
 
-        String welcomeMessage = "Bem vindo, " + nome;
+        setContentView(binding.getRoot());
 
-        TextView textViewWelcome = binding.Hello;
-
-        textViewWelcome.setText(welcomeMessage);
-
-       setContentView(binding.getRoot());
-
-        Button btnEncerrar = findViewById(R.id.btnEncerrar);
+        ImageView btnEncerrar = findViewById(R.id.imagemFuncionario);
         btnEncerrar.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, Splash.class);
             startActivity(intent);

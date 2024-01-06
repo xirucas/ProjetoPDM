@@ -3,4 +3,6 @@
 <resources>
     <string name="app_name">SweetRepair</string>
     <string name="greeting">Bem vindo</string>
+    <string name="sumbit">Submit</string>
+    <string name="pin">_ _ _ _</string>
 </resources>
