@@ -4,9 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Base64;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -55,11 +58,9 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(binding.getRoot());
 
-        ImageView btnEncerrar = findViewById(R.id.imagemFuncionario);
-        btnEncerrar.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, Splash.class);
-            startActivity(intent);
-        });
+        ImageView img = findViewById(R.id.imagemFuncionario);
+        Bitmap bitmap = StringToBitMap(imagemFuncionario);
+        img.setImageBitmap(bitmap);
 
         if(isInternetAvailable()) {
             Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().GetRMASByFuncionario(funcionario.getGUID());
@@ -119,6 +120,18 @@ public class MainActivity extends AppCompatActivity {
             connected = false;
 
         return connected;
+    }
+
+    public Bitmap StringToBitMap(String encodedString){
+        try{
+            byte [] encodeByte = Base64.decode(encodedString,Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            return bitmap;
+        }
+        catch(Exception e){
+            e.getMessage();
+            return null;
+        }
     }
 
 }

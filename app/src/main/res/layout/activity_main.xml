@@ -27,7 +27,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/extrabold"
             android:gravity="left|center_vertical"
-            android:text="Tickets"
+            android:text="RMA"
             android:textColor="@color/black"
             android:textSize="24sp" />
 
