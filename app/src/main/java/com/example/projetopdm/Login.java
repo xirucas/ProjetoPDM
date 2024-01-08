@@ -11,22 +11,15 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.projetopdm.BackEnd.RetrofitClient;
 import com.example.projetopdm.Modelos.Funcionario;
-import com.example.projetopdm.Modelos.RMA;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -64,7 +57,7 @@ public class Login extends AppCompatActivity {
                         Toast.makeText(Login.this, "Error", Toast.LENGTH_SHORT).show();
                     }
                     Bitmap imagem = StringToBitMap(funcionario.getImagemFuncionario());
-                    ImageView imageView = findViewById(R.id.imagemFuncionario);
+                    ImageView imageView = findViewById(R.id.perfil_btn);
                     imageView.setImageBitmap(imagem);
 
                     TextView nome = findViewById(R.id.name);

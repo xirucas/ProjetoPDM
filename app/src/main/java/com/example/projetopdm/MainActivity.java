@@ -2,7 +2,6 @@ package com.example.projetopdm;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,13 +11,8 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.projetopdm.BackEnd.RetrofitClient;
@@ -27,7 +21,6 @@ import com.example.projetopdm.Modelos.RMA;
 import com.example.projetopdm.databinding.ActivityMainBinding;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.zxing.integration.android.IntentIntegrator;
 
 import java.util.ArrayList;
 
@@ -38,7 +31,7 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
-    Funcionario funcionario = null;
+    Funcionario funcionario;
 
     ArrayList<RMA> rmaList = new ArrayList<RMA>();
     ListAdapterRMA listAdapter;
@@ -65,7 +58,30 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(binding.getRoot());
 
-        ImageView img = findViewById(R.id.imagemFuncionario);
+
+        ImageView perfil_btn = findViewById(R.id.perfil_btn);
+
+        // Adicionar um OnClickListener ao LinearLayout
+        perfil_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(getApplicationContext(), Perfil.class);
+                intent.putExtra("Id", funcionario.getId());
+                intent.putExtra("Nome", funcionario.getNome());
+                intent.putExtra("Email", funcionario.getEmail());
+                intent.putExtra("Contacto", funcionario.getContacto());
+                intent.putExtra("GUID", funcionario.getGUID());
+                intent.putExtra("Pin", funcionario.getPin());
+                intent.putExtra("ImagemFuncionario", funcionario.getImagemFuncionario());
+                intent.putExtra("EstadoFuncionario", funcionario.getEstadoFuncionario());
+                intent.putExtra("EstadoFuncionarioId", funcionario.getEstadoFuncionarioId());
+                startActivity(intent);
+            }
+        });
+
+
+        ImageView img = findViewById(R.id.perfil_btn);
         Bitmap bitmap = StringToBitMap(imagemFuncionario);
         img.setImageBitmap(bitmap);
 
