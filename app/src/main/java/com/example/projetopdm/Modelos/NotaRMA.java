@@ -3,6 +3,7 @@ package com.example.projetopdm.Modelos;
 public class NotaRMA {
     int Id;
     String Nota;
+    int ImagemNotaId;
     String ImagemNota;
     int RMAId;
 
@@ -13,6 +14,14 @@ public class NotaRMA {
     public NotaRMA(int id, String nota, String imagemNota, int rmaId) {
         Id = id;
         Nota = nota;
+        ImagemNota = imagemNota;
+        RMAId = rmaId;
+    }
+
+    public NotaRMA(int id, String nota,int imagemNotaId ,String imagemNota, int rmaId) {
+        Id = id;
+        Nota = nota;
+        ImagemNotaId = imagemNotaId;
         ImagemNota = imagemNota;
         RMAId = rmaId;
     }
@@ -42,6 +51,14 @@ public class NotaRMA {
 
     public void setNota(String nota) {
         Nota = nota;
+    }
+
+    public int getImagemNotaId() {
+        return ImagemNotaId;
+    }
+
+    public void setImagemNotaId(int imagemNotaId) {
+        ImagemNotaId = imagemNotaId;
     }
 
     public String getImagemNota() {

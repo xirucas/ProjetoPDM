@@ -27,4 +27,7 @@ public interface Api {
     Call<JsonObject> GetAllGUID();
     @GET("GetFuncionarioByGUID")
     Call<JsonObject> GetFuncionarioByGUID(@Query("GUID") String GUID);
+
+    @GET("GetRMAById")
+    Call<JsonObject> GetRMAById(@Query("Id") int Id);
 }
