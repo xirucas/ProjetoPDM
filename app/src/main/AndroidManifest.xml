@@ -17,6 +17,11 @@
         android:theme="@style/Theme.ProjetoPDM"
         tools:targetApi="31">
         <activity
+            android:name=".Notas"
+            android:exported="false"
+            android:label="@string/title_activity_notas"
+            android:theme="@style/Theme.ProjetoPDM" />
+        <activity
             android:name=".testapis"
             android:exported="false" />
         <activity

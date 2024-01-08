@@ -43,6 +43,11 @@ public class Splash extends AppCompatActivity {
                 if (isInternetAvailable()) {
                     IntentIntegrator integrator = new IntentIntegrator(activity);
                     integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
+
+                    integrator.setBeepEnabled(false);
+                    integrator.setBarcodeImageEnabled(true);
+                    integrator.setOrientationLocked(false);
+
                     integrator.setCameraId(0);//traseira
                     integrator.initiateScan();
                 } else {
@@ -115,5 +120,6 @@ public class Splash extends AppCompatActivity {
 
         return connected;
     }
+
 
 }

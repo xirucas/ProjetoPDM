@@ -1,10 +1,13 @@
 package com.example.projetopdm;
+import android.widget.LinearLayout;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -24,6 +27,7 @@ public class ListAdapterRMA extends ArrayAdapter<RMA> {
     @NonNull
     @Override
 public View getView(int position, @Nullable View view, @NonNull ViewGroup parent) {
+
         RMA rma = getItem(position);
         if (view == null) {
             view = LayoutInflater.from(getContext()).inflate(R.layout.list_rma, parent, false);
@@ -38,6 +42,19 @@ public View getView(int position, @Nullable View view, @NonNull ViewGroup parent
         rmaDescricao.setText(rma.getDescricaoCliente());
         rmaDataCriacao.setText(rma.getDataCriacao());
         rmaEstado.setText(rma.getEstadoRMA());
+
+        LinearLayout RMA_btn = view.findViewById(R.id.RMA_btn);
+
+        // Adicionar um OnClickListener ao LinearLayout
+        RMA_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Lógica a ser executada quando o LinearLayout for clicado
+                Intent intent = new Intent(getContext(), Notas.class);
+                intent.putExtra("RMAId",rma.getRMA());
+                getContext().startActivity(intent);
+            }
+        });
 
         /*android.widget.ImageView edit = convertView.findViewById(R.id.left_view);
         android.widget.ImageView delete = convertView.findViewById(R.id.right_view);*/

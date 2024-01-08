@@ -2,6 +2,7 @@ package com.example.projetopdm;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,6 +11,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Base64;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -25,6 +27,7 @@ import com.example.projetopdm.Modelos.RMA;
 import com.example.projetopdm.databinding.ActivityMainBinding;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.zxing.integration.android.IntentIntegrator;
 
 import java.util.ArrayList;
 
@@ -41,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
     ListAdapterRMA listAdapter;
     RMA rma;
 
+
+
+    @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,6 +111,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+
+
+
+
+
+
     }
 
 
