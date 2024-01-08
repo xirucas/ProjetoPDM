@@ -6,6 +6,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.example.projetopdm.BackEnd.RetrofitClient;
 import com.example.projetopdm.Modelos.NotaRMA;
@@ -61,6 +62,7 @@ public class Notas extends AppCompatActivity {
                                 JsonObject notaRMAObj = NotasRMA.get(i).getAsJsonObject();
                                 notaRMA = new NotaRMA();
                                 notaRMA.setId(notaRMAObj.get("Id").getAsInt());
+                                notaRMA.setTitulo(notaRMAObj.get("Titulo").getAsString());
                                 notaRMA.setNota(notaRMAObj.get("Nota").getAsString());
                                 notaRMA.setRMAId(notaRMAObj.get("RMAId").getAsInt());
                                 if (notaRMAObj.get("ImagemNotaId") != null)
@@ -76,7 +78,7 @@ public class Notas extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
-
+                    Toast.makeText(Notas.this, "Aconteceu algo errado ao tentar carregar o RMA", Toast.LENGTH_SHORT).show();
                 }
             });
         }
