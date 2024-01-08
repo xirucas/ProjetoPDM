@@ -6,11 +6,13 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.projetopdm.BackEnd.RetrofitClient;
 import com.example.projetopdm.Modelos.NotaRMA;
 import com.example.projetopdm.Modelos.RMA;
+import com.example.projetopdm.databinding.ActivityMainBinding;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -19,18 +21,25 @@ import java.util.ArrayList;
 import retrofit2.Call;
 import retrofit2.Callback;
 
+import com.example.projetopdm.databinding.ActivityNotasBinding;
+
 public class Notas extends AppCompatActivity {
+
+    ActivityNotasBinding binding;
     int RMAId;
 
     RMA rma = new RMA();
     NotaRMA notaRMA;
 
     ArrayList<NotaRMA> rmaList = new ArrayList<NotaRMA>();
+    ListaAdapterRMADetails listAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_notas);
+        binding = ActivityNotasBinding.inflate(getLayoutInflater());
+
+        setContentView(binding.getRoot());
 
         RMAId = getIntent().getIntExtra("RMAId",0);
 
@@ -55,6 +64,14 @@ public class Notas extends AppCompatActivity {
                         rma.setEstadoRMAId(rmaObj.get("EstadoRMAId").getAsInt());
                         rma.setFuncionarioId(rmaObj.get("FuncionarioId").getAsInt());
 
+                        TextView rMA = findViewById(R.id.ticketsTitle);
+                        TextView dataRma = findViewById(R.id.datarma);
+                        TextView descricao = findViewById(R.id.textView3);
+
+                        rMA.setText(rma.getRMA());
+                        dataRma.setText(rma.getDataCriacao());
+                        descricao.setText(rma.getDescricaoCliente());
+
                         if (response.body().has("RMANotas")) {
                             JsonArray NotasRMA = response.body().get("RMANotas").getAsJsonArray();
 
@@ -63,6 +80,7 @@ public class Notas extends AppCompatActivity {
                                 notaRMA = new NotaRMA();
                                 notaRMA.setId(notaRMAObj.get("Id").getAsInt());
                                 notaRMA.setTitulo(notaRMAObj.get("Titulo").getAsString());
+                                notaRMA.setDataCriacao(notaRMAObj.get("DataCriacao").getAsString());
                                 notaRMA.setNota(notaRMAObj.get("Nota").getAsString());
                                 notaRMA.setRMAId(notaRMAObj.get("RMAId").getAsInt());
                                 if (notaRMAObj.get("ImagemNotaId") != null)
@@ -71,6 +89,8 @@ public class Notas extends AppCompatActivity {
                                     notaRMA.setImagemNota(notaRMAObj.get("ImagemNota").getAsString());
                                 rmaList.add(notaRMA);
                             }
+                            listAdapter = new ListaAdapterRMADetails(Notas.this, rmaList, Notas.this);
+                            binding.notas.setAdapter(listAdapter);
                         }
 
                     }

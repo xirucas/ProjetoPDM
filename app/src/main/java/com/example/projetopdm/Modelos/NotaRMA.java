@@ -3,6 +3,7 @@ package com.example.projetopdm.Modelos;
 public class NotaRMA {
     int Id;
     String Titulo;
+    String dataCriacao;
     String Nota;
     int ImagemNotaId;
     String ImagemNota;
@@ -12,32 +13,36 @@ public class NotaRMA {
 
     }
 
-    public NotaRMA(int id,String titulo ,String nota, String imagemNota, int rmaId) {
+    public NotaRMA(int id,String titulo ,String dataCriacao ,String nota, String imagemNota, int rmaId) {
         Id = id;
         Titulo = titulo;
+        this.dataCriacao = dataCriacao;
         Nota = nota;
         ImagemNota = imagemNota;
         RMAId = rmaId;
     }
 
-    public NotaRMA(int id,String titulo, String nota,int imagemNotaId ,String imagemNota, int rmaId) {
+    public NotaRMA(int id,String titulo,String dataCriacao, String nota,int imagemNotaId ,String imagemNota, int rmaId) {
         Id = id;
         Titulo = titulo;
+        this.dataCriacao = dataCriacao;
         Nota = nota;
         ImagemNotaId = imagemNotaId;
         ImagemNota = imagemNota;
         RMAId = rmaId;
     }
 
-    public NotaRMA(String titulo, String nota, String imagemNota, int rmaId) {
+    public NotaRMA(String titulo,String dataCriacao, String nota, String imagemNota, int rmaId) {
         Titulo = titulo;
+        this.dataCriacao = dataCriacao;
         Nota = nota;
         ImagemNota = imagemNota;
         RMAId = rmaId;
     }
 
-    public NotaRMA(String titulo,String nota, int rmaId) {
+    public NotaRMA(String titulo,String dataCriacao, String nota, int rmaId) {
         Titulo = titulo;
+        this.dataCriacao = dataCriacao;
         Nota = nota;
         RMAId = rmaId;
     }
@@ -56,6 +61,14 @@ public class NotaRMA {
 
     public void setTitulo(String titulo) {
         Titulo = titulo;
+    }
+
+    public String getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(String dataCriacao) {
+        this.dataCriacao = dataCriacao;
     }
 
     public String getNota() {

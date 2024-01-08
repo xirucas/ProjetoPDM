@@ -130,7 +130,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:icon="@drawable/delete_white"/>
-    <!--        É contigo tati nao percebi como o vou fazer..-->
+        <!--É contigo tati nao percebi como o vou fazer..-->
 
     </LinearLayout>
 
