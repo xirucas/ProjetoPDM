@@ -9,13 +9,16 @@ public class Funcionario {
     String Pin;
 
     String ImagemFuncionario;
+    int EstadoFuncionarioId;
+
+    String EstadoFuncionario;
 
 
     public Funcionario() {
 
     }
 
-    public Funcionario(int id, String GUID, String nome, String email, String contacto, String pin, String imagemFuncionario) {
+    public Funcionario(int id, String GUID, String nome, String email, String contacto, String pin, String imagemFuncionario, int estadoFuncionarioId, String estadoFuncionario) {
         Id = id;
         this.GUID = GUID;
         Nome = nome;
@@ -23,15 +26,19 @@ public class Funcionario {
         Contacto = contacto;
         Pin = pin;
         ImagemFuncionario = imagemFuncionario;
+        EstadoFuncionarioId = estadoFuncionarioId;
+        EstadoFuncionario = estadoFuncionario;
     }
 
-    public Funcionario(String GUID, String nome, String email, String contacto, String pin, String imagemFuncionario) {
+    public Funcionario(String GUID, String nome, String email, String contacto, String pin, String imagemFuncionario, int estadoFuncionarioId, String estadoFuncionario) {
         this.GUID = GUID;
         Nome = nome;
         Email = email;
         Contacto = contacto;
         Pin = pin;
         ImagemFuncionario = imagemFuncionario;
+        EstadoFuncionarioId = estadoFuncionarioId;
+        EstadoFuncionario = estadoFuncionario;
     }
 
     public int getId() {
@@ -88,6 +95,22 @@ public class Funcionario {
 
     public void setImagemFuncionario(String imagemFuncionario) {
         ImagemFuncionario = imagemFuncionario;
+    }
+
+    public int getEstadoFuncionarioId() {
+        return EstadoFuncionarioId;
+    }
+
+    public void setEstadoFuncionarioId(int estadoFuncionarioId) {
+        EstadoFuncionarioId = estadoFuncionarioId;
+    }
+
+    public String getEstadoFuncionario() {
+        return EstadoFuncionario;
+    }
+
+    public void setEstadoFuncionario(String estadoFuncionario) {
+        EstadoFuncionario = estadoFuncionario;
     }
 
     @Override

@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,8 +58,10 @@ public class MainActivity extends AppCompatActivity {
         String pin = getIntent().getStringExtra("Pin");
         String contacto = getIntent().getStringExtra("Contacto");
         String imagemFuncionario = getIntent().getStringExtra("ImagemFuncionario");
+        String estadoFuncionario = getIntent().getStringExtra("EstadoFuncionario");
+        int estadoFuncionarioId = getIntent().getIntExtra("EstadoFuncionarioId", 0);
 
-        funcionario = new Funcionario(Id, GUID, nome, email, contacto, pin, imagemFuncionario);
+        funcionario = new Funcionario(Id, GUID, nome, email, contacto, pin, imagemFuncionario, estadoFuncionarioId, estadoFuncionario);
 
         setContentView(binding.getRoot());
 
