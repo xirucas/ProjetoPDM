@@ -58,6 +58,8 @@ public class Login extends AppCompatActivity {
                         funcionario.setGUID(FuncionarioObj.get("GUID").getAsString());
                         funcionario.setPin(FuncionarioObj.get("Pin").getAsString());
                         funcionario.setImagemFuncionario(FuncionarioObj.get("ImagemFuncionario").getAsString());
+                        funcionario.setEstadoFuncionario("Online");
+                        funcionario.setEstadoFuncionarioId(1);
                     } else {
                         Toast.makeText(Login.this, "Error", Toast.LENGTH_SHORT).show();
                     }
@@ -89,6 +91,8 @@ public class Login extends AppCompatActivity {
                     intent.putExtra("GUID", funcionario.getGUID());
                     intent.putExtra("Pin", funcionario.getPin());
                     intent.putExtra("ImagemFuncionario", funcionario.getImagemFuncionario());
+                    intent.putExtra("EstadoFuncionario", funcionario.getEstadoFuncionario());
+                    intent.putExtra("EstadoFuncionarioId", funcionario.getEstadoFuncionarioId());
                     startActivity(intent);
                 }
                 else{
