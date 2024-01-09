@@ -2,6 +2,8 @@ package com.example.projetopdm;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,18 +11,28 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import android.app.*;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.projetopdm.BackEnd.RetrofitClient;
 import com.example.projetopdm.Modelos.NotaRMA;
 import com.example.projetopdm.Modelos.RMA;
 import com.google.android.material.button.MaterialButton;
+import com.google.gson.JsonObject;
 
 import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.jar.JarEntry;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
 
@@ -74,12 +86,48 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
                 LinearLayout popup = binding.findViewById(R.id.popup);
                 popup.setVisibility(View.VISIBLE);
 
-                TextView confirmar = binding.findViewById(R.id.confirmar);
+                TextView confirmarid = binding.findViewById(R.id.confirmarid);
 
-                confirmar.setText("Tem a certeza que pretende eliminar a nota " + notaRMA.getTitulo() + "?");
+                confirmarid.setText("Tem a certeza que pretende eliminar a nota " + notaRMA.getTitulo() + "?");
 
+                Button confirm = binding.findViewById(R.id.confirmar);
+
+                confirm.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (isInternetAvailable()){
+                            Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().DeleteNotaRMA(notaRMA.getId());
+                            call.enqueue(new Callback<JsonObject>() {
+                                @Override
+                                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                                    JsonObject responseObj = response.body().get("Result").getAsJsonObject();
+                                    if (responseObj.get("Success").getAsBoolean()){
+                                        int pos = binding.listAdapter.getPosition(notaRMA);
+                                        binding.listAdapter.remove(notaRMA);
+                                        binding.finish();
+                                        Toast.makeText(binding, "Nota eliminada com sucesso", Toast.LENGTH_SHORT).show();
+                                    }else {
+                                        Toast.makeText(binding, "Erro ao eliminar nota", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<JsonObject> call, Throwable t) {
+                                    Toast.makeText(binding, "Erro ao eliminar nota", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                        }else {
+                            LinearLayout popup = binding.findViewById(R.id.popup);
+                            popup.setVisibility(View.INVISIBLE);
+                            Toast.makeText(binding, "Não tem acesso à internet", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
         });
+
+
 
         /*android.widget.ImageView edit = convertView.findViewById(R.id.left_view);
         android.widget.ImageView delete = convertView.findViewById(R.id.right_view);*/
@@ -95,6 +143,20 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
 
 
         return view;
+    }
+
+    private boolean isInternetAvailable(){
+        boolean connected = false;
+        ConnectivityManager connectivityManager = (ConnectivityManager)binding.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+            //we are connected to a network
+            connected = true;
+        }
+        else
+            connected = false;
+
+        return connected;
     }
 
 }

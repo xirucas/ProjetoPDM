@@ -4,13 +4,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.projetopdm.BackEnd.RetrofitClient;
@@ -48,6 +53,13 @@ public class Perfil extends AppCompatActivity {
         int estadoFuncionarioId = getIntent().getIntExtra("EstadoFuncionarioId", 0); //1 é online
 
         funcionario = new Funcionario(Id, GUID, nome, email, contacto, pin, imagemFuncionario, estadoFuncionarioId, estadoFuncionario);
+
+        ImageView img = findViewById(R.id.perfil_btn2);
+        TextView Nome = findViewById(R.id.name);
+
+        Nome.setText(nome);
+        Bitmap bitmap = StringToBitMap(imagemFuncionario);
+        img.setImageBitmap(bitmap);
 
         //estadoFuncionarioId=0; //testar em caso de pausa
 
@@ -182,5 +194,17 @@ public class Perfil extends AppCompatActivity {
             connected = false;
 
         return connected;
+    }
+
+    public Bitmap StringToBitMap(String encodedString){
+        try{
+            byte [] encodeByte = Base64.decode(encodedString,Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            return bitmap;
+        }
+        catch(Exception e){
+            e.getMessage();
+            return null;
+        }
     }
 }
