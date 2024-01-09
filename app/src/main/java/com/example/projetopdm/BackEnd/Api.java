@@ -33,4 +33,7 @@ public interface Api {
 
     @POST("CreateOrUpdateFuncionarioAPI")
     Call<JsonObject> CreateOrUpdateFuncionarioAPI(@Body JsonObject body);
+
+    @DELETE("DeleteNotaRMA")
+    Call<JsonObject> DeleteNotaRMA(@Query("Id") int Id);
 }

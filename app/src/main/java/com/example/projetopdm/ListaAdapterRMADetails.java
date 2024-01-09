@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -63,18 +64,21 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
         }
 
 
-        //LinearLayout RMA_btn = view.findViewById(R.id.RMA_btn);
+        Button deleteBt = view.findViewById(R.id.iconButton);
 
         // Adicionar um OnClickListener ao LinearLayout
-        /*RMA_btn.setOnClickListener(new View.OnClickListener() {
+        deleteBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Lógica a ser executada quando o LinearLayout for clicado
-                Intent intent = new Intent(getContext(), Notas.class);
-                intent.putExtra("RMAId",no.getId());
-                getContext().startActivity(intent);
+                LinearLayout popup = binding.findViewById(R.id.popup);
+                popup.setVisibility(View.VISIBLE);
+
+                TextView confirmar = binding.findViewById(R.id.confirmar);
+
+                confirmar.setText("Tem a certeza que pretende eliminar a nota " + notaRMA.getTitulo() + "?");
+
             }
-        });*/
+        });
 
         /*android.widget.ImageView edit = convertView.findViewById(R.id.left_view);
         android.widget.ImageView delete = convertView.findViewById(R.id.right_view);*/

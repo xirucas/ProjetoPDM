@@ -6,6 +6,8 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +44,9 @@ public class Notas extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         RMAId = getIntent().getIntExtra("RMAId",0);
+
+        LinearLayout popup = findViewById(R.id.popup);
+        popup.setVisibility(View.INVISIBLE);
 
         if (isInternetAvailable()){
             Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().GetRMAById(RMAId);

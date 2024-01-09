@@ -134,9 +134,33 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/popup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- So tens que alinhar isto ao meio ou onde quiseres, e meter o botao de cancelar
+        a mensagem da textview mostra uma cena que meti a mostrar no adapter do rmadetails
+        -->
 
 
 
+        <TextView
+            android:id="@+id/confirmarid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/semibold"/>
+    <Button
+        android:id="@+id/confirmar"
+        style="?attr/materialIconButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:icon="@android:drawable/ic_delete" />
 
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
