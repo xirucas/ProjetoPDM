@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 
 import com.example.projetopdm.Modelos.NotaRMA;
 import com.example.projetopdm.Modelos.RMA;
+import com.google.android.material.button.MaterialButton;
 
 import java.lang.reflect.Array;
 import java.time.LocalDateTime;
@@ -64,7 +65,7 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
         }
 
 
-        Button deleteBt = view.findViewById(R.id.iconButton);
+        MaterialButton deleteBt = view.findViewById(R.id.deleteBt);
 
         // Adicionar um OnClickListener ao LinearLayout
         deleteBt.setOnClickListener(new View.OnClickListener() {

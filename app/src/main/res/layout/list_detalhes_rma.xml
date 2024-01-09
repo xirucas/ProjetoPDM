@@ -58,7 +58,8 @@
                 app:iconGravity="end"
                 app:iconPadding="0dp"
                 app:iconSize="30dp"
-                app:iconTint="@color/black" />
+                app:iconTint="@color/black"
+                android:id="@+id/deleteBt"/>
 
 
         </LinearLayout>
