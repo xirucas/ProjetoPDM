@@ -64,7 +64,7 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="130dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="20dp"
@@ -76,6 +76,7 @@
             android:id="@+id/textView3"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:fontFamily="@font/regular"
             android:isScrollContainer="true"
             android:overScrollMode="ifContentScrolls"
             android:text="@string/lorem"
@@ -108,10 +109,11 @@
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="145dp"
         android:layout_marginBottom="20dp"
+        android:backgroundTint="@color/main_blue"
         android:paddingHorizontal="30dp"
         app:icon="@android:drawable/ic_input_add"
         app:iconSize="50dp"
-        app:iconTint="@color/black" />
+        app:iconTint="@color/white" />
 
     <LinearLayout
         android:id="@+id/popup"
