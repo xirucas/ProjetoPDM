@@ -10,4 +10,7 @@
     <color name="input">#EBF5FA</color>
     <color name="card">#F3DDE9EF</color>
     <color name="menu">#A7C5D6</color>
+    <color name="pausa">#FBC02D</color>
+    <color name="encerrar">#CC2727</color>
+    <color name="red">#D32F2F</color>
 </resources>
