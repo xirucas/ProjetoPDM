@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.example.projetopdm.BackEnd.RetrofitClient;
 import com.example.projetopdm.Modelos.Funcionario;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,7 +38,9 @@ public class Login extends AppCompatActivity {
         String GUID = getIntent().getStringExtra("GUID");
 
         if(isInternetAvailable()){
+
             Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().GetFuncionarioByGUID(GUID);
+
             call.enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -51,8 +54,13 @@ public class Login extends AppCompatActivity {
                         funcionario.setGUID(FuncionarioObj.get("GUID").getAsString());
                         funcionario.setPin(FuncionarioObj.get("Pin").getAsString());
                         funcionario.setImagemFuncionario(FuncionarioObj.get("ImagemFuncionario").getAsString());
-                        funcionario.setEstadoFuncionario("Online");
-                        funcionario.setEstadoFuncionarioId(1);
+                        if (FuncionarioObj.get("EstadoFuncionarioId").getAsInt() == 2) {
+                            funcionario.setEstadoFuncionario(FuncionarioObj.get("EstadoFuncionario").getAsString());
+                            funcionario.setEstadoFuncionarioId(FuncionarioObj.get("EstadoFuncionarioId").getAsInt());
+                        } else {
+                            funcionario.setEstadoFuncionario("Online");
+                            funcionario.setEstadoFuncionarioId(1);
+                        }
                     } else {
                         Toast.makeText(Login.this, "Error", Toast.LENGTH_SHORT).show();
                     }
@@ -76,17 +84,47 @@ public class Login extends AppCompatActivity {
             public void onClick(View view) {
                 EditText pin = findViewById(R.id.pin);
                 if(pin.getText().toString().equals(funcionario.getPin())){
-                    Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                    intent.putExtra("Id", funcionario.getId());
-                    intent.putExtra("Nome", funcionario.getNome());
-                    intent.putExtra("Email", funcionario.getEmail());
-                    intent.putExtra("Contacto", funcionario.getContacto());
-                    intent.putExtra("GUID", funcionario.getGUID());
-                    intent.putExtra("Pin", funcionario.getPin());
-                    intent.putExtra("ImagemFuncionario", funcionario.getImagemFuncionario());
-                    intent.putExtra("EstadoFuncionario", funcionario.getEstadoFuncionario());
-                    intent.putExtra("EstadoFuncionarioId", funcionario.getEstadoFuncionarioId());
-                    startActivity(intent);
+
+                    String request = "{"
+                            + " \"Id\": \"" + funcionario.getId() + "\", "
+                            + " \"GUID\": \"" + funcionario.getGUID() + "\", "
+                            + " \"Nome\": \"" + funcionario.getNome() + "\", "
+                            + " \"Email\": \"" + funcionario.getEmail() + "\", "
+                            + " \"Contacto\": \"" + funcionario.getContacto() + "\", "
+                            + " \"Pin\": \"" + funcionario.getPin() + "\", "
+                            + " \"EstadoFuncionarioId\": \"" + funcionario.getEstadoFuncionarioId() + "\" }";
+                    JsonObject body = new JsonParser().parse(request).getAsJsonObject();
+                    Call<JsonObject> call2 = RetrofitClient.getInstance().getMyApi().CreateOrUpdateFuncionarioAPI(body);
+
+                    call2.enqueue(new Callback<JsonObject>() {
+                        @Override
+                        public void onResponse(Call<JsonObject> call2, Response<JsonObject> response) {
+                            JsonObject responseObj = response.body().get("Result").getAsJsonObject();
+                            if (responseObj.get("Success").getAsBoolean()) {
+                                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                                intent.putExtra("Id", funcionario.getId());
+                                intent.putExtra("Nome", funcionario.getNome());
+                                intent.putExtra("Email", funcionario.getEmail());
+                                intent.putExtra("Contacto", funcionario.getContacto());
+                                intent.putExtra("GUID", funcionario.getGUID());
+                                intent.putExtra("Pin", funcionario.getPin());
+                                intent.putExtra("ImagemFuncionario", funcionario.getImagemFuncionario());
+                                intent.putExtra("EstadoFuncionario", funcionario.getEstadoFuncionario());
+                                intent.putExtra("EstadoFuncionarioId", funcionario.getEstadoFuncionarioId());
+                                startActivity(intent);
+                                Toast.makeText(getApplicationContext(), "Logado", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Erro a fazer login", Toast.LENGTH_LONG).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<JsonObject> call2, Throwable t) {
+                            Toast.makeText(getApplicationContext(), "Erro a fazer login", Toast.LENGTH_LONG).show();
+                        }
+                    });
+
+
                 }
                 else{
                     Toast.makeText(Login.this, "Pin incorreto", Toast.LENGTH_SHORT).show();

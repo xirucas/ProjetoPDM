@@ -30,4 +30,7 @@ public interface Api {
 
     @GET("GetRMAById")
     Call<JsonObject> GetRMAById(@Query("Id") int Id);
+
+    @POST("CreateOrUpdateFuncionarioAPI")
+    Call<JsonObject> CreateOrUpdateFuncionarioAPI(@Body JsonObject body);
 }

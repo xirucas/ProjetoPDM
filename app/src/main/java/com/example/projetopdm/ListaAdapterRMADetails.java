@@ -16,8 +16,9 @@ import com.example.projetopdm.Modelos.NotaRMA;
 import com.example.projetopdm.Modelos.RMA;
 
 import java.lang.reflect.Array;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
 
@@ -42,19 +43,19 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
         assert notaRMA != null;
         titulo.setText(notaRMA.getTitulo());
         // xxxx-xx-xx retirar T xx:xx e retirar o resto da datetime
-        char[] data = notaRMA.getDataCriacao().toCharArray();
-        char[] dataFinal = data;
-        for (int i = 0; i < data.length; i++) {
-            if (data[i] == 'T') {
-                dataFinal[i] = ' ';
-            }else{
-                dataFinal[i] = data[i];
-            }
-            if (i == 15) {
-                break;
-            }
-        }
-        dataNota.setText(Arrays.toString(dataFinal));
+
+        String dataOriginal = notaRMA.getDataCriacao();
+
+        DateTimeFormatter formatoOriginal = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+        LocalDateTime data = LocalDateTime.parse(dataOriginal, formatoOriginal);
+
+        DateTimeFormatter novoFormato = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+        String novaDataFormatada = data.format(novoFormato);
+
+        dataNota.setText(novaDataFormatada);
+
         if (notaRMA.getNota().length() > 20)
             nota.setText(notaRMA.getNota().substring(0,20) + "...");
         else{

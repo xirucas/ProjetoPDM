@@ -46,15 +46,20 @@ public View getView(int position, @Nullable View view, @NonNull ViewGroup parent
         LinearLayout RMA_btn = view.findViewById(R.id.RMA_btn);
 
         // Adicionar um OnClickListener ao LinearLayout
-        RMA_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Lógica a ser executada quando o LinearLayout for clicado
-                Intent intent = new Intent(getContext(), Notas.class);
-                intent.putExtra("RMAId",rma.getId());
-                getContext().startActivity(intent);
-            }
-        });
+        int estadoFuncionarioId = binding.funcionario.getEstadoFuncionarioId();
+        if (estadoFuncionarioId == 1){
+            RMA_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Lógica a ser executada quando o LinearLayout for clicado
+                    Intent intent = new Intent(getContext(), Notas.class);
+                    intent.putExtra("RMAId",rma.getId());
+                    getContext().startActivity(intent);
+                }
+            });
+        }
+
+
 
         /*android.widget.ImageView edit = convertView.findViewById(R.id.left_view);
         android.widget.ImageView delete = convertView.findViewById(R.id.right_view);*/
