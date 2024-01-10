@@ -89,7 +89,7 @@
         style="@style/Widget.AppCompat.ListView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/iconButton"
+        android:layout_above="@+id/novaNota_btn"
         android:layout_below="@+id/notasTitle"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="8dp"
@@ -101,7 +101,7 @@
         tools:listitem="@layout/list_detalhes_rma" />
 
     <Button
-        android:id="@+id/iconButton"
+        android:id="@+id/novaNota_btn"
         style="?attr/materialIconButtonFilledStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

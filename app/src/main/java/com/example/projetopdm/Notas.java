@@ -3,10 +3,12 @@ package com.example.projetopdm;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +29,9 @@ import com.example.projetopdm.databinding.ActivityNotasBinding;
 
 public class Notas extends AppCompatActivity {
 
+
     ActivityNotasBinding binding;
+    Button novaNova_btn;
     int RMAId;
 
     RMA rma = new RMA();
@@ -40,7 +44,7 @@ public class Notas extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityNotasBinding.inflate(getLayoutInflater());
-
+        novaNova_btn = (Button) findViewById(R.id.novaNota_btn);
         setContentView(binding.getRoot());
 
         RMAId = getIntent().getIntExtra("RMAId",0);
@@ -106,7 +110,22 @@ public class Notas extends AppCompatActivity {
                     Toast.makeText(Notas.this, "Aconteceu algo errado ao tentar carregar o RMA", Toast.LENGTH_SHORT).show();
                 }
             });
+
+
+            novaNova_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getApplicationContext(), Nota.class);
+                    intent.putExtra("GUID","-1");
+                    startActivity(intent);
+                }
+            });
+
+
         }
+
+
+
     }
 
     private boolean isInternetAvailable(){

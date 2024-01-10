@@ -51,7 +51,6 @@ public View getView(int position, @Nullable View view, @NonNull ViewGroup parent
             RMA_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // Lógica a ser executada quando o LinearLayout for clicado
                     Intent intent = new Intent(getContext(), Notas.class);
                     intent.putExtra("RMAId",rma.getId());
                     getContext().startActivity(intent);
