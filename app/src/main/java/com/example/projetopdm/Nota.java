@@ -16,20 +16,33 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.Manifest;
 import android.widget.Toast;
+
+import com.example.projetopdm.BackEnd.RetrofitClient;
+import com.example.projetopdm.Modelos.NotaRMA;
+import com.example.projetopdm.Modelos.RMA;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import retrofit2.Call;
+import retrofit2.Callback;
 
 
 public class Nota extends AppCompatActivity {
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 1001; // Use any unique value
     private static final int IMAGE_CAPTURE_CODE = 1001;
 
-
-    Boolean isCreating= false;
+    Notas binding;
+    EditText titulo;
+    EditText nota;
     ImageView imageView;
     Button img_btn;
+    Button create_btn;
     Uri image_uri;
+    NotaRMA notaRMA;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,13 +51,14 @@ public class Nota extends AppCompatActivity {
 
         imageView = (ImageView) findViewById(R.id.imageView);
         img_btn=(Button) findViewById(R.id.img_btn);
+        create_btn=(Button) findViewById(R.id.create_btn);
+        titulo=(EditText) findViewById(R.id.Caixa_titulo);
+        nota=(EditText) findViewById(R.id.Caixa_Texto);
 
-        if (getIntent().getStringExtra("GUID").equals("-1")){
-            isCreating = true;
-            imageView.setVisibility(View.INVISIBLE);
-        }
-        if (isCreating){
-
+        if (getIntent().getIntExtra("Id", 0) != 0) {
+            notaRMA = new NotaRMA(getIntent().getIntExtra("Id", 0), getIntent().getStringExtra("Titulo"), getIntent().getStringExtra("DataCriacao"), getIntent().getStringExtra("Nota"), getIntent().getIntExtra("ImagemNotaId", 0), getIntent().getStringExtra("ImagemNota"), getIntent().getIntExtra("RMAId", 0));
+            titulo.setText(notaRMA.getTitulo());
+            nota.setText(notaRMA.getNota());
         }
         img_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,7 +80,46 @@ public class Nota extends AppCompatActivity {
             }
         });
 
+        create_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (titulo.getText().toString().isEmpty() || nota.getText().toString().isEmpty()){
+                    Toast.makeText(Nota.this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
+            }else {
+                    String request = "{"
+                            + " \"Id\": \"" + notaRMA.getId() + "\", "
+                            + " \"Titulo\": \"" + notaRMA.getTitulo() + "\", "
+                            + " \"Nota\": \"" + notaRMA.getNota() + "\", "
+                            + " \"RMAId\": \"" + notaRMA.getRMAId() + "\", "
+                            + " \"IdImagem\": \"" + notaRMA.getImagemNotaId()
+                            + " \"Imagem\": \"" + notaRMA.getImagemNota() + "\" }";
+                    JsonObject body = new JsonParser().parse(request).getAsJsonObject();
+                    Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().CreateOrUpdateNotaRMA(body);
+
+                    call.enqueue(new Callback<JsonObject>() {
+                        @Override
+                        public void onResponse(Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
+                            JsonObject responseObj = response.body().get("Result").getAsJsonObject();
+                            if (responseObj.get("Success").getAsBoolean()) {
+                                Toast.makeText(getApplicationContext(), "Nota criada com sucesso", Toast.LENGTH_LONG).show();
+                                binding.finish();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Erro ao criar nota", Toast.LENGTH_LONG).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<JsonObject> call, Throwable t) {
+                            Toast.makeText(getApplicationContext(), "Erro ao criar nota", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+        };
+
+    });
     }
+
+
 
     private void openCamera(){
         ContentValues values= new ContentValues();

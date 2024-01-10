@@ -104,7 +104,8 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
                                     if (responseObj.get("Success").getAsBoolean()){
                                         int pos = binding.listAdapter.getPosition(notaRMA);
                                         binding.listAdapter.remove(notaRMA);
-                                        binding.finish();
+                                        popup.setVisibility(View.INVISIBLE);
+                                        binding.listAdapter.notifyDataSetChanged();
                                         Toast.makeText(binding, "Nota eliminada com sucesso", Toast.LENGTH_SHORT).show();
                                     }else {
                                         Toast.makeText(binding, "Erro ao eliminar nota", Toast.LENGTH_SHORT).show();

@@ -6,23 +6,23 @@
     android:layout_height="match_parent"
     tools:context=".Nota">
 
-    <TextView
+    <EditText
         android:id="@+id/Caixa_titulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="171dp"
         android:layout_marginTop="100dp"
-        android:text="TextView"
+        android:text="Titulo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <EditText
         android:id="@+id/Caixa_Texto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="171dp"
         android:layout_marginTop="143dp"
-        android:text="TextView"
+        android:text="Nota"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -36,6 +36,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/create_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="156dp"
+        android:layout_marginTop="450dp"
+        android:text="Criar Nota"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="142dp"
@@ -45,5 +55,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_camera" />
+
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -31,7 +31,6 @@ public class Notas extends AppCompatActivity {
 
 
     ActivityNotasBinding binding;
-    Button novaNova_btn;
     int RMAId;
 
     RMA rma = new RMA();
@@ -44,12 +43,13 @@ public class Notas extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityNotasBinding.inflate(getLayoutInflater());
-        novaNova_btn = (Button) findViewById(R.id.novaNota_btn);
+
         setContentView(binding.getRoot());
 
         RMAId = getIntent().getIntExtra("RMAId",0);
 
         LinearLayout popup = findViewById(R.id.popup);
+        Button novaNova_btn = (Button) findViewById(R.id.novaNota_btn);
         popup.setVisibility(View.INVISIBLE);
 
         if (isInternetAvailable()){
@@ -83,24 +83,26 @@ public class Notas extends AppCompatActivity {
 
                         if (response.body().has("RMANotas")) {
                             JsonArray NotasRMA = response.body().get("RMANotas").getAsJsonArray();
-
-                            for (int i = 0; i < NotasRMA.size(); i++) {
-                                JsonObject notaRMAObj = NotasRMA.get(i).getAsJsonObject();
-                                notaRMA = new NotaRMA();
-                                notaRMA.setId(notaRMAObj.get("Id").getAsInt());
-                                notaRMA.setTitulo(notaRMAObj.get("Titulo").getAsString());
-                                notaRMA.setDataCriacao(notaRMAObj.get("DataCriacao").getAsString());
-                                notaRMA.setNota(notaRMAObj.get("Nota").getAsString());
-                                notaRMA.setRMAId(notaRMAObj.get("RMAId").getAsInt());
-                                if (notaRMAObj.get("ImagemNotaId") != null)
-                                    notaRMA.setImagemNotaId(notaRMAObj.get("ImagemNotaId").getAsInt());
-                                if (notaRMAObj.get("ImagemNota") != null)
-                                    notaRMA.setImagemNota(notaRMAObj.get("ImagemNota").getAsString());
-                                rmaList.add(notaRMA);
+                            if (NotasRMA.get(0).getAsJsonObject().get("Id").getAsInt() != 0) {
+                                for (int i = 0; i < NotasRMA.size(); i++) {
+                                    JsonObject notaRMAObj = NotasRMA.get(i).getAsJsonObject();
+                                    notaRMA = new NotaRMA();
+                                    notaRMA.setId(notaRMAObj.get("Id").getAsInt());
+                                    notaRMA.setTitulo(notaRMAObj.get("Titulo").getAsString());
+                                    notaRMA.setDataCriacao(notaRMAObj.get("DataCriacao").getAsString());
+                                    notaRMA.setNota(notaRMAObj.get("Nota").getAsString());
+                                    notaRMA.setRMAId(notaRMAObj.get("RMAId").getAsInt());
+                                    if (notaRMAObj.get("ImagemNotaId") != null)
+                                        notaRMA.setImagemNotaId(notaRMAObj.get("ImagemNotaId").getAsInt());
+                                    if (notaRMAObj.get("ImagemNota") != null)
+                                        notaRMA.setImagemNota(notaRMAObj.get("ImagemNota").getAsString());
+                                    rmaList.add(notaRMA);
+                                }
+                                listAdapter = new ListaAdapterRMADetails(Notas.this, rmaList, Notas.this);
+                                binding.notas.setAdapter(listAdapter);
                             }
-                            listAdapter = new ListaAdapterRMADetails(Notas.this, rmaList, Notas.this);
-                            binding.notas.setAdapter(listAdapter);
                         }
+
 
                     }
                 }
@@ -116,7 +118,7 @@ public class Notas extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getApplicationContext(), Nota.class);
-                    intent.putExtra("GUID","-1");
+                    intent.putExtra("RMAId", 0);
                     startActivity(intent);
                 }
             });
