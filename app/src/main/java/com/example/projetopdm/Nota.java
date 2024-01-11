@@ -43,6 +43,7 @@ public class Nota extends AppCompatActivity {
     Button create_btn;
     Uri image_uri;
     NotaRMA notaRMA;
+    Boolean creating=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +60,7 @@ public class Nota extends AppCompatActivity {
             notaRMA = new NotaRMA(getIntent().getIntExtra("Id", 0), getIntent().getStringExtra("Titulo"), getIntent().getStringExtra("DataCriacao"), getIntent().getStringExtra("Nota"), getIntent().getIntExtra("ImagemNotaId", 0), getIntent().getStringExtra("ImagemNota"), getIntent().getIntExtra("RMAId", 0));
             titulo.setText(notaRMA.getTitulo());
             nota.setText(notaRMA.getNota());
+            creating=true;
         }
         img_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,6 +162,7 @@ public class Nota extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             imageView.setImageURI(image_uri);
             imageView.setVisibility(View.VISIBLE);
+
         }
     }
 }

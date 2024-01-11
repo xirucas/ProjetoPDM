@@ -37,6 +37,8 @@ import retrofit2.Response;
 public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
 
     Notas binding;
+
+    LinearLayout notas ;
     public ListaAdapterRMADetails(@NonNull Context context, ArrayList<NotaRMA> dataArrayList, Notas binding) {
         super(context, R.layout.list_detalhes_rma, dataArrayList);
         this.binding = binding;
@@ -125,6 +127,17 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
                         }
                     }
                 });
+
+
+            }
+        });
+
+        notas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), Nota.class);
+                intent.putExtra("NotaId",notaRMA.getId());
+                getContext().startActivity(intent);
             }
         });
 
