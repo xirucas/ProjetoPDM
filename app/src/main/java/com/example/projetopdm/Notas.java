@@ -118,7 +118,7 @@ public class Notas extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getApplicationContext(), Nota.class);
-                    intent.putExtra("RMAId", 0);
+                    intent.putExtra("RMAId", RMAId);
                     startActivity(intent);
                 }
             });

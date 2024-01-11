@@ -4,16 +4,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,6 +29,11 @@ import com.example.projetopdm.Modelos.NotaRMA;
 import com.example.projetopdm.Modelos.RMA;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -59,6 +67,12 @@ public class Nota extends AppCompatActivity {
             notaRMA = new NotaRMA(getIntent().getIntExtra("Id", 0), getIntent().getStringExtra("Titulo"), getIntent().getStringExtra("DataCriacao"), getIntent().getStringExtra("Nota"), getIntent().getIntExtra("ImagemNotaId", 0), getIntent().getStringExtra("ImagemNota"), getIntent().getIntExtra("RMAId", 0));
             titulo.setText(notaRMA.getTitulo());
             nota.setText(notaRMA.getNota());
+            if (notaRMA.getImagemNota() != null) {
+                Bitmap imagem = StringToBitMap(notaRMA.getImagemNota());
+                imageView.setImageBitmap(imagem);
+            }
+        }else{
+            imageView.setImageURI(null);
         }
         img_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,13 +100,45 @@ public class Nota extends AppCompatActivity {
                 if (titulo.getText().toString().isEmpty() || nota.getText().toString().isEmpty()){
                     Toast.makeText(Nota.this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
             }else {
-                    String request = "{"
-                            + " \"Id\": \"" + notaRMA.getId() + "\", "
-                            + " \"Titulo\": \"" + notaRMA.getTitulo() + "\", "
-                            + " \"Nota\": \"" + notaRMA.getNota() + "\", "
-                            + " \"RMAId\": \"" + notaRMA.getRMAId() + "\", "
-                            + " \"IdImagem\": \"" + notaRMA.getImagemNotaId()
-                            + " \"Imagem\": \"" + notaRMA.getImagemNota() + "\" }";
+                    String request = "";
+                    if (getIntent().getIntExtra("Id", 0) != 0) {
+                        notaRMA.setNota(nota.getText().toString());
+                        notaRMA.setTitulo(titulo.getText().toString());
+                        if (image_uri != null) {
+                            Bitmap imagem = uriToBitmap(getApplicationContext(), image_uri);
+                            String imagemString = bitmapToString(imagem);
+                            notaRMA.setImagemNota(imagemString);
+                        }
+                         request = "{"
+                                + " \"Id\": \"" + notaRMA.getId() + "\", "
+                                + " \"Titulo\": \"" + notaRMA.getTitulo() + "\", "
+                                + " \"Nota\": \"" + notaRMA.getNota() + "\", "
+                                + " \"RMAId\": \"" + getIntent().getIntExtra("RMAId",0) + "\", "
+                                + " \"IdImagem\": \"" + notaRMA.getImagemNotaId() + "\", "
+                                + " \"Imagem\": \"" + notaRMA.getImagemNota() + "\" }";
+                    }
+                    else {
+                        if (image_uri != null) {
+                            Bitmap imagem = uriToBitmap(getApplicationContext(), image_uri);
+                            String imagemString = bitmapToString(imagem);
+                            request = "{"
+                                    + " \"Id\": \"" + 0 + "\", "
+                                    + " \"Titulo\": \"" + titulo.getText().toString() + "\", "
+                                    + " \"Nota\": \"" + nota.getText().toString() + "\", "
+                                    + " \"RMAId\": \"" + getIntent().getIntExtra("RMAId", 0) + "\", "
+                                    + " \"IdImagem\": \"" + 0 + "\", "
+                                    + " \"Imagem\": \"" + imagemString + "\" }";
+                        } else {
+                            request = "{"
+                                    + " \"Id\": \"" + 0 + "\", "
+                                    + " \"Titulo\": \"" + titulo.getText().toString() + "\", "
+                                    + " \"Nota\": \"" + nota.getText().toString() + "\", "
+                                    + " \"RMAId\": \"" + getIntent().getIntExtra("RMAId", 0) + "\", "
+                                    + " \"IdImagem\": \"" + 0 + "\", "
+                                    + " \"Imagem\": \"" + "" + "\" }";
+                        }
+                    }
+
                     JsonObject body = new JsonParser().parse(request).getAsJsonObject();
                     Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().CreateOrUpdateNotaRMA(body);
 
@@ -102,7 +148,9 @@ public class Nota extends AppCompatActivity {
                             JsonObject responseObj = response.body().get("Result").getAsJsonObject();
                             if (responseObj.get("Success").getAsBoolean()) {
                                 Toast.makeText(getApplicationContext(), "Nota criada com sucesso", Toast.LENGTH_LONG).show();
-                                binding.finish();
+                                Intent intent = new Intent(getApplicationContext(), Notas.class);
+                                intent.putExtra("RMAId", getIntent().getIntExtra("RMAId", 0));
+                                startActivity(intent);
                             } else {
                                 Toast.makeText(getApplicationContext(), "Erro ao criar nota", Toast.LENGTH_LONG).show();
                             }
@@ -160,6 +208,48 @@ public class Nota extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             imageView.setImageURI(image_uri);
             imageView.setVisibility(View.VISIBLE);
+        }
+    }
+
+
+
+    public Bitmap uriToBitmap(Context context, Uri uri) {
+        Bitmap bitmap = null;
+        try {
+            // Abre um InputStream a partir da URI
+            InputStream imageStream = context.getContentResolver().openInputStream(uri);
+
+            // Converte o InputStream em um Bitmap
+            bitmap = BitmapFactory.decodeStream(imageStream);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return bitmap;
+    }
+
+    public String bitmapToString(Bitmap bitmap) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        // Comprime a imagem em um formato específico (PNG, JPEG, etc.)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+
+        // Converte os bytes para Base64
+        String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+        return encodedImage;
+    }
+
+    public Bitmap StringToBitMap(String encodedString){
+        try{
+            byte [] encodeByte = Base64.decode(encodedString,Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            return bitmap;
+        }
+        catch(Exception e){
+            e.getMessage();
+            return null;
         }
     }
 }
