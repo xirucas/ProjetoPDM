@@ -47,6 +47,15 @@ public class NotaRMA {
         RMAId = rmaId;
     }
 
+    public NotaRMA(int notaId, int rmaId, String titulo, String dataCriacao, String nota) {
+        Id = notaId;
+        RMAId = rmaId;
+        Titulo = titulo;
+        this.dataCriacao = dataCriacao;
+        Nota = nota;
+    }
+
+
     public int getId() {
         return Id;
     }

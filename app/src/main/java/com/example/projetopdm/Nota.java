@@ -4,12 +4,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,6 +42,7 @@ import java.io.InputStream;
 
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class Nota extends AppCompatActivity {
@@ -62,17 +68,55 @@ public class Nota extends AppCompatActivity {
         create_btn=(Button) findViewById(R.id.create_btn);
         titulo=(EditText) findViewById(R.id.Caixa_titulo);
         nota=(EditText) findViewById(R.id.Caixa_Texto);
+        if (isInternetAvailable()) {
+            if (getIntent().getIntExtra("NotaId", 0) != 0) {
+                create_btn.setText("Atualizar Nota");
+                Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().GetNotaRMAById(getIntent().getIntExtra("NotaId", 0));
 
-        if (getIntent().getIntExtra("Id", 0) != 0) {
-            notaRMA = new NotaRMA(getIntent().getIntExtra("Id", 0), getIntent().getStringExtra("Titulo"), getIntent().getStringExtra("DataCriacao"), getIntent().getStringExtra("Nota"), getIntent().getIntExtra("ImagemNotaId", 0), getIntent().getStringExtra("ImagemNota"), getIntent().getIntExtra("RMAId", 0));
-            titulo.setText(notaRMA.getTitulo());
-            nota.setText(notaRMA.getNota());
-            if (notaRMA.getImagemNota() != null) {
+                call.enqueue(new Callback<JsonObject>() {
+                    @Override
+                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                        JsonObject responseObj = response.body().get("Result").getAsJsonObject();
+                        if (responseObj.get("Success").getAsBoolean()) {
+                            JsonObject notaObj = response.body().get("RMANota").getAsJsonObject();
+                            notaRMA = new NotaRMA();
+                            notaRMA.setId(notaObj.get("Id").getAsInt());
+                            notaRMA.setTitulo(notaObj.get("Titulo").getAsString());
+                            notaRMA.setDataCriacao(notaObj.get("DataCriacao").getAsString());
+                            notaRMA.setNota(notaObj.get("Nota").getAsString());
+                            notaRMA.setRMAId(notaObj.get("RMAId").getAsInt());
+                            titulo.setText(notaRMA.getTitulo());
+                            nota.setText(notaRMA.getNota());
+                            if (notaObj.has("ImagemNota")){
+                                notaRMA.setImagemNotaId(notaObj.get("ImagemNotaId").getAsInt());
+                                notaRMA.setImagemNota(notaObj.get("ImagemNota").getAsString());
+                                Bitmap imagem = StringToBitMap(notaRMA.getImagemNota());
+                                imageView.setImageBitmap(imagem);
+                            }
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Erro ao carregar nota", Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<JsonObject> call, Throwable t) {
+                        Toast.makeText(getApplicationContext(), "Erro ao carregar nota", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+           /* if (binding.notaRMA.getImagemNota() != null) {
+                notaRMA.setImagemNota(getIntent().getStringExtra("ImagemNota"));
+                notaRMA.setImagemNotaId(getIntent().getIntExtra("ImagemNotaId", 0));
                 Bitmap imagem = StringToBitMap(notaRMA.getImagemNota());
                 imageView.setImageBitmap(imagem);
+            }*/
+            } else {
+                create_btn.setText("Criar Nota");
+                imageView.setImageURI(null);
+                notaRMA = new NotaRMA();
             }
-        }else{
-            imageView.setImageURI(null);
+        }else {
+            Toast.makeText(getApplicationContext(), "Sem conexão com a internet", Toast.LENGTH_LONG).show();
         }
         img_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,7 +145,7 @@ public class Nota extends AppCompatActivity {
                     Toast.makeText(Nota.this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
             }else {
                     String request = "";
-                    if (getIntent().getIntExtra("Id", 0) != 0) {
+                    if (getIntent().getIntExtra("NotaId", 0) != 0) {
                         notaRMA.setNota(nota.getText().toString());
                         notaRMA.setTitulo(titulo.getText().toString());
                         if (image_uri != null) {
@@ -121,6 +165,7 @@ public class Nota extends AppCompatActivity {
                         if (image_uri != null) {
                             Bitmap imagem = uriToBitmap(getApplicationContext(), image_uri);
                             String imagemString = bitmapToString(imagem);
+                            notaRMA.setImagemNota(imagemString);
                             request = "{"
                                     + " \"Id\": \"" + 0 + "\", "
                                     + " \"Titulo\": \"" + titulo.getText().toString() + "\", "
@@ -148,9 +193,10 @@ public class Nota extends AppCompatActivity {
                             JsonObject responseObj = response.body().get("Result").getAsJsonObject();
                             if (responseObj.get("Success").getAsBoolean()) {
                                 Toast.makeText(getApplicationContext(), "Nota criada com sucesso", Toast.LENGTH_LONG).show();
-                                Intent intent = new Intent(getApplicationContext(), Notas.class);
-                                intent.putExtra("RMAId", getIntent().getIntExtra("RMAId", 0));
-                                startActivity(intent);
+                                Intent resultIntent = new Intent();
+                                resultIntent.putExtra("AtivarAPI", true);
+                                setResult(Activity.RESULT_OK, resultIntent);
+                                finish();
                             } else {
                                 Toast.makeText(getApplicationContext(), "Erro ao criar nota", Toast.LENGTH_LONG).show();
                             }
@@ -252,4 +298,21 @@ public class Nota extends AppCompatActivity {
             return null;
         }
     }
+
+    private boolean isInternetAvailable(){
+        boolean connected = false;
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+            //we are connected to a network
+            connected = true;
+        }
+        else
+            connected = false;
+
+        return connected;
+    }
+
+
+
 }

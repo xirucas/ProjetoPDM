@@ -48,7 +48,7 @@ public class Splash extends AppCompatActivity {
 
                     integrator.setBeepEnabled(false);
                     integrator.setBarcodeImageEnabled(true);
-                    integrator.setOrientationLocked(false);
+                    integrator.setOrientationLocked(true);
 
                     integrator.setCameraId(0);//traseira
                     integrator.initiateScan();

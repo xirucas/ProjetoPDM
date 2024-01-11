@@ -2,6 +2,7 @@ package com.example.projetopdm;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -30,6 +31,7 @@ import com.example.projetopdm.databinding.ActivityNotasBinding;
 public class Notas extends AppCompatActivity {
 
 
+    public static final int MEU_REQUEST_CODE = 1;
     ActivityNotasBinding binding;
     int RMAId;
 
@@ -38,6 +40,22 @@ public class Notas extends AppCompatActivity {
 
     ArrayList<NotaRMA> rmaList = new ArrayList<NotaRMA>();
     ListaAdapterRMADetails listAdapter;
+    Button novaNova_btn;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Activity.RESULT_OK) {
+            // A variável está contida nos dados da Intent
+            if (data.hasExtra("AtivarAPI")){
+                if (data.getBooleanExtra("AtivarAPI", false)){
+                    rmaList.clear();
+                    API();
+                }
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +67,14 @@ public class Notas extends AppCompatActivity {
         RMAId = getIntent().getIntExtra("RMAId",0);
 
         LinearLayout popup = findViewById(R.id.popup);
-        Button novaNova_btn = (Button) findViewById(R.id.novaNota_btn);
+        novaNova_btn = (Button) findViewById(R.id.novaNota_btn);
         popup.setVisibility(View.INVISIBLE);
+        rmaList.clear();
+        API();
 
+    }
+
+    private void API(){
         if (isInternetAvailable()){
             Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().GetRMAById(RMAId);
 
@@ -119,15 +142,14 @@ public class Notas extends AppCompatActivity {
                 public void onClick(View v) {
                     Intent intent = new Intent(getApplicationContext(), Nota.class);
                     intent.putExtra("RMAId", RMAId);
-                    startActivity(intent);
+                    startActivityForResult(intent, MEU_REQUEST_CODE);
                 }
             });
 
 
+        }else {
+            Toast.makeText(Notas.this, "Não tem acesso à internet", Toast.LENGTH_SHORT).show();
         }
-
-
-
     }
 
     private boolean isInternetAvailable(){

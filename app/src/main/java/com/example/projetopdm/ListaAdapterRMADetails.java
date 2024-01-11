@@ -132,12 +132,15 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
             }
         });
 
+        notas= view.findViewById(R.id.notas);
+
         notas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), Nota.class);
+                Intent intent = new Intent(binding.getApplicationContext(), Nota.class);
                 intent.putExtra("NotaId",notaRMA.getId());
-                getContext().startActivity(intent);
+                intent.putExtra("RMAId",notaRMA.getRMAId());
+                binding.startActivityForResult(intent, binding.MEU_REQUEST_CODE);
             }
         });
 
