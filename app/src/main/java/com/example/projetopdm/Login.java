@@ -1,5 +1,7 @@
 package com.example.projetopdm;
 
+import static com.example.projetopdm.LocalDataBase.FuncionarioSharedPreferences.getFuncionarioData;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -33,10 +35,21 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        Funcionario x = getFuncionarioData(this);
 
         String GUID = getIntent().getStringExtra("GUID");
 
+
+        if (x.getGUID()!=null){
+            if(x.getGUID().equals(GUID)){
+                Bitmap imagem = StringToBitMap(x.getImagemFuncionario());
+                ImageView imageView = findViewById(R.id.perfil_btn);
+                imageView.setImageBitmap(imagem);
+
+                TextView nome = findViewById(R.id.name);
+                nome.setText(x.getNome());
+            }
+        }
         if(isInternetAvailable()){
 
             Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().GetFuncionarioByGUID(GUID);
@@ -83,52 +96,119 @@ public class Login extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 EditText pin = findViewById(R.id.pin);
-                if(pin.getText().toString().equals(funcionario.getPin())){
+                if(x.getGUID()!=null){
+                    if (pin.getText().toString().equals(x.getPin())){
+                        Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                        intent.putExtra("Id", x.getId());
+                        intent.putExtra("Nome", x.getNome());
+                        intent.putExtra("Email", x.getEmail());
+                        intent.putExtra("Contacto", x.getContacto());
+                        intent.putExtra("GUID", x.getGUID());
+                        intent.putExtra("Pin", x.getPin());
+                        intent.putExtra("ImagemFuncionario", x.getImagemFuncionario());
+                        intent.putExtra("EstadoFuncionario", x.getEstadoFuncionario());
+                        intent.putExtra("EstadoFuncionarioId", x.getEstadoFuncionarioId());
+                        startActivity(intent);
+                        Toast.makeText(getApplicationContext(), "Logado via local", Toast.LENGTH_LONG).show();
+                    }
+                    if (isInternetAvailable()){
+                        if(pin.getText().toString().equals(funcionario.getPin())){
 
-                    String request = "{"
-                            + " \"Id\": \"" + funcionario.getId() + "\", "
-                            + " \"GUID\": \"" + funcionario.getGUID() + "\", "
-                            + " \"Nome\": \"" + funcionario.getNome() + "\", "
-                            + " \"Email\": \"" + funcionario.getEmail() + "\", "
-                            + " \"Contacto\": \"" + funcionario.getContacto() + "\", "
-                            + " \"Pin\": \"" + funcionario.getPin() + "\", "
-                            + " \"EstadoFuncionarioId\": \"" + funcionario.getEstadoFuncionarioId() + "\" }";
-                    JsonObject body = new JsonParser().parse(request).getAsJsonObject();
-                    Call<JsonObject> call2 = RetrofitClient.getInstance().getMyApi().CreateOrUpdateFuncionarioAPI(body);
+                            String request = "{"
+                                    + " \"Id\": \"" + funcionario.getId() + "\", "
+                                    + " \"GUID\": \"" + funcionario.getGUID() + "\", "
+                                    + " \"Nome\": \"" + funcionario.getNome() + "\", "
+                                    + " \"Email\": \"" + funcionario.getEmail() + "\", "
+                                    + " \"Contacto\": \"" + funcionario.getContacto() + "\", "
+                                    + " \"Pin\": \"" + funcionario.getPin() + "\", "
+                                    + " \"EstadoFuncionarioId\": \"" + funcionario.getEstadoFuncionarioId() + "\" }";
+                            JsonObject body = new JsonParser().parse(request).getAsJsonObject();
+                            Call<JsonObject> call2 = RetrofitClient.getInstance().getMyApi().CreateOrUpdateFuncionarioAPI(body);
 
-                    call2.enqueue(new Callback<JsonObject>() {
-                        @Override
-                        public void onResponse(Call<JsonObject> call2, Response<JsonObject> response) {
-                            JsonObject responseObj = response.body().get("Result").getAsJsonObject();
-                            if (responseObj.get("Success").getAsBoolean()) {
-                                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                                intent.putExtra("Id", funcionario.getId());
-                                intent.putExtra("Nome", funcionario.getNome());
-                                intent.putExtra("Email", funcionario.getEmail());
-                                intent.putExtra("Contacto", funcionario.getContacto());
-                                intent.putExtra("GUID", funcionario.getGUID());
-                                intent.putExtra("Pin", funcionario.getPin());
-                                intent.putExtra("ImagemFuncionario", funcionario.getImagemFuncionario());
-                                intent.putExtra("EstadoFuncionario", funcionario.getEstadoFuncionario());
-                                intent.putExtra("EstadoFuncionarioId", funcionario.getEstadoFuncionarioId());
-                                startActivity(intent);
-                                Toast.makeText(getApplicationContext(), "Logado", Toast.LENGTH_LONG).show();
-                            } else {
+                            call2.enqueue(new Callback<JsonObject>() {
+                                @Override
+                                public void onResponse(Call<JsonObject> call2, Response<JsonObject> response) {
+                                    JsonObject responseObj = response.body().get("Result").getAsJsonObject();
+                                    if (responseObj.get("Success").getAsBoolean()) {
+                                        Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                                        intent.putExtra("Id", funcionario.getId());
+                                        intent.putExtra("Nome", funcionario.getNome());
+                                        intent.putExtra("Email", funcionario.getEmail());
+                                        intent.putExtra("Contacto", funcionario.getContacto());
+                                        intent.putExtra("GUID", funcionario.getGUID());
+                                        intent.putExtra("Pin", funcionario.getPin());
+                                        intent.putExtra("ImagemFuncionario", funcionario.getImagemFuncionario());
+                                        intent.putExtra("EstadoFuncionario", funcionario.getEstadoFuncionario());
+                                        intent.putExtra("EstadoFuncionarioId", funcionario.getEstadoFuncionarioId());
+                                        startActivity(intent);
+                                        Toast.makeText(getApplicationContext(), "Logado", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "Erro a fazer login", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<JsonObject> call2, Throwable t) {
+                                    Toast.makeText(getApplicationContext(), "Erro a fazer login", Toast.LENGTH_LONG).show();
+                                }
+                            });
+
+
+                        }
+                        else{
+                            Toast.makeText(Login.this, "Pin incorreto", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+                if (isInternetAvailable()){
+                    if(pin.getText().toString().equals(funcionario.getPin())){
+
+                        String request = "{"
+                                + " \"Id\": \"" + funcionario.getId() + "\", "
+                                + " \"GUID\": \"" + funcionario.getGUID() + "\", "
+                                + " \"Nome\": \"" + funcionario.getNome() + "\", "
+                                + " \"Email\": \"" + funcionario.getEmail() + "\", "
+                                + " \"Contacto\": \"" + funcionario.getContacto() + "\", "
+                                + " \"Pin\": \"" + funcionario.getPin() + "\", "
+                                + " \"EstadoFuncionarioId\": \"" + funcionario.getEstadoFuncionarioId() + "\" }";
+                        JsonObject body = new JsonParser().parse(request).getAsJsonObject();
+                        Call<JsonObject> call2 = RetrofitClient.getInstance().getMyApi().CreateOrUpdateFuncionarioAPI(body);
+
+                        call2.enqueue(new Callback<JsonObject>() {
+                            @Override
+                            public void onResponse(Call<JsonObject> call2, Response<JsonObject> response) {
+                                JsonObject responseObj = response.body().get("Result").getAsJsonObject();
+                                if (responseObj.get("Success").getAsBoolean()) {
+                                    Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                                    intent.putExtra("Id", funcionario.getId());
+                                    intent.putExtra("Nome", funcionario.getNome());
+                                    intent.putExtra("Email", funcionario.getEmail());
+                                    intent.putExtra("Contacto", funcionario.getContacto());
+                                    intent.putExtra("GUID", funcionario.getGUID());
+                                    intent.putExtra("Pin", funcionario.getPin());
+                                    intent.putExtra("ImagemFuncionario", funcionario.getImagemFuncionario());
+                                    intent.putExtra("EstadoFuncionario", funcionario.getEstadoFuncionario());
+                                    intent.putExtra("EstadoFuncionarioId", funcionario.getEstadoFuncionarioId());
+                                    startActivity(intent);
+                                    Toast.makeText(getApplicationContext(), "Logado", Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Erro a fazer login", Toast.LENGTH_LONG).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<JsonObject> call2, Throwable t) {
                                 Toast.makeText(getApplicationContext(), "Erro a fazer login", Toast.LENGTH_LONG).show();
                             }
-                        }
-
-                        @Override
-                        public void onFailure(Call<JsonObject> call2, Throwable t) {
-                            Toast.makeText(getApplicationContext(), "Erro a fazer login", Toast.LENGTH_LONG).show();
-                        }
-                    });
+                        });
 
 
+                    }
+                    else{
+                        Toast.makeText(Login.this, "Pin incorreto", Toast.LENGTH_SHORT).show();
+                    }
                 }
-                else{
-                    Toast.makeText(Login.this, "Pin incorreto", Toast.LENGTH_SHORT).show();
-                }
+
             }
         });
 

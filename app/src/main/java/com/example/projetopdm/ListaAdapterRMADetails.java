@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -139,7 +140,14 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
             public void onClick(View v) {
                 Intent intent = new Intent(binding.getApplicationContext(), Nota.class);
                 intent.putExtra("NotaId",notaRMA.getId());
+                Log.e("Notas"," id nulo ?? "+ notaRMA.getId());
                 intent.putExtra("RMAId",notaRMA.getRMAId());
+                intent.putExtra("NotaTitulo",notaRMA.getTitulo());
+                intent.putExtra("Descricao",notaRMA.getNota());
+                intent.putExtra("Imagem",notaRMA.getImagemNota());
+                intent.putExtra("Data",notaRMA.getDataCriacao());
+                intent.putExtra("ImagemID",notaRMA.getImagemNotaId());
+                intent.putExtra("Update","Update");
                 binding.startActivityForResult(intent, binding.MEU_REQUEST_CODE);
             }
         });
