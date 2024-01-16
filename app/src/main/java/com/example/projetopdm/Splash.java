@@ -79,69 +79,11 @@ public class Splash extends AppCompatActivity {
                         intent.putExtra("GUID", result.getContents());
                         startActivity(intent);
                     }
-                    if (isInternetAvailable()){
-                        Log.e("Splash","nao é o ultimo utilizador vai presisar de net para acessar");
-                        Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().GetAllGUID();
-                        call.enqueue(new Callback<JsonObject>() {
-                            @Override
-                            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                                JsonObject responseObj = response.body().get("Result").getAsJsonObject();
-
-                                if(responseObj.get("Success").getAsBoolean()){
-                                    JsonArray guidListObj = response.body().get("GUID").getAsJsonArray();
-                                    for (int i = 0; i < guidListObj.size(); i++) {
-                                        String GUID = guidListObj.get(i).getAsString();
-                                        guidList.add(GUID);
-                                    }
-
-                                    if(guidList.contains(result.getContents())) {
-                                        Intent intent = new Intent(getApplicationContext(), Login.class);
-                                        intent.putExtra("GUID", result.getContents());
-                                        startActivity(intent);
-                                    }
-                                    else{
-                                        Toast.makeText(Splash.this, "QR inválido -> " + result.getContents(), Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-
-                            }
-                            @Override
-                            public void onFailure(Call<JsonObject> call, Throwable t) {
-                                Toast.makeText(Splash.this, "Aconteceu algo errado ao tentar ler o QR", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                    else if (isInternetAvailable()){
+                        ChamarApi(result,guidList);
                     }
                 } else if (isInternetAvailable()) {
-                    Log.e("Splash","nao é o ultimo utilizador vai presisar de net para acessar");
-                    Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().GetAllGUID();
-                    call.enqueue(new Callback<JsonObject>() {
-                        @Override
-                        public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                            JsonObject responseObj = response.body().get("Result").getAsJsonObject();
-
-                            if(responseObj.get("Success").getAsBoolean()){
-                                JsonArray guidListObj = response.body().get("GUID").getAsJsonArray();
-                                for (int i = 0; i < guidListObj.size(); i++) {
-                                    String GUID = guidListObj.get(i).getAsString();
-                                    guidList.add(GUID);
-                                }
-
-                                if(guidList.contains(result.getContents())) {
-                                    Intent intent = new Intent(getApplicationContext(), Login.class);
-                                    intent.putExtra("GUID", result.getContents());
-                                    startActivity(intent);
-                                }
-                                else{
-                                    Toast.makeText(Splash.this, "QR inválido -> " + result.getContents(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-
-                        }
-                        @Override
-                        public void onFailure(Call<JsonObject> call, Throwable t) {
-                            Toast.makeText(Splash.this, "Aconteceu algo errado ao tentar ler o QR", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    ChamarApi(result,guidList);
                 }
             } else {
                 alert("cancelado");
@@ -150,6 +92,38 @@ public class Splash extends AppCompatActivity {
             super.onActivityResult(requestCode, resultCode, data);
         }
 
+    }
+    private void ChamarApi(IntentResult result,ArrayList<String> guidList){
+        Log.e("Splash","nao é o ultimo utilizador vai presisar de net para acessar");
+        Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().GetAllGUID();
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                JsonObject responseObj = response.body().get("Result").getAsJsonObject();
+
+                if(responseObj.get("Success").getAsBoolean()){
+                    JsonArray guidListObj = response.body().get("GUID").getAsJsonArray();
+                    for (int i = 0; i < guidListObj.size(); i++) {
+                        String GUID = guidListObj.get(i).getAsString();
+                        guidList.add(GUID);
+                    }
+
+                    if(guidList.contains(result.getContents())) {
+                        Intent intent = new Intent(getApplicationContext(), Login.class);
+                        intent.putExtra("GUID", result.getContents());
+                        startActivity(intent);
+                    }
+                    else{
+                        Toast.makeText(Splash.this, "QR inválido -> " + result.getContents(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+            }
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(Splash.this, "Aconteceu algo errado ao tentar ler o QR", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void alert(String testeID) {

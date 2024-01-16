@@ -56,17 +56,17 @@
         Funcionario funcionario;
 
         ArrayList<RMA> rmaList ;
-        List<RMAEntity> rmasLocais;
+
         ListAdapterRMA listAdapter;
-        RMA rma;
+
 
         RMADao rmaDao;
         Api api;
 
         AppDatabase db;
         RetrofitClient retrofitClient;
-        private MainViewModel mainViewModel;
-        private RMARepository rmaRepository;
+
+
 
 
         @Override
@@ -75,24 +75,16 @@
 
             binding = ActivityMainBinding.inflate(getLayoutInflater());
             setContentView(binding.getRoot());
-
+            rmaList= new ArrayList<>();
             initializeFuncionarioFromIntent();
             initializeDatabaseAndViewModel();
             setupPerfilButton();
             displayFuncionarioImage();
 
-            //mainViewModel.getRMAsLocais().observe(this, this::onRMAEntitiesChanged);
-            // Inicialização do ViewModel e Repository
-            mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
-            rmaRepository = new RMARepository(rmaDao,api,this,funcionario.getGUID());
 
-            // Carregar dados dos RMAs
-            loadRMAs();
-            if (isInternetAvailable()) {
-                new SincronizarRMAsTask().execute();
-            } else {
-                Toast.makeText(MainActivity.this, "Sem conexão com a internet.", Toast.LENGTH_SHORT).show();
-            }
+
+
+
 
         }
         private void initializeFuncionarioFromIntent() {
@@ -114,6 +106,9 @@
                 this.deleteDatabase("BaseDeDadosLocal");
                 saveFuncionarioData(this,funcionario);
             }
+
+
+
         }
         private void initializeDatabaseAndViewModel() {
             retrofitClient = RetrofitClient.getInstance();
@@ -121,9 +116,9 @@
             rmaDao = db.rmaDao();
             api = retrofitClient.getMyApi();
 
-            mainViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
-                    .get(MainViewModel.class);
-            mainViewModel.init(rmaDao, api, this, funcionario.getGUID());
+
+            sincronizarRMAs();
+
         }
 
         private boolean isInternetAvailable(){
@@ -163,15 +158,7 @@
                 img.setImageBitmap(bitmap);
             }
         }
-        private void onRMAEntitiesChanged(List<RMAEntity> rmaEntities) {
-            if (rmaEntities != null) {
-                rmaList = convertRMAEntityListToRMAList(rmaEntities);
-                listAdapter = new ListAdapterRMA(MainActivity.this, rmaList, MainActivity.this);
-                binding.listRMA.setAdapter(listAdapter);
-            } else {
-                Toast.makeText(MainActivity.this, "Erro ao carregar RMAs locais.", Toast.LENGTH_SHORT).show();
-            }
-        }
+
 
         public Bitmap StringToBitMap(String encodedString){
             try{
@@ -207,102 +194,73 @@
         }
 
         // Classe SincronizarRMAsTask
-        private class SincronizarRMAsTask extends AsyncTask<Void, Void, Void> {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        RMARepository rmaRepository = new RMARepository(rmaDao, api, MainActivity.this, funcionario.getGUID());
-                        rmaRepository.sincronizarRMAs(); // Esta chamada é assíncrona e atualiza o banco de dados local
-                    }
-                });
-                return null;
+        public  void SincronizarRMAsTask()  {
+
+
+            List<RMAEntity> rmaEntities = rmaDao.getAllRMAs();
+            Toast.makeText(MainActivity.this, "aqui -->"+ rmaEntities.size(), Toast.LENGTH_SHORT).show();
+
+            if (rmaList.size()==0){
+                rmaList = convertRMAEntityListToRMAList(rmaEntities);
             }
 
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                mainViewModel.getRMAsLocais().observe(MainActivity.this, new Observer<List<RMAEntity>>() {
-                    @Override
-                    public void onChanged(List<RMAEntity> rmaEntities) {
-                        if (rmaEntities != null) {
-                            rmaList = convertRMAEntityListToRMAList(rmaEntities);
-                            listAdapter = new ListAdapterRMA(MainActivity.this, rmaList, MainActivity.this);
-                            binding.listRMA.setAdapter(listAdapter);
-                            Toast.makeText(MainActivity.this, "Dados sincronizados com sucesso!", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-            }
+            listAdapter = new ListAdapterRMA(MainActivity.this, rmaList, MainActivity.this);
+            binding.listRMA.setAdapter(listAdapter);
+            Toast.makeText(MainActivity.this, "Dados sincronizados com sucesso! -->"+ rmaList.size(), Toast.LENGTH_SHORT).show();
         }
 
+        public void sincronizarRMAs () {
+            // Lógica para verificar a conectividade de rede
 
-        private void sincronizarRMAs() {
-            try {
-                // Move as operações do banco de dados para aqui
-                retrofitClient = RetrofitClient.getInstance();
-                db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "BaseDeDadosLocal").allowMainThreadQueries().build();
-                rmaDao = db.rmaDao();
-                api = retrofitClient.getMyApi();
 
-                // Crie uma instância do RMARepository
-                RMARepository rmaRepository = new RMARepository(rmaDao, api, MainActivity.this, getIntent().getStringExtra("GUID"));
 
-                // Verifique a conectividade novamente antes de sincronizar
-                if (isInternetAvailable()) {
-                    rmaRepository.sincronizarRMAs();
-                } else {
-                    // Trate o caso em que não há conectividade
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(MainActivity.this, "Sem conexão com a internet.", Toast.LENGTH_SHORT).show();
+            // Chamar a API e atualizar a base de dados local
+            Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().GetRMASByFuncionario(funcionario.getGUID());
+
+            call.enqueue(new Callback<JsonObject>() {
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                    if (response.isSuccessful()) {
+                        JsonObject responseObject = response.body();
+
+                        if (responseObject.has("RMA")) {
+                            JsonArray rmaListObj = response.body().get("RMA").getAsJsonArray();
+                            List<RMAEntity> rmaListEnt = new ArrayList<>();
+
+                            for (int i = 0; i < rmaListObj.size(); i++) {
+                                JsonObject rmaObj = rmaListObj.get(i).getAsJsonObject();
+                                String dataAb = "";
+                                String dataF = "";
+                                if (rmaObj.get("DataAbertura") != null){
+                                    dataAb = (rmaObj.get("DataAbertura").getAsString());
+                                } else {
+                                    dataAb = "null";
+                                }
+                                if (rmaObj.get("DataFecho") != null){
+                                    dataF = (rmaObj.get("DataFecho").getAsString());
+                                } else {
+                                    dataF = "null";
+                                }
+                                RMAEntity rma = new RMAEntity(rmaObj.get("Id").getAsInt(), rmaObj.get("RMA").getAsString(), rmaObj.get("DescricaoCliente").getAsString(), rmaObj.get("DataCriacao").getAsString(), dataAb, dataF, rmaObj.get("EstadoRMA").getAsString(), rmaObj.get("EstadoRMAId").getAsInt(), rmaObj.get("FuncionarioId").getAsInt());
+                                RMA x =  new RMA(rmaObj.get("Id").getAsInt(), rmaObj.get("RMA").getAsString(), rmaObj.get("DescricaoCliente").getAsString(), rmaObj.get("DataCriacao").getAsString(), dataAb, dataF, rmaObj.get("EstadoRMA").getAsString(), rmaObj.get("EstadoRMAId").getAsInt(), rmaObj.get("FuncionarioId").getAsInt());
+                                rmaListEnt.add(rma);
+                                rmaList.add(x);
+
+                            }
+                            rmaDao.insertAll(rmaListEnt);
+
+
+                            SincronizarRMAsTask();
                         }
-                    });
+
+                    }
+
                 }
 
-                // Após a sincronização, retorne a lista de RMAs locais
-                final List<RMAEntity> rmasLocais = rmaRepository.getRMAsFromLocal();
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (rmasLocais != null) {
-                            // Atualize a UI com a lista de RMAs locais
-                            rmaList = convertRMAEntityListToRMAList(rmasLocais);
-                            listAdapter = new ListAdapterRMA(MainActivity.this, rmaList, MainActivity.this);
-                            binding.listRMA.setAdapter(listAdapter);
-
-                            // Agora, você pode adicionar um Toast para verificar se a lista está sendo carregada corretamente
-                            Toast.makeText(MainActivity.this, "RMAs locais carregados com sucesso!", Toast.LENGTH_SHORT).show();
-                        } else {
-                            // Trate o erro aqui, se necessário
-                            Log.e("Error", "Erro ao obter a lista de RMAs locais.");
-                        }
-                    }
-                });
-            } catch (Exception e) {
-                Log.e("Error", "Erro ao acessar o banco de dados em segundo plano: " + e.getMessage());
-            }
-        }
-
-        private void loadRMAs() {
-            rmaRepository.getRMAsFromLocal(new Consumer<List<RMAEntity>>() {
                 @Override
-                public void accept(List<RMAEntity> rmaEntities) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ArrayList<RMA> rmaListConverted = convertRMAEntityListToRMAList(rmaEntities);
-                            listAdapter = new ListAdapterRMA(MainActivity.this, rmaListConverted, MainActivity.this);
-                            binding.listRMA.setAdapter(listAdapter);
-                        }
-                    });
+                public void onFailure(Call<JsonObject> call, Throwable t) {
+                    // Tratar falhas
                 }
             });
-
-
-    }
+        }
     }

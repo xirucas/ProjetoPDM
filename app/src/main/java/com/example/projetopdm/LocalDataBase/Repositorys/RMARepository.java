@@ -4,21 +4,25 @@ package com.example.projetopdm.LocalDataBase.Repositorys;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
+import kotlin.reflect.KCallable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 
 import com.example.projetopdm.BackEnd.Api;
+import com.example.projetopdm.BackEnd.RetrofitClient;
 import com.example.projetopdm.LocalDataBase.DAOs.FuncionarioDao;
 import com.example.projetopdm.LocalDataBase.DAOs.NotaRMADao;
 import com.example.projetopdm.LocalDataBase.DAOs.RMADao;
 import com.example.projetopdm.LocalDataBase.Entity.FuncionarioEntity;
 import com.example.projetopdm.LocalDataBase.Entity.NotaRMAEntity;
 import com.example.projetopdm.LocalDataBase.Entity.RMAEntity;
+import com.example.projetopdm.MainActivity;
 import com.example.projetopdm.Modelos.RMA;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -45,12 +49,20 @@ public class RMARepository {
         this.context = context;
         this.FuncionarioGUID=FuncionarioGUID;
     }
+    public interface SincronizarRMAsCallback {
+        void onSuccess(List<RMAEntity> rmaEntities);
+        void onFailure(Throwable t);
+    }
 
-    public void sincronizarRMAs() {
+    public void sincronizarRMAs () {
         // Lógica para verificar a conectividade de rede
-        if (isInternetAvailable()) {
+
+
+
             // Chamar a API e atualizar a base de dados local
-            myApi.GetRMASByFuncionario(this.FuncionarioGUID).enqueue(new Callback<JsonObject>() {
+            Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().GetRMASByFuncionario(this.FuncionarioGUID);
+
+            call.enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     if (response.isSuccessful()) {
@@ -78,9 +90,11 @@ public class RMARepository {
                                 rmaList.add(rma);
                             }
                             RMADao.insertAll(rmaList);
+                            Log.e("MainActivity","sync feito lista size "+RMADao.getAllRMAs().size());
                         }
 
                     }
+
                 }
 
                 @Override
@@ -88,8 +102,6 @@ public class RMARepository {
                     // Tratar falhas
                 }
             });
-        }
-
     }
     public List<RMAEntity> getRMAsFromLocal() {
         return RMADao.getAllRMAs(); // Suponha que você tenha um método getAllRMAs() no seu RMADao para buscar todos os RMAs.

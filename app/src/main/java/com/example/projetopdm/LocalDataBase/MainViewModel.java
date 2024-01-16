@@ -45,10 +45,7 @@ public class MainViewModel extends ViewModel {
         rmasLocais = converterListaParaLiveData(rmasLocaisList);
     }
 
-    public void sincronizarRMAs(String guid) {
-        // Execute the synchronization in the background
-        rmaRepository.sincronizarRMAs();
-    }
+
 
     public LiveData<List<RMAEntity>> converterListaParaLiveData(List<RMAEntity> lista) {
         MutableLiveData<List<RMAEntity>> liveData = new MutableLiveData<>();

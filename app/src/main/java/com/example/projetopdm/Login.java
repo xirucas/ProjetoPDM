@@ -48,48 +48,13 @@ public class Login extends AppCompatActivity {
 
                 TextView nome = findViewById(R.id.name);
                 nome.setText(x.getNome());
+            } else if (isInternetAvailable()) {
+                chamarAPI(GUID);
             }
+        }else if(isInternetAvailable()){
+            chamarAPI(GUID);
         }
-        if(isInternetAvailable()){
 
-            Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().GetFuncionarioByGUID(GUID);
-
-            call.enqueue(new Callback<JsonObject>() {
-                @Override
-                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                    JsonObject responseObj = response.body().get("Result").getAsJsonObject();
-                    if (responseObj.get("Success").getAsBoolean()) {
-                        JsonObject FuncionarioObj = response.body().get("Funcionario").getAsJsonObject();
-                        funcionario.setId(FuncionarioObj.get("Id").getAsInt());
-                        funcionario.setNome(FuncionarioObj.get("Nome").getAsString());
-                        funcionario.setEmail(FuncionarioObj.get("Email").getAsString());
-                        funcionario.setContacto(FuncionarioObj.get("Contacto").getAsString());
-                        funcionario.setGUID(FuncionarioObj.get("GUID").getAsString());
-                        funcionario.setPin(FuncionarioObj.get("Pin").getAsString());
-                        funcionario.setImagemFuncionario(FuncionarioObj.get("ImagemFuncionario").getAsString());
-                        if (FuncionarioObj.get("EstadoFuncionarioId").getAsInt() == 2) {
-                            funcionario.setEstadoFuncionario(FuncionarioObj.get("EstadoFuncionario").getAsString());
-                            funcionario.setEstadoFuncionarioId(FuncionarioObj.get("EstadoFuncionarioId").getAsInt());
-                        } else {
-                            funcionario.setEstadoFuncionario("Online");
-                            funcionario.setEstadoFuncionarioId(1);
-                        }
-                    } else {
-                        Toast.makeText(Login.this, "Error", Toast.LENGTH_SHORT).show();
-                    }
-                    Bitmap imagem = StringToBitMap(funcionario.getImagemFuncionario());
-                    ImageView imageView = findViewById(R.id.perfil_btn);
-                    imageView.setImageBitmap(imagem);
-
-                    TextView nome = findViewById(R.id.name);
-                    nome.setText(funcionario.getNome());
-                }
-                @Override
-                public void onFailure(Call<JsonObject> call, Throwable t) {
-                    Toast.makeText(Login.this, "Aconteceu algo errado ao tentar carregar o funcionario", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
 
         Button submit = findViewById(R.id.submit_btn);
         submit.setOnClickListener(new View.OnClickListener() {
@@ -113,47 +78,7 @@ public class Login extends AppCompatActivity {
                     }
                     if (isInternetAvailable()){
                         if(pin.getText().toString().equals(funcionario.getPin())){
-
-                            String request = "{"
-                                    + " \"Id\": \"" + funcionario.getId() + "\", "
-                                    + " \"GUID\": \"" + funcionario.getGUID() + "\", "
-                                    + " \"Nome\": \"" + funcionario.getNome() + "\", "
-                                    + " \"Email\": \"" + funcionario.getEmail() + "\", "
-                                    + " \"Contacto\": \"" + funcionario.getContacto() + "\", "
-                                    + " \"Pin\": \"" + funcionario.getPin() + "\", "
-                                    + " \"EstadoFuncionarioId\": \"" + funcionario.getEstadoFuncionarioId() + "\" }";
-                            JsonObject body = new JsonParser().parse(request).getAsJsonObject();
-                            Call<JsonObject> call2 = RetrofitClient.getInstance().getMyApi().CreateOrUpdateFuncionarioAPI(body);
-
-                            call2.enqueue(new Callback<JsonObject>() {
-                                @Override
-                                public void onResponse(Call<JsonObject> call2, Response<JsonObject> response) {
-                                    JsonObject responseObj = response.body().get("Result").getAsJsonObject();
-                                    if (responseObj.get("Success").getAsBoolean()) {
-                                        Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                                        intent.putExtra("Id", funcionario.getId());
-                                        intent.putExtra("Nome", funcionario.getNome());
-                                        intent.putExtra("Email", funcionario.getEmail());
-                                        intent.putExtra("Contacto", funcionario.getContacto());
-                                        intent.putExtra("GUID", funcionario.getGUID());
-                                        intent.putExtra("Pin", funcionario.getPin());
-                                        intent.putExtra("ImagemFuncionario", funcionario.getImagemFuncionario());
-                                        intent.putExtra("EstadoFuncionario", funcionario.getEstadoFuncionario());
-                                        intent.putExtra("EstadoFuncionarioId", funcionario.getEstadoFuncionarioId());
-                                        startActivity(intent);
-                                        Toast.makeText(getApplicationContext(), "Logado", Toast.LENGTH_LONG).show();
-                                    } else {
-                                        Toast.makeText(getApplicationContext(), "Erro a fazer login", Toast.LENGTH_LONG).show();
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Call<JsonObject> call2, Throwable t) {
-                                    Toast.makeText(getApplicationContext(), "Erro a fazer login", Toast.LENGTH_LONG).show();
-                                }
-                            });
-
-
+                           chamarAPIparaMain();
                         }
                         else{
                             Toast.makeText(Login.this, "Pin incorreto", Toast.LENGTH_SHORT).show();
@@ -162,47 +87,7 @@ public class Login extends AppCompatActivity {
                 }
                 if (isInternetAvailable()){
                     if(pin.getText().toString().equals(funcionario.getPin())){
-
-                        String request = "{"
-                                + " \"Id\": \"" + funcionario.getId() + "\", "
-                                + " \"GUID\": \"" + funcionario.getGUID() + "\", "
-                                + " \"Nome\": \"" + funcionario.getNome() + "\", "
-                                + " \"Email\": \"" + funcionario.getEmail() + "\", "
-                                + " \"Contacto\": \"" + funcionario.getContacto() + "\", "
-                                + " \"Pin\": \"" + funcionario.getPin() + "\", "
-                                + " \"EstadoFuncionarioId\": \"" + funcionario.getEstadoFuncionarioId() + "\" }";
-                        JsonObject body = new JsonParser().parse(request).getAsJsonObject();
-                        Call<JsonObject> call2 = RetrofitClient.getInstance().getMyApi().CreateOrUpdateFuncionarioAPI(body);
-
-                        call2.enqueue(new Callback<JsonObject>() {
-                            @Override
-                            public void onResponse(Call<JsonObject> call2, Response<JsonObject> response) {
-                                JsonObject responseObj = response.body().get("Result").getAsJsonObject();
-                                if (responseObj.get("Success").getAsBoolean()) {
-                                    Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-                                    intent.putExtra("Id", funcionario.getId());
-                                    intent.putExtra("Nome", funcionario.getNome());
-                                    intent.putExtra("Email", funcionario.getEmail());
-                                    intent.putExtra("Contacto", funcionario.getContacto());
-                                    intent.putExtra("GUID", funcionario.getGUID());
-                                    intent.putExtra("Pin", funcionario.getPin());
-                                    intent.putExtra("ImagemFuncionario", funcionario.getImagemFuncionario());
-                                    intent.putExtra("EstadoFuncionario", funcionario.getEstadoFuncionario());
-                                    intent.putExtra("EstadoFuncionarioId", funcionario.getEstadoFuncionarioId());
-                                    startActivity(intent);
-                                    Toast.makeText(getApplicationContext(), "Logado", Toast.LENGTH_LONG).show();
-                                } else {
-                                    Toast.makeText(getApplicationContext(), "Erro a fazer login", Toast.LENGTH_LONG).show();
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<JsonObject> call2, Throwable t) {
-                                Toast.makeText(getApplicationContext(), "Erro a fazer login", Toast.LENGTH_LONG).show();
-                            }
-                        });
-
-
+                        chamarAPIparaMain();
                     }
                     else{
                         Toast.makeText(Login.this, "Pin incorreto", Toast.LENGTH_SHORT).show();
@@ -212,6 +97,86 @@ public class Login extends AppCompatActivity {
             }
         });
 
+    }
+    private void chamarAPIparaMain(){
+        String request = "{"
+                + " \"Id\": \"" + funcionario.getId() + "\", "
+                + " \"GUID\": \"" + funcionario.getGUID() + "\", "
+                + " \"Nome\": \"" + funcionario.getNome() + "\", "
+                + " \"Email\": \"" + funcionario.getEmail() + "\", "
+                + " \"Contacto\": \"" + funcionario.getContacto() + "\", "
+                + " \"Pin\": \"" + funcionario.getPin() + "\", "
+                + " \"EstadoFuncionarioId\": \"" + funcionario.getEstadoFuncionarioId() + "\" }";
+        JsonObject body = new JsonParser().parse(request).getAsJsonObject();
+        Call<JsonObject> call2 = RetrofitClient.getInstance().getMyApi().CreateOrUpdateFuncionarioAPI(body);
+
+        call2.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call2, Response<JsonObject> response) {
+                JsonObject responseObj = response.body().get("Result").getAsJsonObject();
+                if (responseObj.get("Success").getAsBoolean()) {
+                    Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                    intent.putExtra("Id", funcionario.getId());
+                    intent.putExtra("Nome", funcionario.getNome());
+                    intent.putExtra("Email", funcionario.getEmail());
+                    intent.putExtra("Contacto", funcionario.getContacto());
+                    intent.putExtra("GUID", funcionario.getGUID());
+                    intent.putExtra("Pin", funcionario.getPin());
+                    intent.putExtra("ImagemFuncionario", funcionario.getImagemFuncionario());
+                    intent.putExtra("EstadoFuncionario", funcionario.getEstadoFuncionario());
+                    intent.putExtra("EstadoFuncionarioId", funcionario.getEstadoFuncionarioId());
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(), "Logado", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Erro a fazer login", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call2, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Erro a fazer login", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void chamarAPI(String GUID){
+        Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().GetFuncionarioByGUID(GUID);
+
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                JsonObject responseObj = response.body().get("Result").getAsJsonObject();
+                if (responseObj.get("Success").getAsBoolean()) {
+                    JsonObject FuncionarioObj = response.body().get("Funcionario").getAsJsonObject();
+                    funcionario.setId(FuncionarioObj.get("Id").getAsInt());
+                    funcionario.setNome(FuncionarioObj.get("Nome").getAsString());
+                    funcionario.setEmail(FuncionarioObj.get("Email").getAsString());
+                    funcionario.setContacto(FuncionarioObj.get("Contacto").getAsString());
+                    funcionario.setGUID(FuncionarioObj.get("GUID").getAsString());
+                    funcionario.setPin(FuncionarioObj.get("Pin").getAsString());
+                    funcionario.setImagemFuncionario(FuncionarioObj.get("ImagemFuncionario").getAsString());
+                    if (FuncionarioObj.get("EstadoFuncionarioId").getAsInt() == 2) {
+                        funcionario.setEstadoFuncionario(FuncionarioObj.get("EstadoFuncionario").getAsString());
+                        funcionario.setEstadoFuncionarioId(FuncionarioObj.get("EstadoFuncionarioId").getAsInt());
+                    } else {
+                        funcionario.setEstadoFuncionario("Online");
+                        funcionario.setEstadoFuncionarioId(1);
+                    }
+                } else {
+                    Toast.makeText(Login.this, "Error", Toast.LENGTH_SHORT).show();
+                }
+                Bitmap imagem = StringToBitMap(funcionario.getImagemFuncionario());
+                ImageView imageView = findViewById(R.id.perfil_btn);
+                imageView.setImageBitmap(imagem);
+
+                TextView nome = findViewById(R.id.name);
+                nome.setText(funcionario.getNome());
+            }
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(Login.this, "Aconteceu algo errado ao tentar carregar o funcionario", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private boolean isInternetAvailable(){
