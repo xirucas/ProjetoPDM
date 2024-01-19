@@ -265,8 +265,16 @@ public class Nota extends AppCompatActivity {
             // Abre um InputStream a partir da URI
             InputStream imageStream = context.getContentResolver().openInputStream(uri);
 
-            // Converte o InputStream em um Bitmap
+            // Obtém a rotação da imagem a partir das informações EXIF
+            int rotation = getRotationFromExif(context, uri);
+
+            // Converte o InputStream em um Bitmap considerando a rotação
             bitmap = BitmapFactory.decodeStream(imageStream);
+            if (rotation != 0) {
+                Matrix matrix = new Matrix();
+                matrix.postRotate(rotation);
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -274,6 +282,32 @@ public class Nota extends AppCompatActivity {
         }
 
         return bitmap;
+    }
+
+    private int getRotationFromExif(Context context, Uri uri) {
+        int rotation = 0;
+        try {
+            InputStream input = context.getContentResolver().openInputStream(uri);
+            ExifInterface exifInterface = new ExifInterface(input);
+
+            int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    rotation = 90;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    rotation = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    rotation = 270;
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return rotation;
     }
 
     public String bitmapToString(Bitmap bitmap) {
