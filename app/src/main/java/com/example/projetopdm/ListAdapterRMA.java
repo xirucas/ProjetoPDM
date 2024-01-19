@@ -53,9 +53,6 @@ public View getView(int position, @Nullable View view, @NonNull ViewGroup parent
                 public void onClick(View view) {
                     Intent intent = new Intent(getContext(), Notas.class);
                     intent.putExtra("RMAId",rma.getId());
-                    intent.putExtra("RMA",rma.getRMA());
-                    intent.putExtra("Descriçao",rma.getDescricaoCliente());
-                    intent.putExtra("Data",rma.getDataCriacao());
                     getContext().startActivity(intent);
                 }
             });
