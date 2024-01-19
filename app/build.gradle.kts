@@ -74,6 +74,8 @@ dependencies {
     implementation("com.google.zxing:core:3.4.0")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
+    implementation ("com.alimuzaffar.lib:pinentryedittext:1.3.10")
+
     implementation ("com.squareup.retrofit2:retrofit:2.4.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.4.0")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))

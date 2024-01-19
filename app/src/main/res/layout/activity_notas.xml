@@ -93,7 +93,7 @@
         android:layout_below="@+id/notasTitle"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="-97dp"
+        android:layout_marginBottom="10dp"
         android:layout_weight="1"
         android:divider="#00FFFFFF"
         android:dividerHeight="5dp"
@@ -115,40 +115,54 @@
         app:iconSize="50dp"
         app:iconTint="@color/white" />
 
-    <LinearLayout
-        android:id="@+id/popup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="false"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentTop="false"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentRight="false"
-        android:layout_alignParentBottom="false"
-        android:background="@color/white"
-        android:foregroundGravity="center"
-        app:layout_constraintBottom_toTopOf="@+id/menu"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="20dp">
 
-        <!-- So tens que alinhar isto ao meio ou onde quiseres, e meter o botao de cancelar
-        a mensagem da textview mostra uma cena que meti a mostrar no adapter do rmadetails
-        -->
-
-        <TextView
-            android:id="@+id/confirmarid"
+        <LinearLayout
+            android:id="@+id/popup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/semibold" />
+            android:layout_centerInParent="true"
+            android:background="@drawable/round_corners"
+            android:backgroundTint="@color/ic_launcher_background"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="10dp"
+            android:paddingTop="10dip"
+            android:paddingBottom="30dp">
 
-        <Button
-            android:id="@+id/confirmar"
-            style="?attr/materialIconButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:icon="@android:drawable/ic_delete" />
+            <Button
+                android:id="@+id/closePopup"
+                style="?attr/materialIconButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                app:icon="@android:drawable/ic_delete" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/confirmarid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginTop="5dip"
+                android:fontFamily="@font/semibold"
+                android:text="Tem a certeza que pretende eliminar esta nota?"
+                android:textAlignment="center" />
+
+            <Button
+                android:id="@+id/confirmar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Confirmar" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
 
 </RelativeLayout>
