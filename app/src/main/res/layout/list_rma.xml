@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/card_round_corners"
+        android:backgroundTint="@color/card"
         android:orientation="vertical"
         android:padding="10dp"
         android:paddingTop="15dp"
@@ -26,7 +27,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:fontFamily="@font/semibold"
+                android:fontFamily="@font/bold"
                 android:text=""
                 android:textColor="@color/black"
                 android:textSize="20sp" />
@@ -50,8 +51,8 @@
             android:layout_marginStart="20dp"
             android:gravity="center_vertical"
             android:text="Descrição"
-            android:textColor="@color/text"
-            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:textSize="16sp"
             android:textStyle="italic" />
 
         <TextView
