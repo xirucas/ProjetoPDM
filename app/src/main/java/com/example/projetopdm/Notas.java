@@ -67,10 +67,18 @@ public class Notas extends AppCompatActivity {
         RMAId = getIntent().getIntExtra("RMAId",0);
 
         LinearLayout popup = findViewById(R.id.popup);
+        Button closePopup = findViewById(R.id.closePopup);
         novaNova_btn = (Button) findViewById(R.id.novaNota_btn);
         popup.setVisibility(View.INVISIBLE);
         rmaList.clear();
         API();
+
+        closePopup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popup.setVisibility(View.INVISIBLE);
+            }
+        });
 
     }
 

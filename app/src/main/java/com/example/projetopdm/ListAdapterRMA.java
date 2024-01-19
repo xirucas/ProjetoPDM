@@ -39,9 +39,16 @@ public View getView(int position, @Nullable View view, @NonNull ViewGroup parent
         TextView rmaEstado = view.findViewById(R.id.estado);
         assert rma != null;
         rmaId.setText(rma.getRMA());
-        rmaDescricao.setText(rma.getDescricaoCliente());
+        if (rma.getDescricaoCliente().length() > 35)
+            rmaDescricao.setText(rma.getDescricaoCliente().substring(0,35) + "...");
+        else{
+            rmaDescricao.setText(rma.getDescricaoCliente());
+        }
         rmaDataCriacao.setText(rma.getDataCriacao());
         rmaEstado.setText(rma.getEstadoRMA());
+
+
+
 
         LinearLayout RMA_btn = view.findViewById(R.id.RMA_btn);
 

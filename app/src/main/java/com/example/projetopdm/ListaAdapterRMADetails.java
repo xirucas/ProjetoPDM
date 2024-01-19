@@ -72,8 +72,8 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
 
         dataNota.setText(novaDataFormatada);
 
-        if (notaRMA.getNota().length() > 20)
-            nota.setText(notaRMA.getNota().substring(0,20) + "...");
+        if (notaRMA.getNota().length() > 35)
+            nota.setText(notaRMA.getNota().substring(0,35) + "...");
         else{
         nota.setText(notaRMA.getNota());
         }
