@@ -190,23 +190,10 @@ public class NotaRMARepository {
 
     }
 
-    public void getNotasRMAsFromLocal(Consumer<List<NotaRMAEntity>> callback) {
+    public List<NotaRMAEntity> getNotasRMAsFromLocal() {
 
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            int offset = currentPage * ITEMS_PER_PAGE;
-            Log.i("Notas","teste "+this.RMAid);
-
-            List<NotaRMAEntity> notaRmaEntities = NotaRMADao.getNotasByRMAIdWithLimit(this.RMAid, currentPage, ITEMS_PER_PAGE);
-            if (notaRmaEntities != null) {
-                callback.accept(notaRmaEntities);
-                currentPage++;
-                Log.i("Notas", "Dados buscados com sucesso.");
-            } else {
-                Log.e("Notas", "null ao buscar dados.");
-            }
-        });
-        executor.shutdown();
+            List<NotaRMAEntity> notaRmaEntities = NotaRMADao.getNotasByRMAIdWithLimit(this.RMAid);
+            return notaRmaEntities;
     }
 
 

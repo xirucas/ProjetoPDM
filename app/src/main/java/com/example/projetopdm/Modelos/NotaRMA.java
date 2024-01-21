@@ -1,10 +1,13 @@
 package com.example.projetopdm.Modelos;
 
+import com.example.projetopdm.LocalDataBase.Entity.NotaRMAEntity;
+
 public class NotaRMA {
     int Id;
     String Titulo;
     String dataCriacao;
     String Nota;
+    String UpdateOn;
     int ImagemNotaId;
     String ImagemNota;
     int RMAId;
@@ -20,7 +23,12 @@ public class NotaRMA {
         Nota = nota;
         ImagemNota = imagemNota;
         RMAId = rmaId;
+
     }
+    public NotaRMAEntity toNotaRMAEntity() {
+        return new NotaRMAEntity(this.Id, this.Titulo, this.dataCriacao, this.Nota, this.ImagemNota, this.RMAId);
+    }
+
 
     public NotaRMA(int id,String titulo,String dataCriacao, String nota,int imagemNotaId ,String imagemNota, int rmaId) {
         Id = id;
@@ -86,6 +94,14 @@ public class NotaRMA {
 
     public void setNota(String nota) {
         Nota = nota;
+    }
+
+    public String getUpdateOn() {
+        return UpdateOn;
+    }
+
+    public void setUpdateOn(String updateOn) {
+        UpdateOn = updateOn;
     }
 
     public int getImagemNotaId() {

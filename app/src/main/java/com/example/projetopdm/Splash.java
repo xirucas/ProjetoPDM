@@ -47,19 +47,14 @@ public class Splash extends AppCompatActivity {
         scan_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isInternetAvailable()) {
-                    IntentIntegrator integrator = new IntentIntegrator(activity);
-                    integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
+                IntentIntegrator integrator = new IntentIntegrator(activity);
+                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
+                integrator.setBeepEnabled(false);
+                integrator.setBarcodeImageEnabled(true);
+                integrator.setOrientationLocked(true);
 
-                    integrator.setBeepEnabled(false);
-                    integrator.setBarcodeImageEnabled(true);
-                    integrator.setOrientationLocked(true);
-
-                    integrator.setCameraId(0);//traseira
-                    integrator.initiateScan();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Sem conexão com a internet", Toast.LENGTH_LONG).show();
-                }
+                integrator.setCameraId(0);//traseira
+                integrator.initiateScan();
 
             }
         });

@@ -63,21 +63,13 @@ public class Nota extends AppCompatActivity {
     Button create_btn;
     Uri image_uri;
     NotaRMA notaRMA;
-    NotaRMA notaRMA2;
-    NotaRMADao notaRMADao;
-    NotaRMARepository notaRMARepository;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nota);
         Intent intent= getIntent();
-
-        AppDatabase db = Room.databaseBuilder(getApplicationContext(),
-                AppDatabase.class, "BaseDeDadosLocal").allowMainThreadQueries().build();
-        notaRMADao = db.notaRMADao();
-        notaRMARepository = new NotaRMARepository(notaRMADao, RetrofitClient.getInstance().getMyApi(), getApplicationContext(), intent.getIntExtra("RMAId",0));
-
 
 
         imageView = (ImageView) findViewById(R.id.imageView);
@@ -86,14 +78,14 @@ public class Nota extends AppCompatActivity {
         titulo=(EditText) findViewById(R.id.Caixa_titulo);
         nota=(EditText) findViewById(R.id.Caixa_Texto);
 
-        if (intent != null && intent.hasExtra("NotaId")) {
-            int notaIdStr = intent.getIntExtra("NotaId",0);
-            Log.e("Notas", "NotaId recebido: " + notaIdStr);
-        }
 
         if (intent.getStringExtra("Update").equals("Update")){
             create_btn.setText("Atualizar");
-            notaRMA2= new NotaRMA(intent.getIntExtra("NotaId",0),
+
+
+
+
+            notaRMA= new NotaRMA(intent.getIntExtra("NotaId",0),
                     intent.getStringExtra("NotaTitulo"),
                     intent.getStringExtra("Data"),
                     intent.getStringExtra("Descricao"),
@@ -102,19 +94,24 @@ public class Nota extends AppCompatActivity {
                     intent.getIntExtra("RMAId",0));
 
 
-            if (notaRMA2.getImagemNota() != null && !notaRMA2.getImagemNota().isEmpty()) {
-                Uri uri = Uri.parse(notaRMA2.getImagemNota());
+            if (notaRMA.getImagemNota() != null && !notaRMA.getImagemNota().isEmpty()) {
+                Uri uri = Uri.parse(notaRMA.getImagemNota());
                 imageView.setImageURI(uri);
             }
 
-            titulo.setText(notaRMA2.getTitulo());
-            nota.setText(notaRMA2.getNota());
+            titulo.setText(notaRMA.getTitulo());
+            nota.setText(notaRMA.getNota());
+            if (isInternetAvailable()){
+                Bitmap x = StringToBitMap(notaRMA.getImagemNota());
+                imageView.setImageBitmap(x);
+            }
+
         }
 
 
         if (intent.getStringExtra("Update").equals("Novo")){
             create_btn.setText("Adicionar Nota");
-            notaRMA2=new NotaRMA();
+            notaRMA=new NotaRMA();
         }
 
 
@@ -146,22 +143,78 @@ public class Nota extends AppCompatActivity {
         create_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (titulo.getText().toString().isEmpty() || nota.getText().toString().isEmpty()) {
+                if (titulo.getText().toString().isEmpty() || nota.getText().toString().isEmpty()){
                     Toast.makeText(Nota.this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
-                } else {
-                    NotaRMAEntity notaRMAEntity = createNotaFromUI();
+                }else {
+                    String request = "";
+                    if (getIntent().getIntExtra("NotaId", 0) != 0) {
+                        notaRMA.setNota(nota.getText().toString());
+                        notaRMA.setTitulo(titulo.getText().toString());
+                        if (image_uri != null) {
+                            Bitmap imagem = uriToBitmap(getApplicationContext(), image_uri);
+                            String imagemString = bitmapToString(imagem);
+                            notaRMA.setImagemNota(imagemString);
+                        }
+                        request = "{"
+                                + " \"Id\": \"" + notaRMA.getId() + "\", "
+                                + " \"Titulo\": \"" + notaRMA.getTitulo() + "\", "
+                                + " \"Nota\": \"" + notaRMA.getNota() + "\", "
+                                + " \"RMAId\": \"" + getIntent().getIntExtra("RMAId",0) + "\", "
+                                + " \"IdImagem\": \"" + notaRMA.getImagemNotaId() + "\", "
+                                + " \"Imagem\": \"" + notaRMA.getImagemNota() + "\" }";
+                    }
+                    else {
+                        if (image_uri != null) {
+                            Bitmap imagem = uriToBitmap(getApplicationContext(), image_uri);
+                            String imagemString = bitmapToString(imagem);
+                            notaRMA.setImagemNota(imagemString);
+                            request = "{"
+                                    + " \"Id\": \"" + 0 + "\", "
+                                    + " \"Titulo\": \"" + titulo.getText().toString() + "\", "
+                                    + " \"Nota\": \"" + nota.getText().toString() + "\", "
+                                    + " \"RMAId\": \"" + getIntent().getIntExtra("RMAId", 0) + "\", "
+                                    + " \"IdImagem\": \"" + 0 + "\", "
+                                    + " \"Imagem\": \"" + imagemString + "\" }";
+                        } else {
+                            request = "{"
+                                    + " \"Id\": \"" + 0 + "\", "
+                                    + " \"Titulo\": \"" + titulo.getText().toString() + "\", "
+                                    + " \"Nota\": \"" + nota.getText().toString() + "\", "
+                                    + " \"RMAId\": \"" + getIntent().getIntExtra("RMAId", 0) + "\", "
+                                    + " \"IdImagem\": \"" + 0 + "\", "
+                                    + " \"Imagem\": \"" + "" + "\" }";
+                        }
+                    }
 
-                    // Crie uma instância do repositório
-                    NotaRMARepository notaRMARepository = new NotaRMARepository(notaRMADao, RetrofitClient.getInstance().getMyApi(), getApplicationContext(), notaRMA2.getRMAId());
+                    JsonObject body = new JsonParser().parse(request).getAsJsonObject();
+                    Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().CreateOrUpdateNotaRMA(body);
 
-                    // Crie ou atualize a nota
-                    notaRMARepository.createOrUpdateNota(notaRMAEntity);
+                    call.enqueue(new Callback<JsonObject>() {
+                        @Override
+                        public void onResponse(Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
+                            JsonObject responseObj = response.body().get("Result").getAsJsonObject();
+                            if (responseObj.get("Success").getAsBoolean()) {
+                                Toast.makeText(getApplicationContext(), "Nota criada com sucesso", Toast.LENGTH_LONG).show();
+                                Intent resultIntent = new Intent();
+                                resultIntent.putExtra("AtivarAPI", true);
+                                setResult(Activity.RESULT_OK, resultIntent);
+                                finish();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Erro ao criar nota", Toast.LENGTH_LONG).show();
+                            }
+                        }
 
-                    finish();
+                        @Override
+                        public void onFailure(Call<JsonObject> call, Throwable t) {
+                            Toast.makeText(getApplicationContext(), "Erro ao criar nota", Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
-        };
+            };
 
-    });
+        });
+
+
     }
     private NotaRMAEntity createNotaFromUI() {
         NotaRMAEntity notaRMAEntity = new NotaRMAEntity();
@@ -169,14 +222,14 @@ public class Nota extends AppCompatActivity {
         notaRMAEntity.setTitulo(titulo.getText().toString());
         notaRMAEntity.setNota(nota.getText().toString());
         notaRMAEntity.setImagemNota(image_uri.toString());
-        notaRMAEntity.setImagemNotaId(notaRMA2.getImagemNotaId());
-        notaRMAEntity.setDataCriacao(notaRMA2.getDataCriacao());
-        notaRMAEntity.setRMAId(notaRMA2.getRMAId());
+        notaRMAEntity.setImagemNotaId(notaRMA.getImagemNotaId());
+        notaRMAEntity.setDataCriacao(notaRMA.getDataCriacao());
+        notaRMAEntity.setRMAId(notaRMA.getRMAId());
         // Defina outros campos necessários de acordo com os dados da UI
 
         // Se estiver atualizando uma nota existente, defina o ID
-        if (notaRMA2 != null) {
-            notaRMAEntity.setId(notaRMA2.getId());
+        if (notaRMA != null) {
+            notaRMAEntity.setId(notaRMA.getId());
         }
 
         return notaRMAEntity;
@@ -282,6 +335,7 @@ public class Nota extends AppCompatActivity {
 
         return connected;
     }
+
 
 
 

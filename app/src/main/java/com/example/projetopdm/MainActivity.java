@@ -116,7 +116,13 @@
             rmaDao = db.rmaDao();
             api = retrofitClient.getMyApi();
 
+            if (!isInternetAvailable()){
+                rmaList = convertRMAEntityListToRMAList(rmaDao.getAllRMAs());
+            }
 
+            listAdapter = new ListAdapterRMA(MainActivity.this, rmaList, MainActivity.this);
+            binding.listRMA.setAdapter(listAdapter);
+            Toast.makeText(MainActivity.this, "Dados sincronizados com sucesso! -->"+ rmaList.size(), Toast.LENGTH_SHORT).show();
             sincronizarRMAs();
 
         }
@@ -200,7 +206,7 @@
             List<RMAEntity> rmaEntities = rmaDao.getAllRMAs();
             Toast.makeText(MainActivity.this, "aqui -->"+ rmaEntities.size(), Toast.LENGTH_SHORT).show();
 
-            if (rmaList.size()==0){
+            if (!isInternetAvailable()){
                 rmaList = convertRMAEntityListToRMAList(rmaEntities);
             }
 
@@ -247,7 +253,11 @@
                                 rmaList.add(x);
 
                             }
-                            rmaDao.insertAll(rmaListEnt);
+
+                            if (rmaDao.getAllRMAs()==null){
+                                rmaDao.insertAll(rmaListEnt);
+                            }
+
 
 
                             SincronizarRMAsTask();
@@ -262,5 +272,7 @@
                     // Tratar falhas
                 }
             });
+
+
         }
     }

@@ -24,8 +24,8 @@
 
         @Query("SELECT * FROM notas_rma WHERE RMAId = :RMAId")
         List<NotaRMAEntity> getNotasByRMAId(int RMAId);
-        @Query("SELECT * FROM notas_rma WHERE RMAId = :rmaId LIMIT :itemCount OFFSET :startIndex")
-        List<NotaRMAEntity> getNotasByRMAIdWithLimit(int rmaId, int startIndex, int itemCount);
+        @Query("SELECT * FROM notas_rma WHERE RMAId = :rmaId")
+        List<NotaRMAEntity> getNotasByRMAIdWithLimit(int rmaId);
         @Update
         void update(NotaRMAEntity notaRMA);
 
