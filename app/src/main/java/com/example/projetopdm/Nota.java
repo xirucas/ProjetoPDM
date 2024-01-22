@@ -283,6 +283,7 @@ public class Nota extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             imageView.setImageURI(image_uri);
+            imageViewPopup.setImageURI(image_uri);
             imageView.setVisibility(View.VISIBLE);
         }
     }
