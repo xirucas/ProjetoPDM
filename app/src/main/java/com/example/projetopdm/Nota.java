@@ -27,6 +27,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.Manifest;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.projetopdm.BackEnd.RetrofitClient;
@@ -53,8 +54,11 @@ public class Nota extends AppCompatActivity {
     EditText titulo;
     EditText nota;
     ImageView imageView;
+    ImageView imageViewPopup;
+    LinearLayout popup;
     Button img_btn;
     Button create_btn;
+    Button close_btn;
     Uri image_uri;
     NotaRMA notaRMA;
 
@@ -68,6 +72,10 @@ public class Nota extends AppCompatActivity {
         create_btn=(Button) findViewById(R.id.create_btn);
         titulo=(EditText) findViewById(R.id.Caixa_titulo);
         nota=(EditText) findViewById(R.id.Caixa_Texto);
+        imageViewPopup = findViewById(R.id.imageViewPopup);
+        close_btn = findViewById(R.id.closePopup);
+        popup = findViewById(R.id.popupImage);
+        popup.setVisibility(View.INVISIBLE);
         if (isInternetAvailable()) {
             if (getIntent().getIntExtra("NotaId", 0) != 0) {
                 create_btn.setText("Atualizar Nota");
@@ -92,6 +100,8 @@ public class Nota extends AppCompatActivity {
                                 notaRMA.setImagemNota(notaObj.get("ImagemNota").getAsString());
                                 Bitmap imagem = StringToBitMap(notaRMA.getImagemNota());
                                 imageView.setImageBitmap(imagem);
+                                imageViewPopup.setImageBitmap(imagem);
+
                             }
                         } else {
                             Toast.makeText(getApplicationContext(), "Erro ao carregar nota", Toast.LENGTH_LONG).show();
@@ -118,6 +128,26 @@ public class Nota extends AppCompatActivity {
         }else {
             Toast.makeText(getApplicationContext(), "Sem conexão com a internet", Toast.LENGTH_LONG).show();
         }
+
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (imageView.getDrawable() != null) {
+                    imageViewPopup.setVisibility(View.VISIBLE);
+                }else{
+                    Toast.makeText(getApplicationContext(), "Sem imagem para mostrar", Toast.LENGTH_LONG).show();
+
+                }
+            }
+        });
+
+        close_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageViewPopup.setVisibility(View.INVISIBLE);
+            }
+        });
+
         img_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
