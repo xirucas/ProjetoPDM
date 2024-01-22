@@ -133,7 +133,7 @@ public class Nota extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (imageView.getDrawable() != null) {
-                    imageViewPopup.setVisibility(View.VISIBLE);
+                    popup.setVisibility(View.VISIBLE);
                 }else{
                     Toast.makeText(getApplicationContext(), "Sem imagem para mostrar", Toast.LENGTH_LONG).show();
 
@@ -141,10 +141,12 @@ public class Nota extends AppCompatActivity {
             }
         });
 
+
+
         close_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imageViewPopup.setVisibility(View.INVISIBLE);
+                popup.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -243,7 +245,9 @@ public class Nota extends AppCompatActivity {
     });
     }
 
-
+    private void openPopup(){
+        popup.setVisibility(View.VISIBLE);
+    }
 
     private void openCamera(){
         ContentValues values= new ContentValues();
