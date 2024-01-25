@@ -2,19 +2,21 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.ProjetoPDM" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.ProjetoPDM" parent="Theme.Material3.DayNight.NoActionBar">
 
         <item name="colorPrimary">@color/main_blue</item>
         <item name="colorSecondary">@color/secondary_blue</item>
 
         <item name="android:fontFamily">@font/regular</item>
+
     </style>
-
-    <style name="Theme.ProjetoPDM" parent="Base.Theme.ProjetoPDM" />
-
-    <style name="circleImageView" parent="">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">50%</item>
+    
+    <style name="Theme.ProjetoPDM.NoActionBarAndStatusBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:fitsSystemWindows">true</item>
     </style>
 
 </resources>

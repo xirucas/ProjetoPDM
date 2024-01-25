@@ -23,6 +23,8 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Base64;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -66,6 +68,7 @@ public class Nota extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nota);
+
 
         imageView = (ImageView) findViewById(R.id.imageView);
         img_btn=(Button) findViewById(R.id.img_btn);

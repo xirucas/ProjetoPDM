@@ -9,30 +9,43 @@
     <EditText
         android:id="@+id/Caixa_titulo"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="171dp"
-        android:layout_marginTop="100dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="16dp"
+        android:background="@null"
+        android:enabled="true"
+        android:fontFamily="@font/bold"
         android:text="Titulo"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/create_btn" />
 
     <EditText
         android:id="@+id/Caixa_Texto"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="171dp"
-        android:layout_marginTop="143dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="20dp"
+        android:background="@null"
+        android:fontFamily="@font/regular"
         android:text="Nota"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/Caixa_titulo" />
 
     <Button
-        android:id="@+id/img_btn"
+        android:id="@+id/back_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="156dp"
-        android:layout_marginTop="388dp"
-        android:text="Button"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/transparent"
+        app:icon="@drawable/arrow_left_icon"
+        app:iconGravity="start"
+        app:iconPadding="0dp"
+        app:iconSize="25dp"
+        app:iconTint="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -40,28 +53,53 @@
         android:id="@+id/create_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="156dp"
-        android:layout_marginTop="450dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="25dp"
+        android:background="@drawable/round_corners"
+        android:backgroundTint="@color/transparent"
+        android:textColor="@color/black"
+        app:icon="@drawable/guardar_icon"
+        app:iconGravity="textStart"
+        app:iconPadding="10dp"
+        app:iconSize="25dp"
+        app:iconTint="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/img_btn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/transparent"
+        app:icon="@drawable/camera_icon"
+        app:iconGravity="textStart"
+        app:iconSize="50dp"
+        app:iconTint="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="142dp"
-        android:layout_height="137dp"
-        android:layout_marginStart="132dp"
-        android:layout_marginTop="224dp"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="25dp"
+        android:background="@drawable/estado_round_corners"
+        android:backgroundTint="#6A2B2B2B"
         android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_camera" />
+        app:layout_constraintTop_toBottomOf="@+id/Caixa_Texto"
+        app:srcCompat="@drawable/photo_icon" />
 
     <LinearLayout
         android:id="@+id/popupImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_margin="15dp">
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/closePopup"
@@ -71,11 +109,10 @@
             android:layout_gravity="right"
             app:icon="@android:drawable/ic_delete" />
 
-    <ImageView
-        android:id="@+id/imageViewPopup"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/black"/>
+        <ImageView
+            android:id="@+id/imageViewPopup"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
     </LinearLayout>
 

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
+    <color name="black">#171c26</color>
     <color name="white">#FFFFFFFF</color>
 
     <color name="main_blue">#0288D1</color>
     <color name="secondary_blue">#002234</color>
     <color name="transparent">#00FFFFFF</color>
-    <color name="green">#A8C2A9</color>
+    <color name="green">#799E59</color>
     <color name="input">#EBF5FA</color>
     <color name="card">#F3DDE9EF</color>
     <color name="menu">#A7C5D6</color>
@@ -14,4 +14,6 @@
     <color name="encerrar">#CC2727</color>
     <color name="red">#D32F2F</color>
     <color name="text">#B3B3B3</color>
+    <color name="estado">#383b3e</color>
+    <color name="normal_text">#FFFFFF</color>
 </resources>
