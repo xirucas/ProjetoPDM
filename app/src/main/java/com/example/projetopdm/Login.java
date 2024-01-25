@@ -1,6 +1,7 @@
 package com.example.projetopdm;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,13 +29,14 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class Login extends AppCompatActivity {
-
+    ConstraintLayout loading;
     Funcionario funcionario = new Funcionario();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        loading = findViewById(R.id.loading);
+        loading.setVisibility(View.VISIBLE);
 
         String GUID = getIntent().getStringExtra("GUID");
 
@@ -70,13 +73,21 @@ public class Login extends AppCompatActivity {
 
                     TextView nome = findViewById(R.id.name);
                     nome.setText(funcionario.getNome());
+                    loading.setVisibility(View.INVISIBLE);
+
                 }
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
                     Toast.makeText(Login.this, "Aconteceu algo errado ao tentar carregar o funcionario", Toast.LENGTH_SHORT).show();
+                    loading.setVisibility(View.INVISIBLE);
                 }
             });
+        }else {
+            Toast.makeText(Login.this, "Sem ligação à internet", Toast.LENGTH_SHORT).show();
+            loading.setVisibility(View.INVISIBLE);
         }
+
+
 
         Button submit = findViewById(R.id.submit_btn);
         submit.setOnClickListener(new View.OnClickListener() {

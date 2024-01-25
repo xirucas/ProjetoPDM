@@ -40,6 +40,9 @@ public interface Api {
     @POST("CreateOrUpdateNotaRMA")
     Call<JsonObject> CreateOrUpdateNotaRMA(@Body JsonObject body);
 
+    @POST("CreateOrUpdate_RMA")
+    Call<JsonObject> CreateOrUpdate_RMA(@Body JsonObject body);
+
     @DELETE("DeleteNotaRMA")
     Call<JsonObject> DeleteNotaRMA(@Query("Id") int Id);
 }

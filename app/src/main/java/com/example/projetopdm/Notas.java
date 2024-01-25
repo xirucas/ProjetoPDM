@@ -1,6 +1,7 @@
 package com.example.projetopdm;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,18 +23,27 @@ import com.example.projetopdm.databinding.ActivityMainBinding;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 
 import com.example.projetopdm.databinding.ActivityNotasBinding;
+import com.google.gson.JsonParser;
+
+
 
 public class Notas extends AppCompatActivity {
 
-
+    ConstraintLayout loading;
     public static final int MEU_REQUEST_CODE = 1;
     ActivityNotasBinding binding;
+    ActivityMainBinding bindingMain;
     int RMAId;
 
     RMA rma = new RMA();
@@ -41,6 +52,7 @@ public class Notas extends AppCompatActivity {
     ArrayList<NotaRMA> rmaList = new ArrayList<NotaRMA>();
     ListaAdapterRMADetails listAdapter;
     Button novaNova_btn;
+    Button change_status_btn;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -64,13 +76,19 @@ public class Notas extends AppCompatActivity {
 
         setContentView(binding.getRoot());
 
-        RMAId = getIntent().getIntExtra("RMAId",0);
+bindingMain = ActivityMainBinding.inflate(getLayoutInflater());
 
+
+        RMAId = getIntent().getIntExtra("RMAId",0);
+        loading = findViewById(R.id.loading);
+        loading.setVisibility(View.VISIBLE);
         LinearLayout popup = findViewById(R.id.popup);
         Button closePopup = findViewById(R.id.closePopup);
         novaNova_btn = (Button) findViewById(R.id.novaNota_btn);
+        change_status_btn = (Button) findViewById(R.id.change_status_btn);
         popup.setVisibility(View.INVISIBLE);
         rmaList.clear();
+
         API();
 
         closePopup.setOnClickListener(new View.OnClickListener() {
@@ -100,6 +118,7 @@ public class Notas extends AppCompatActivity {
                         rma.setDataCriacao(rmaObj.get("DataCriacao").getAsString());
                         if (rmaObj.get("DataAbertura")!=null) rma.setDataAbertura(rmaObj.get("DataAbertura").getAsString());
                         if (rmaObj.get("DataFecho")!=null) rma.setDataFecho(rmaObj.get("DataFecho").getAsString());
+                        if (rmaObj.get("HorasTrabalhadas")!=null) rma.setHorasTrabalhadas(rmaObj.get("HorasTrabalhadas").getAsString());
                         rma.setEstadoRMA(rmaObj.get("EstadoRMA").getAsString());
                         rma.setEstadoRMAId(rmaObj.get("EstadoRMAId").getAsInt());
                         rma.setFuncionarioId(rmaObj.get("FuncionarioId").getAsInt());
@@ -131,6 +150,7 @@ public class Notas extends AppCompatActivity {
                                 }
                                 listAdapter = new ListaAdapterRMADetails(Notas.this, rmaList, Notas.this);
                                 binding.notas.setAdapter(listAdapter);
+                                loading.setVisibility(View.INVISIBLE);
                             }
                         }
 
@@ -141,6 +161,7 @@ public class Notas extends AppCompatActivity {
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
                     Toast.makeText(Notas.this, "Aconteceu algo errado ao tentar carregar o RMA", Toast.LENGTH_SHORT).show();
+                    loading.setVisibility(View.INVISIBLE);
                 }
             });
 
@@ -154,9 +175,118 @@ public class Notas extends AppCompatActivity {
                 }
             });
 
+            change_status_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    loading.setVisibility(View.VISIBLE);
+                    String dataAtual = new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date());
+                    String request = "";
+                    if (rma.getEstadoRMAId() == 2){ //1= Completo 2 = Novo 3= Em progresso
+                        rma.setEstadoRMAId(3);
+                        rma.setEstadoRMA("Em Progresso");
+                        rma.setDataAbertura(dataAtual);
+
+                        request = "{"
+                                + " \"Id\": \"" + rma.getId() + "\", "
+                                + " \"RMA\": \"" + rma.getRMA() + "\", "
+                                + " \"DescricaoCliente\": \"" + rma.getDescricaoCliente() + "\", "
+                                + " \"DataCriacao\": \"" + rma.getDataCriacao() + "\", "
+                                + " \"DataAbertura\": \"" + rma.getDataAbertura() + "\", "
+                                + " \"DataFecho\": \"" + "" + "\", "
+                                + " \"HorasTrabalhadas\": \"" + "" + "\", "
+                                + " \"EstadoRMA\": \"" + rma.getEstadoRMAId() + "\", "
+                                + " \"FuncionarioId\": \"" + rma.getFuncionarioId() + "\" }";
+
+                    }else if (rma.getEstadoRMAId() == 3) {
+                        rma.setEstadoRMAId(1);
+                        rma.setEstadoRMA("Completo");
+                        rma.setDataFecho(dataAtual);
+
+                        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+                        try {
+                            // Convertendo as strings para objetos Date
+                            Date dataAbertura = format.parse(rma.getDataAbertura());
+                            Date dataFechamento = format.parse(rma.getDataFecho());
+
+                            long different = dataFechamento.getTime() - dataAbertura.getTime();
+
+                            long secondsInMilli = 1000;
+                            long minutesInMilli = secondsInMilli * 60;
+                            long hoursInMilli = minutesInMilli * 60;
+                            long daysInMilli = hoursInMilli * 8;
+
+                            long elapsedDays = different / daysInMilli;
+                            different = different % daysInMilli;
+
+                            long elapsedHours = different / hoursInMilli;
+                            different = different % hoursInMilli;
+
+                            long elapsedMinutes = different / minutesInMilli;
+                            different = different % minutesInMilli;
+
+                            String horasTrabalhadas = (elapsedDays)+elapsedHours + ":" + elapsedMinutes;
+
+                            rma.setHorasTrabalhadas(horasTrabalhadas);
+
+                            request = "{"
+                                    + " \"Id\": \"" + rma.getId() + "\", "
+                                    + " \"RMA\": \"" + rma.getRMA() + "\", "
+                                    + " \"DescricaoCliente\": \"" + rma.getDescricaoCliente() + "\", "
+                                    + " \"DataCriacao\": \"" + rma.getDataCriacao() + "\", "
+                                    + " \"DataAbertura\": \"" + rma.getDataAbertura() + "\", "
+                                    + " \"DataFecho\": \"" + rma.getDataFecho() + "\", "
+                                    + " \"HorasTrabalhadas\": \"" + rma.getHorasTrabalhadas() + "\", "
+                                    + " \"EstadoRMA\": \"" + rma.getEstadoRMAId() + "\", "
+                                    + " \"FuncionarioId\": \"" + rma.getFuncionarioId() + "\" }";
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    JsonObject body = new JsonParser().parse(request).getAsJsonObject();
+                    Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().CreateOrUpdate_RMA(body);
+
+                    call.enqueue(new Callback<JsonObject>() {
+                        @Override
+                        public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                            JsonObject responseObj = response.body().get("Result").getAsJsonObject();
+                            if (responseObj.get("Success").getAsBoolean()){
+                                Intent resultIntent = new Intent();
+                                resultIntent.putExtra("AtivarAPI", true);
+                                setResult(Activity.RESULT_OK, resultIntent);
+                                if (rma.getEstadoRMAId()==1){
+                                    //encerrar esta janela e voltar para a main
+                                    loading.setVisibility(View.INVISIBLE);
+                                    finish();
+                                }
+                                Toast.makeText(getApplicationContext(), "Estado do RMA alterado para: " + rma.getEstadoRMA(), Toast.LENGTH_LONG).show();
+                            }else{
+                                Toast.makeText(getApplicationContext(), "Erro ao alterar estado do RMA", Toast.LENGTH_LONG).show();
+                                loading.setVisibility(View.INVISIBLE);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<JsonObject> call, Throwable t) {
+                            Toast.makeText(getApplicationContext(), "Erro ao alterar estado do RMA", Toast.LENGTH_LONG).show();
+                            loading.setVisibility(View.INVISIBLE);
+                        }
+                    });
+
+
+
+
+
+
+                }
+            });
+
+
+
 
         }else {
             Toast.makeText(Notas.this, "Não tem acesso à internet", Toast.LENGTH_SHORT).show();
+            loading.setVisibility(View.INVISIBLE);
         }
     }
 

@@ -7,6 +7,7 @@ public class RMA {
     String DataCriacao;
     String DataAbertura;
     String DataFecho;
+    String HorasTrabalhadas;
     String EstadoRMA;
     int EstadoRMAId;
     int FuncionarioId;
@@ -84,6 +85,14 @@ public class RMA {
 
     public void setDataFecho(String dataFecho) {
         DataFecho = dataFecho;
+    }
+
+    public String getHorasTrabalhadas() {
+        return HorasTrabalhadas;
+    }
+
+    public void setHorasTrabalhadas(String horasTrabalhadas) {
+        HorasTrabalhadas = horasTrabalhadas;
     }
 
     public String getEstadoRMA() {

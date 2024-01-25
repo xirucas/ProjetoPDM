@@ -15,10 +15,14 @@ import androidx.annotation.Nullable;
 
 import com.example.projetopdm.Modelos.RMA;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+
 
 public class ListAdapterRMA extends ArrayAdapter<RMA> {
     MainActivity binding;
+
     public ListAdapterRMA(@NonNull Context context, ArrayList<RMA> dataArrayList, MainActivity binding) {
         super(context, R.layout.list_rma, dataArrayList);
         this.binding = binding;
@@ -44,6 +48,7 @@ public View getView(int position, @Nullable View view, @NonNull ViewGroup parent
         else{
             rmaDescricao.setText(rma.getDescricaoCliente());
         }
+
         rmaDataCriacao.setText(rma.getDataCriacao());
         rmaEstado.setText(rma.getEstadoRMA());
 
@@ -54,13 +59,13 @@ public View getView(int position, @Nullable View view, @NonNull ViewGroup parent
 
         // Adicionar um OnClickListener ao LinearLayout
         int estadoFuncionarioId = binding.funcionario.getEstadoFuncionarioId();
-        if (estadoFuncionarioId == 1){
+        if (estadoFuncionarioId == 1 && (rma.getEstadoRMAId() == 2 || rma.getEstadoRMAId() == 3)){
             RMA_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(getContext(), Notas.class);
+                    Intent intent = new Intent(binding.getApplicationContext(), Notas.class);
                     intent.putExtra("RMAId",rma.getId());
-                    getContext().startActivity(intent);
+                    binding.startActivityForResult(intent, binding.MEU_REQUEST_CODE);
                 }
             });
         }

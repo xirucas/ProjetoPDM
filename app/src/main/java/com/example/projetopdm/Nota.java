@@ -3,6 +3,7 @@ package com.example.projetopdm;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.Activity;
 import android.content.Context;
@@ -63,6 +64,7 @@ public class Nota extends AppCompatActivity {
     Button close_btn;
     Uri image_uri;
     NotaRMA notaRMA;
+    ConstraintLayout loading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +81,8 @@ public class Nota extends AppCompatActivity {
         close_btn = findViewById(R.id.closePopup);
         popup = findViewById(R.id.popupImage);
         popup.setVisibility(View.INVISIBLE);
+        loading = findViewById(R.id.loading);
+        loading.setVisibility(View.VISIBLE);
         if (isInternetAvailable()) {
             if (getIntent().getIntExtra("NotaId", 0) != 0) {
                 create_btn.setText("Atualizar Nota");
@@ -104,16 +108,18 @@ public class Nota extends AppCompatActivity {
                                 Bitmap imagem = StringToBitMap(notaRMA.getImagemNota());
                                 imageView.setImageBitmap(imagem);
                                 imageViewPopup.setImageBitmap(imagem);
-
+                                loading.setVisibility(View.INVISIBLE);
                             }
                         } else {
                             Toast.makeText(getApplicationContext(), "Erro ao carregar nota", Toast.LENGTH_LONG).show();
+                            loading.setVisibility(View.INVISIBLE);
                         }
                     }
 
                     @Override
                     public void onFailure(Call<JsonObject> call, Throwable t) {
                         Toast.makeText(getApplicationContext(), "Erro ao carregar nota", Toast.LENGTH_LONG).show();
+                        loading.setVisibility(View.INVISIBLE);
                     }
                 });
 
@@ -127,9 +133,11 @@ public class Nota extends AppCompatActivity {
                 create_btn.setText("Criar Nota");
                 imageView.setImageURI(null);
                 notaRMA = new NotaRMA();
+                loading.setVisibility(View.INVISIBLE);
             }
         }else {
             Toast.makeText(getApplicationContext(), "Sem conexão com a internet", Toast.LENGTH_LONG).show();
+            loading.setVisibility(View.INVISIBLE);
         }
 
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -176,7 +184,9 @@ public class Nota extends AppCompatActivity {
         create_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                loading.setVisibility(View.VISIBLE);
                 if (titulo.getText().toString().isEmpty() || nota.getText().toString().isEmpty()){
+                    loading.setVisibility(View.INVISIBLE);
                     Toast.makeText(Nota.this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
             }else {
                     String request = "";
@@ -231,15 +241,18 @@ public class Nota extends AppCompatActivity {
                                 Intent resultIntent = new Intent();
                                 resultIntent.putExtra("AtivarAPI", true);
                                 setResult(Activity.RESULT_OK, resultIntent);
+                                loading.setVisibility(View.INVISIBLE);
                                 finish();
                             } else {
                                 Toast.makeText(getApplicationContext(), "Erro ao criar nota", Toast.LENGTH_LONG).show();
+                                loading.setVisibility(View.INVISIBLE);
                             }
                         }
 
                         @Override
                         public void onFailure(Call<JsonObject> call, Throwable t) {
                             Toast.makeText(getApplicationContext(), "Erro ao criar nota", Toast.LENGTH_LONG).show();
+                            loading.setVisibility(View.INVISIBLE);
                         }
                     });
                 }

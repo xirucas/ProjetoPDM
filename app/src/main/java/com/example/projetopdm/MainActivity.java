@@ -1,7 +1,9 @@
 package com.example.projetopdm;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -15,6 +17,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.projetopdm.BackEnd.RetrofitClient;
@@ -32,6 +35,8 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+    ConstraintLayout loading;
+    public static final int MEU_REQUEST_CODE = 1;
     ActivityMainBinding binding;
     Funcionario funcionario;
 
@@ -39,6 +44,19 @@ public class MainActivity extends AppCompatActivity {
     ListAdapterRMA listAdapter;
     RMA rma;
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            // A variável está contida nos dados da Intent
+            if (data.hasExtra("AtivarAPI")){
+                if (data.getBooleanExtra("AtivarAPI", false)){
+                    rmaList.clear();
+                    API();
+                }
+            }
+        }
+    }
 
 
     @Override
@@ -46,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot()); // Set the root view of the binding object
+        loading = findViewById(R.id.loading);
+        loading.setVisibility(View.VISIBLE);
         int Id = getIntent().getIntExtra("Id", 0);
         String nome = getIntent().getStringExtra("Nome");
         String email = getIntent().getStringExtra("Email");
@@ -59,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
         funcionario = new Funcionario(Id, GUID, nome, email, contacto, pin, imagemFuncionario, estadoFuncionarioId, estadoFuncionario);
 
         setContentView(binding.getRoot());
-
 
         ImageView perfil_btn = findViewById(R.id.perfil_btn);
 
@@ -81,12 +100,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-
         ImageView img = findViewById(R.id.perfil_btn);
         Bitmap bitmap = StringToBitMap(imagemFuncionario);
         img.setImageBitmap(bitmap);
 
+        API();
+    }
+
+    private void API(){
         if(isInternetAvailable()) {
             Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().GetRMASByFuncionario(funcionario.getGUID());
             call.enqueue(new Callback<JsonObject>() {
@@ -97,45 +118,46 @@ public class MainActivity extends AppCompatActivity {
                         if (!response.body().has("RMA")){
                             Toast.makeText(MainActivity.this, "Não existem RMA's", Toast.LENGTH_SHORT).show();
                         }else{
-                        JsonArray rmaListObj = response.body().get("RMA").getAsJsonArray();
-                        for (int i = 0; i < rmaListObj.size(); i++) {
-                            JsonObject rmaObj = rmaListObj.get(i).getAsJsonObject();
-                            String dataAb = "";
-                            String dataF = "";
-                            if (rmaObj.get("DataAbertura") != null){
-                                dataAb = (rmaObj.get("DataAbertura").getAsString());
-                            }else{
-                                   dataAb = "null";
+                            JsonArray rmaListObj = response.body().get("RMA").getAsJsonArray();
+                            for (int i = 0; i < rmaListObj.size(); i++) {
+                                JsonObject rmaObj = rmaListObj.get(i).getAsJsonObject();
+                                String dataAb = "";
+                                String dataF = "";
+                                if (rmaObj.get("DataAbertura") != null){
+                                    dataAb = (rmaObj.get("DataAbertura").getAsString());
+                                }else{
+                                    dataAb = "null";
+                                }
+                                if (rmaObj.get("DataFecho") != null){
+                                    dataF = (rmaObj.get("DataFecho").getAsString());
+                                }
+                                else{
+                                    dataF = "null";
+                                }
+                                rma = new RMA(rmaObj.get("Id").getAsInt(), rmaObj.get("RMA").getAsString(), rmaObj.get("DescricaoCliente").getAsString(),rmaObj.get("DataCriacao").getAsString() ,dataAb , dataF, rmaObj.get("EstadoRMA").getAsString(), rmaObj.get("EstadoRMAId").getAsInt(), rmaObj.get("FuncionarioId").getAsInt());
+                                if (rmaObj.get("HorasTrabalhadas")!=null) rma.setHorasTrabalhadas(rmaObj.get("HorasTrabalhadas").getAsString());
+                                rmaList.add(rma);
                             }
-                            if (rmaObj.get("DataFecho") != null){
-                                dataF = (rmaObj.get("DataFecho").getAsString());
-                            }
-                            else{
-                                dataF = "null";
-                            }
-                            rma = new RMA(rmaObj.get("Id").getAsInt(), rmaObj.get("RMA").getAsString(), rmaObj.get("DescricaoCliente").getAsString(),rmaObj.get("DataCriacao").getAsString() ,dataAb , dataF, rmaObj.get("EstadoRMA").getAsString(), rmaObj.get("EstadoRMAId").getAsInt(), rmaObj.get("FuncionarioId").getAsInt());
-                            rmaList.add(rma);
+                            listAdapter = new ListAdapterRMA(MainActivity.this, rmaList, MainActivity.this);
+                            binding.listRMA.setAdapter(listAdapter);
+                            loading.setVisibility(View.INVISIBLE);
                         }
-                        listAdapter = new ListAdapterRMA(MainActivity.this, rmaList, MainActivity.this);
-                        binding.listRMA.setAdapter(listAdapter);
-                    }
                     } else {
                         Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                        loading.setVisibility(View.INVISIBLE);
                     }
                 }
 
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
                     Toast.makeText(MainActivity.this, "Aconteceu algo errado ao tentar carregar os RMA's", Toast.LENGTH_SHORT).show();
+                    loading.setVisibility(View.INVISIBLE);
                 }
             });
+        }else {
+            Toast.makeText(MainActivity.this, "Sem ligação à internet", Toast.LENGTH_SHORT).show();
+            loading.setVisibility(View.INVISIBLE);
         }
-
-
-
-
-
-
     }
 
 

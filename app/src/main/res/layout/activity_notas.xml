@@ -115,6 +115,21 @@
         app:iconSize="50dp"
         app:iconTint="@color/white" />
 
+    <Button
+        android:id="@+id/change_status_btn"
+        style="?attr/materialIconButtonFilledStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:backgroundTint="@color/main_blue"
+        android:paddingHorizontal="30dp"
+        app:icon="@drawable/arrow"
+        app:iconSize="50dp"
+        app:iconTint="@color/white" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -163,6 +178,10 @@
 
     </RelativeLayout>
 
-
+    <include
+        android:id="@+id/loading"
+        layout="@layout/loading_page"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </RelativeLayout>
