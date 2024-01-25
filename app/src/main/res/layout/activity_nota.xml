@@ -99,6 +99,7 @@
         android:id="@+id/popupImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/white"
         android:orientation="vertical">
 
         <Button
@@ -106,13 +107,15 @@
             style="?attr/materialIconButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:layout_marginRight="25dp"
             android:layout_gravity="right"
             app:icon="@android:drawable/ic_delete" />
 
         <ImageView
             android:id="@+id/imageViewPopup"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 
