@@ -178,6 +178,37 @@ bindingMain = ActivityMainBinding.inflate(getLayoutInflater());
             change_status_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    String horaEntrada= "09:00";
+                    String horaSaida= "18:00";
+                    String horaPausa= "13:00";
+                    String horaRetorno= "14:00";
+                    String horaAtual = new SimpleDateFormat("HH:mm").format(new Date());
+
+                    //verificar se está dentro do horário de trabalho
+                        if (TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaEntrada.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaEntrada.split(":")[1]))) <= TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaAtual.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaAtual.split(":")[1]))) &&
+                                TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaSaida.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaSaida.split(":")[1]))) >= TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaAtual.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaAtual.split(":")[1])))) {
+                            //verificar se está dentro do horário de pausa
+                            if (TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaPausa.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaPausa.split(":")[1]))) <= TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaAtual.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaAtual.split(":")[1]))) &&
+                                    TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaRetorno.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaRetorno.split(":")[1]))) >= TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaAtual.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaAtual.split(":")[1])))) {
+                                //dentro do horário de pausa
+                                Toast.makeText(getApplicationContext(), "Tenha calma está na sua pausa descanse um bocado", Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                        }else {
+                            //fora do horário de trabalho
+                            //se for antes do inicio
+                            if (TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaEntrada.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaEntrada.split(":")[1]))) >= TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaAtual.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaAtual.split(":")[1])))) {
+                                Toast.makeText(getApplicationContext(), "Tenha calma so começa a trabalhar as 9", Toast.LENGTH_LONG).show();
+                                return;
+                            }else {
+                                //se for depois do fim
+                                if (TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaSaida.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaSaida.split(":")[1]))) <= TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaAtual.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaAtual.split(":")[1])))) {
+                                    Toast.makeText(getApplicationContext(), "Vá para casa e descanse ja passa da hora de saída", Toast.LENGTH_LONG).show();
+                                    return;
+                                }
+                            }
+                        }
+
                     loading.setVisibility(View.VISIBLE);
                     String dataAtual = new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date());
                     String request = "";
@@ -213,7 +244,7 @@ bindingMain = ActivityMainBinding.inflate(getLayoutInflater());
                             long secondsInMilli = 1000;
                             long minutesInMilli = secondsInMilli * 60;
                             long hoursInMilli = minutesInMilli * 60;
-                            long daysInMilli = hoursInMilli * 8;
+                            long daysInMilli = hoursInMilli * 24;
 
                             long elapsedDays = different / daysInMilli;
                             different = different % daysInMilli;
@@ -224,7 +255,7 @@ bindingMain = ActivityMainBinding.inflate(getLayoutInflater());
                             long elapsedMinutes = different / minutesInMilli;
                             different = different % minutesInMilli;
 
-                            String horasTrabalhadas = (elapsedDays)+elapsedHours + ":" + elapsedMinutes;
+                            String horasTrabalhadas = (elapsedDays*8)+elapsedHours + ":" + elapsedMinutes;
 
                             rma.setHorasTrabalhadas(horasTrabalhadas);
 
@@ -256,9 +287,9 @@ bindingMain = ActivityMainBinding.inflate(getLayoutInflater());
                                 setResult(Activity.RESULT_OK, resultIntent);
                                 if (rma.getEstadoRMAId()==1){
                                     //encerrar esta janela e voltar para a main
-                                    loading.setVisibility(View.INVISIBLE);
                                     finish();
                                 }
+                                loading.setVisibility(View.INVISIBLE);
                                 Toast.makeText(getApplicationContext(), "Estado do RMA alterado para: " + rma.getEstadoRMA(), Toast.LENGTH_LONG).show();
                             }else{
                                 Toast.makeText(getApplicationContext(), "Erro ao alterar estado do RMA", Toast.LENGTH_LONG).show();
