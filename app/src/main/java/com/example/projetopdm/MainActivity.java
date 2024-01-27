@@ -12,12 +12,15 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Base64;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.projetopdm.BackEnd.RetrofitClient;
@@ -39,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     public static final int MEU_REQUEST_CODE = 1;
     ActivityMainBinding binding;
     Funcionario funcionario;
+
+    SearchView searchView;
 
     ArrayList<RMA> rmaList = new ArrayList<RMA>();
     ListAdapterRMA listAdapter;
@@ -81,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         ImageView perfil_btn = findViewById(R.id.perfil_btn);
+        searchView = findViewById(R.id.searchView);
 
         // Adicionar um OnClickListener ao LinearLayout
         perfil_btn.setOnClickListener(new View.OnClickListener() {
@@ -105,6 +111,23 @@ public class MainActivity extends AppCompatActivity {
         img.setImageBitmap(bitmap);
 
         API();
+
+        //filtrar pelo titulo
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Chamada para atualizar o filtro na sua lista
+                listAdapter.getFilter().filter(newText);
+                return true;
+            }
+        });
+
+
     }
 
     private void API(){

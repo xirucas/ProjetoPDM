@@ -255,7 +255,14 @@ bindingMain = ActivityMainBinding.inflate(getLayoutInflater());
                             long elapsedMinutes = different / minutesInMilli;
                             different = different % minutesInMilli;
 
-                            String horasTrabalhadas = (elapsedDays*8)+elapsedHours + ":" + elapsedMinutes;
+                            String horasTrabalhadas ="";
+                            if (elapsedDays>0){
+                                horasTrabalhadas = (elapsedDays*8)+elapsedHours + ":" + elapsedMinutes;
+                            } else if (elapsedHours >= 8) {
+                                horasTrabalhadas = "8:00";
+                            } else {
+                                horasTrabalhadas = elapsedHours + ":" + elapsedMinutes;
+                            }
 
                             rma.setHorasTrabalhadas(horasTrabalhadas);
 
