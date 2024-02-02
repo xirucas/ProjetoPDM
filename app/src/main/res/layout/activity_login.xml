@@ -7,12 +7,13 @@
     android:background="@drawable/bg"
     tools:context=".Login">
 
+
     <androidx.cardview.widget.CardView
         android:id="@+id/user"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_gravity="center"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="120dp"
         app:cardBackgroundColor="@color/transparent"
         app:cardCornerRadius="250dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -21,8 +22,8 @@
 
         <ImageView
             android:id="@+id/perfil_btn"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:scaleType="centerCrop"
             android:src="@drawable/user" />
 
@@ -32,12 +33,13 @@
         android:id="@+id/greeting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:fontFamily="@font/extrabold"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/semibold"
         android:text="@string/greeting"
         android:textColor="@color/black"
         android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/user" />
 
@@ -45,6 +47,7 @@
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/regular"
         android:text="name"
         android:textColor="@color/black"
         android:textSize="24sp"
@@ -55,44 +58,60 @@
     <EditText
         android:id="@+id/pin"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginStart="100dp"
-        android:layout_marginTop="70dp"
-        android:layout_marginEnd="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="32dp"
         android:background="@drawable/round_corners"
         android:backgroundTint="@color/input"
         android:ems="10"
         android:fontFamily="@font/regular"
         android:hint="@string/pin"
         android:inputType="numberPassword"
+        android:paddingVertical="15dp"
         android:singleLine="true"
         android:textAlignment="center"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/name" />
+        app:layout_constraintTop_toBottomOf="@+id/introduzir_pin" />
 
     <Button
         android:id="@+id/submit_btn"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginStart="100dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
         android:fontFamily="@font/medium"
-        android:text="@string/sumbit"
-        android:textColor="@color/white"
-        android:textSize="16sp"
+        android:paddingVertical="15dp"
+        android:text="@string/login"
+        android:textColor="@color/black"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pin" />
+
+    <TextView
+        android:id="@+id/introduzir_pin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:fontFamily="@font/regular"
+        android:text="Introduza o seu PIN pessoal"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/name" />
+
 
     <include
         android:id="@+id/loading"
         layout="@layout/loading_page"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
 
 
 

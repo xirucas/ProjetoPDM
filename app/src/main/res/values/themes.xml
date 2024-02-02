@@ -7,6 +7,8 @@
         <item name="colorPrimary">@color/main_blue</item>
         <item name="colorSecondary">@color/secondary_blue</item>
 
+        <item name="colorControlActivated">@color/main_blue</item>
+
         <item name="android:fontFamily">@font/regular</item>
 
     </style>

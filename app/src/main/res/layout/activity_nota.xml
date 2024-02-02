@@ -6,123 +6,157 @@
     android:layout_height="match_parent"
     tools:context=".Nota">
 
-    <EditText
-        android:id="@+id/Caixa_titulo"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="16dp"
-        android:background="@null"
-        android:enabled="true"
-        android:fontFamily="@font/bold"
-        android:text="Titulo"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/create_btn" />
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
-    <EditText
-        android:id="@+id/Caixa_Texto"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="20dp"
-        android:background="@null"
-        android:fontFamily="@font/regular"
-        android:text="Nota"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Caixa_titulo" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/back_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="@color/transparent"
-        app:icon="@drawable/arrow_left_icon"
-        app:iconGravity="start"
-        app:iconPadding="0dp"
-        app:iconSize="25dp"
-        app:iconTint="@color/black"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+                        <EditText
+                            android:id="@+id/Caixa_titulo"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="20dp"
+                            android:backgroundTint="@color/estado"
+                            android:enabled="true"
+                            android:fontFamily="@font/bold"
+                            android:hint="Titulo"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="5dp"
+                            android:textColorHighlight="#511976D2"
+                            android:textSize="24sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/back_button" />
 
-    <Button
-        android:id="@+id/create_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="25dp"
-        android:background="@drawable/round_corners"
-        android:backgroundTint="@color/transparent"
-        android:textColor="@color/black"
-        app:icon="@drawable/guardar_icon"
-        app:iconGravity="textStart"
-        app:iconPadding="10dp"
-        app:iconSize="25dp"
-        app:iconTint="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+                        <EditText
+                            android:id="@+id/Caixa_Texto"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="20dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="24dp"
+                            android:layout_marginEnd="20dp"
+                            android:layout_weight="1"
+                            android:backgroundTint="@color/estado"
+                            android:fontFamily="@font/regular"
+                            android:hint="Descrição"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="10dp"
+                            android:textColorHighlight="#511976D2"
+                            android:textSize="16sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.0"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/Caixa_titulo" />
 
-    <Button
-        android:id="@+id/img_btn"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@color/transparent"
-        app:icon="@drawable/camera_icon"
-        app:iconGravity="textStart"
-        app:iconSize="50dp"
-        app:iconTint="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+                        <Button
+                            android:id="@+id/back_button"
+                            style="?attr/materialIconButtonStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="20dp"
+                            app:icon="@drawable/arrow_left_icon"
+                            app:iconSize="30dp"
+                            app:iconTint="@color/black"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="25dp"
-        android:background="@drawable/estado_round_corners"
-        android:backgroundTint="#6A2B2B2B"
-        android:orientation="vertical"
-        android:clickable="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Caixa_Texto"
-        app:srcCompat="@drawable/photo_icon" />
+                        <Button
+                            android:id="@+id/create_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:background="@drawable/round_corners"
+                            android:backgroundTint="@color/main_blue"
+                            android:textColor="@color/black"
+                            app:iconGravity="textStart"
+                            app:iconPadding="10dp"
+                            app:iconSize="25dp"
+                            app:iconTint="@color/black"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"/>
 
-    <LinearLayout
-        android:id="@+id/popupImage"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/white"
-        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/closePopup"
-            style="?attr/materialIconButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:layout_marginRight="25dp"
-            android:layout_gravity="right"
-            app:icon="@android:drawable/ic_delete" />
+                        <Button
+                            android:id="@+id/img_btn"
+                            style="?attr/materialIconButtonStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:icon="@drawable/camera_icon"
+                            app:iconSize="50dp"
+                            app:iconTint="@color/black"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
-        <ImageView
-            android:id="@+id/imageViewPopup"
+                        <ImageView
+                            android:id="@+id/imageView"
+                            android:layout_width="match_parent"
+                            android:layout_height="400dp"
+                            android:layout_marginHorizontal="20dp"
+                            android:layout_marginTop="16dp"
+                            android:background="@drawable/estado_round_corners"
+                            android:backgroundTint="#6A2B2B2B"
+                            android:orientation="vertical"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/Caixa_Texto"
+                            app:srcCompat="@drawable/photo_icon" />
+
+                        <TextView
+                            android:id="@+id/dataCriacao"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:paddingHorizontal="10dp"
+                            android:text="TextView"
+                            android:textColor="@color/text"
+                            android:textSize="10sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/Caixa_titulo" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </ScrollView>
+
+
+        <RelativeLayout
+            android:id="@+id/popupImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#0C1017"
+            android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/closePopup"
+                    style="?attr/materialIconButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    app:icon="@drawable/close_icon"
+                    app:iconSize="40dp"
+                    app:iconTint="@color/black"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/imageViewPopup"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+        </RelativeLayout>
+
+        <include
+            android:id="@+id/loading"
+            layout="@layout/loading_page"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
-    </LinearLayout>
-
-    <include
-        android:id="@+id/loading"
-        layout="@layout/loading_page"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

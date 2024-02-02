@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,6 +59,7 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
         TextView nota = view.findViewById(R.id.descricao);
         assert notaRMA != null;
         titulo.setText(notaRMA.getTitulo());
+
         // xxxx-xx-xx retirar T xx:xx e retirar o resto da datetime
 
         String dataOriginal = notaRMA.getDataCriacao();
@@ -79,13 +81,13 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
         }
 
 
-        MaterialButton deleteBt = view.findViewById(R.id.deleteBt);
+        Button deleteBt = view.findViewById(R.id.deleteBt);
 
         // Adicionar um OnClickListener ao LinearLayout
         deleteBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LinearLayout popup = binding.findViewById(R.id.popup);
+                RelativeLayout popup = binding.findViewById(R.id.popup);
                 popup.setVisibility(View.VISIBLE);
 
                 TextView confirmarid = binding.findViewById(R.id.confirmarid);
@@ -121,7 +123,7 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
                             });
 
                         }else {
-                            LinearLayout popup = binding.findViewById(R.id.popup);
+                            RelativeLayout popup = binding.findViewById(R.id.popup);
                             popup.setVisibility(View.INVISIBLE);
                             Toast.makeText(binding, "Não tem acesso à internet", Toast.LENGTH_SHORT).show();
                         }

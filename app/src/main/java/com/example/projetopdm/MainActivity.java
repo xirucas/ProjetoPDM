@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
 
         API();
 
+
         //filtrar pelo titulo
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override

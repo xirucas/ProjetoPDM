@@ -37,18 +37,15 @@ public class Perfil extends AppCompatActivity {
     MainActivity binding;
     Funcionario funcionario;
     Button encerrar_btn ;
-    Button pausa_btn;
+    Button backButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil);
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
-
         encerrar_btn = (Button) findViewById(R.id.encerrar_btn);
-        pausa_btn = (Button) findViewById(R.id.pausa_btn);
+        backButton = (Button) findViewById(R.id.back_button);
+
         int Id = getIntent().getIntExtra("Id", 0);
         String nome = getIntent().getStringExtra("Nome");
         String email = getIntent().getStringExtra("Email");
@@ -63,22 +60,28 @@ public class Perfil extends AppCompatActivity {
 
         ImageView img = findViewById(R.id.perfil_btn2);
         TextView Nome = findViewById(R.id.name);
+        TextView emailFuncionario = findViewById(R.id.email);
 
         Nome.setText(nome);
         Bitmap bitmap = StringToBitMap(imagemFuncionario);
         img.setImageBitmap(bitmap);
+        emailFuncionario.setText(email);
 
-        //estadoFuncionarioId=0; //testar em caso de pausa
+        //estadoFuncionarioId=0;
 
         if (estadoFuncionarioId != 1){
             encerrar_btn.setVisibility(View.INVISIBLE);
-            pausa_btn.setText("Retornar da pausa");
         }
         if (estadoFuncionarioId == 1){
             encerrar_btn.setVisibility(View.VISIBLE);
-            pausa_btn.setText("Iniciar pausa");
         }
 
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         encerrar_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -121,71 +124,6 @@ public class Perfil extends AppCompatActivity {
 
             }
         });
-        pausa_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isInternetAvailable()) {
-                    if (estadoFuncionarioId == 1) {//se tiver online
-                        funcionario.setEstadoFuncionarioId(2);
-                        funcionario.setEstadoFuncionario("Em Pausa");
-
-
-                    } else if (estadoFuncionarioId == 2) {//se tiver em pausa
-                        //codigo para retomar ao trabalho
-                        funcionario.setEstadoFuncionarioId(1);
-                        funcionario.setEstadoFuncionario("Online");
-                    }
-
-                    String request = "{"
-                            + " \"Id\": \"" + Id + "\", "
-                            + " \"GUID\": \"" + GUID + "\", "
-                            + " \"Nome\": \"" + nome + "\", "
-                            + " \"Email\": \"" + email + "\", "
-                            + " \"Contacto\": \"" + contacto + "\", "
-                            + " \"Pin\": \"" + pin + "\", "
-                            + " \"EstadoFuncionarioId\": \"" + funcionario.getEstadoFuncionarioId() + "\" }";
-                    JsonObject body = new JsonParser().parse(request).getAsJsonObject();
-                    Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().CreateOrUpdateFuncionarioAPI(body);
-
-                    call.enqueue(new Callback<JsonObject>() {
-                        @Override
-                        public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                            JsonObject responseObj = response.body().get("Result").getAsJsonObject();
-                            if (responseObj.get("Success").getAsBoolean()) {
-                                Toast.makeText(getApplicationContext(), "Estado do funcionario alterado", Toast.LENGTH_LONG).show();
-                                //voltar para a main activity
-                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                intent.putExtra("Id", funcionario.getId());
-                                intent.putExtra("Nome", funcionario.getNome());
-                                intent.putExtra("Email", funcionario.getEmail());
-                                intent.putExtra("Contacto", funcionario.getContacto());
-                                intent.putExtra("GUID", funcionario.getGUID());
-                                intent.putExtra("Pin", funcionario.getPin());
-                                intent.putExtra("ImagemFuncionario", funcionario.getImagemFuncionario());
-                                intent.putExtra("EstadoFuncionario", funcionario.getEstadoFuncionario());
-                                intent.putExtra("EstadoFuncionarioId", funcionario.getEstadoFuncionarioId());
-                                startActivity(intent);
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Erro ao alterar estado do funcionario", Toast.LENGTH_LONG).show();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<JsonObject> call, Throwable t) {
-                            Toast.makeText(getApplicationContext(), "Erro ao alterar estado do funcionario", Toast.LENGTH_LONG).show();
-                        }
-                    });
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "Sem conexão com a internet", Toast.LENGTH_LONG).show();
-                }
-
-
-            }
-        });
-
-
-
     }
 
 

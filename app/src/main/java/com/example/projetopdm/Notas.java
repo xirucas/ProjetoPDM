@@ -2,6 +2,7 @@ package com.example.projetopdm;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,10 +47,8 @@ public class Notas extends AppCompatActivity {
     ActivityNotasBinding binding;
     ActivityMainBinding bindingMain;
     int RMAId;
-
     RMA rma = new RMA();
     NotaRMA notaRMA;
-
     ArrayList<NotaRMA> rmaList = new ArrayList<NotaRMA>();
     ListaAdapterRMADetails listAdapter;
     Button novaNova_btn;
@@ -76,13 +76,13 @@ public class Notas extends AppCompatActivity {
 
         setContentView(binding.getRoot());
 
-bindingMain = ActivityMainBinding.inflate(getLayoutInflater());
+        bindingMain = ActivityMainBinding.inflate(getLayoutInflater());
 
-
+        Button backButton = findViewById(R.id.back_button);
         RMAId = getIntent().getIntExtra("RMAId",0);
         loading = findViewById(R.id.loading);
         loading.setVisibility(View.VISIBLE);
-        LinearLayout popup = findViewById(R.id.popup);
+        RelativeLayout popup = findViewById(R.id.popup);
         Button closePopup = findViewById(R.id.closePopup);
         novaNova_btn = (Button) findViewById(R.id.novaNota_btn);
         change_status_btn = (Button) findViewById(R.id.change_status_btn);
@@ -98,6 +98,12 @@ bindingMain = ActivityMainBinding.inflate(getLayoutInflater());
             }
         });
 
+        backButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick (View v) {
+                finish();
+            }
+        });
+
     }
 
     private void API(){
@@ -106,7 +112,7 @@ bindingMain = ActivityMainBinding.inflate(getLayoutInflater());
 
             call.enqueue(new Callback<JsonObject>(){
                 @Override
-                public void onResponse(Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     JsonObject responseObj = response.body().get("Result").getAsJsonObject();
                     if (responseObj.get("Success").getAsBoolean()){
 
@@ -131,6 +137,15 @@ bindingMain = ActivityMainBinding.inflate(getLayoutInflater());
                         dataRma.setText(rma.getDataCriacao());
                         descricao.setText(rma.getDescricaoCliente());
 
+                        if (rma.getEstadoRMAId() == 2) {
+                            change_status_btn.setText("Iniciar RMA");
+                            change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.main_blue));
+                        } else if (rma.getEstadoRMAId() == 3) {
+                            change_status_btn.setText("Concluir RMA");
+                            change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.completo));
+                        }
+
+
                         if (response.body().has("RMANotas")) {
                             JsonArray NotasRMA = response.body().get("RMANotas").getAsJsonArray();
                             if (NotasRMA.get(0).getAsJsonObject().get("Id").getAsInt() != 0) {
@@ -150,11 +165,10 @@ bindingMain = ActivityMainBinding.inflate(getLayoutInflater());
                                 }
                                 listAdapter = new ListaAdapterRMADetails(Notas.this, rmaList, Notas.this);
                                 binding.notas.setAdapter(listAdapter);
-                                loading.setVisibility(View.INVISIBLE);
+
                             }
                         }
-
-
+                        loading.setVisibility(View.INVISIBLE);
                     }
                 }
 
@@ -296,12 +310,13 @@ bindingMain = ActivityMainBinding.inflate(getLayoutInflater());
                                     //encerrar esta janela e voltar para a main
                                     finish();
                                 }
-                                loading.setVisibility(View.INVISIBLE);
+
                                 Toast.makeText(getApplicationContext(), "Estado do RMA alterado para: " + rma.getEstadoRMA(), Toast.LENGTH_LONG).show();
                             }else{
                                 Toast.makeText(getApplicationContext(), "Erro ao alterar estado do RMA", Toast.LENGTH_LONG).show();
                                 loading.setVisibility(View.INVISIBLE);
                             }
+                            loading.setVisibility(View.INVISIBLE);
                         }
 
                         @Override

@@ -9,10 +9,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/card_round_corners"
-        android:backgroundTint="@color/card"
+        android:backgroundTint="@color/main_blue"
         android:orientation="vertical"
-        android:padding="10dp"
-        android:paddingTop="15dp"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="20dp"
+        android:paddingTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -20,75 +21,58 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tituloNotas"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
-                android:layout_marginStart="20dp"
+                android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:fontFamily="@font/bold"
-                android:gravity="center_vertical"
-                android:text="Título"
-                android:textColor="@color/black"
-                android:textSize="16sp" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/dataNotas"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
-                android:layout_marginEnd="20dp"
-                android:layout_weight="1"
-                android:fontFamily="@font/regular"
-                android:gravity="end"
-                android:text="Data"
-                android:textColor="@color/black"
-                android:textSize="12sp" />
+                <TextView
+                    android:id="@+id/tituloNotas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/bold"
+                    android:text="Título"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
 
-            <com.google.android.material.button.MaterialButton
+                <TextView
+                    android:id="@+id/dataNotas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/regular"
+                    android:gravity="end"
+                    android:text="Data"
+                    android:textColor="#B5C8FB"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/deleteBt"
+                style="?attr/materialIconButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/circle"
-                app:backgroundTint="@color/transparent"
-                app:icon="@android:drawable/ic_menu_delete"
-                app:iconGravity="end"
-                app:iconPadding="0dp"
+                app:icon="@drawable/delete_icon"
                 app:iconSize="30dp"
-                app:iconTint="@color/black"
-                android:id="@+id/deleteBt"/>
+                app:iconTint="@color/black" />
 
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/linhaNotas"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/descricao"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
-                android:layout_marginStart="20dp"
-                android:layout_weight="1"
-                android:fontFamily="@font/regular"
-                android:gravity="center_vertical"
-                android:text="Descrição"
-                android:textColor="@color/black"
-                android:textSize="12sp"
-                android:textStyle="italic" />
-
-
-        </LinearLayout>
-
+        <TextView
+            android:id="@+id/descricao"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:fontFamily="@font/regular"
+            android:gravity="center_vertical"
+            android:text="There are many  variations of passages of Lorem Ipsum available"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
 
     </LinearLayout>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

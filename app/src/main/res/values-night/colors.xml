@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FFFFFF</color>
-    <color name="white">#171c26</color>
+    <color name="white">#0e121b</color>
 
-    <color name="main_blue">#0288D1</color>
-    <color name="secondary_blue">#001F30</color>
+    <color name="main_blue">#3369ff</color>
+    <color name="secondary_blue">#171c26</color>
+    <color name="red">#D32F2F</color>
+
     <color name="transparent">#00FFFFFF</color>
-    <color name="green">#689F38</color>
+
     <color name="input">#252D32</color>
-    <color name="card">#2b2f33</color>
-    <color name="menu">#2b2f33</color>
-    <color name="pausa">#FBC94B</color>
-    <color name="text">#B3B3B3</color>
     <color name="estado">#383b3e</color>
+
+    <color name="completo">#689F38</color>
+    <color name="progresso">#FBC94B</color>
+    <color name="novo">#4DB8F3</color>
+
+    <color name="text">#B3B3B3</color>
     <color name="normal_text">#FFFFFF</color>
 </resources>

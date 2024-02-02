@@ -10,33 +10,48 @@
         android:id="@+id/menu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/menu_bottom_round_corners"
-        android:backgroundTint="@color/menu"
+        android:gravity="clip_vertical|center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="20dp"
-        android:paddingVertical="30dp">
+        android:paddingTop="30dp">
 
-        <TextView
-            android:id="@+id/ticketsTitle"
+        <Button
+            android:id="@+id/back_button"
+            style="?attr/materialIconButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="@font/extrabold"
-            android:gravity="left|center_vertical"
-            android:text="RMA"
-            android:textColor="@color/black"
-            android:textSize="24sp" />
+            app:icon="@drawable/arrow_left_icon"
+            app:iconSize="30dp"
+            app:iconTint="@color/black">
 
-        <TextView
-            android:id="@+id/datarma"
+        </Button>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="@font/regular"
-            android:gravity="right"
-            android:text="Data"
-            android:textColor="@color/black"
-            android:textSize="16sp" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/ticketsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/extrabold"
+                android:text="RMA"
+                android:textColor="@color/black"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/datarma"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/regular"
+                android:gravity="right"
+                android:text="Data"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
     <TextView
@@ -64,10 +79,9 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="130dp"
-        android:layout_marginStart="20dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="20dp"
         android:isScrollContainer="true"
         android:orientation="vertical"
         android:layout_below="@+id/descTitle">
@@ -75,7 +89,7 @@
         <TextView
             android:id="@+id/textView3"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:fontFamily="@font/regular"
             android:isScrollContainer="true"
             android:overScrollMode="ifContentScrolls"
@@ -84,12 +98,13 @@
     </LinearLayout>
 
 
+
     <ListView
         android:id="@+id/notas"
         style="@style/Widget.AppCompat.ListView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/novaNota_btn"
+        android:layout_above="@+id/buttons"
         android:layout_below="@+id/notasTitle"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="8dp"
@@ -100,49 +115,52 @@
         android:scrollbars="none"
         tools:listitem="@layout/list_detalhes_rma" />
 
-    <Button
-        android:id="@+id/novaNota_btn"
-        style="?attr/materialIconButtonFilledStyle"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/buttons"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="145dp"
-        android:layout_marginBottom="20dp"
-        android:backgroundTint="@color/main_blue"
-        android:paddingHorizontal="30dp"
-        app:icon="@android:drawable/ic_input_add"
-        app:iconSize="50dp"
-        app:iconTint="@color/white" />
+        android:gravity="center"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/change_status_btn"
-        style="?attr/materialIconButtonFilledStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
-        android:backgroundTint="@color/main_blue"
-        android:paddingHorizontal="30dp"
-        app:icon="@drawable/arrow"
-        app:iconSize="50dp"
-        app:iconTint="@color/white" />
+        <Button
+            android:id="@+id/novaNota_btn"
+            style="?attr/materialIconButtonFilledStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:backgroundTint="@color/main_blue"
+            android:padding="15dp"
+            app:icon="@drawable/plus_icon"
+            app:iconSize="40dp"
+            app:iconTint="@color/black" />
+
+        <Button
+            android:id="@+id/change_status_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:backgroundTint="@color/main_blue"
+            android:fontFamily="@font/regular"
+            android:textColor="@color/black" />
+
+    </LinearLayout>
 
     <RelativeLayout
+        android:id="@+id/popup"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginHorizontal="20dp">
+        android:background="#AB0E121B">
 
         <LinearLayout
-            android:id="@+id/popup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:background="@drawable/round_corners"
             android:backgroundTint="@color/ic_launcher_background"
             android:gravity="center"
+            android:layout_marginHorizontal="20dp"
             android:orientation="vertical"
             android:paddingHorizontal="10dp"
             android:paddingTop="10dip"

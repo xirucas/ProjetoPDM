@@ -1,6 +1,7 @@
 package com.example.projetopdm;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Context;
@@ -30,6 +31,7 @@ import retrofit2.Response;
 
 public class Login extends AppCompatActivity {
     ConstraintLayout loading;
+    CardView imagemFuncionario;
     Funcionario funcionario = new Funcionario();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,9 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         loading = findViewById(R.id.loading);
         loading.setVisibility(View.VISIBLE);
+
+        imagemFuncionario = findViewById(R.id.user);
+        imagemFuncionario.setVisibility(View.INVISIBLE);
 
         String GUID = getIntent().getStringExtra("GUID");
 
@@ -74,17 +79,20 @@ public class Login extends AppCompatActivity {
                     TextView nome = findViewById(R.id.name);
                     nome.setText(funcionario.getNome());
                     loading.setVisibility(View.INVISIBLE);
+                    imagemFuncionario.setVisibility(View.VISIBLE);
 
                 }
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
                     Toast.makeText(Login.this, "Aconteceu algo errado ao tentar carregar o funcionario", Toast.LENGTH_SHORT).show();
                     loading.setVisibility(View.INVISIBLE);
+
                 }
             });
         }else {
             Toast.makeText(Login.this, "Sem ligação à internet", Toast.LENGTH_SHORT).show();
             loading.setVisibility(View.INVISIBLE);
+
         }
 
 

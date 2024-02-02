@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.example.projetopdm.Modelos.RMA;
 
@@ -34,6 +35,7 @@ public class ListAdapterRMA extends ArrayAdapter<RMA> {
         this.originalList = new ArrayList<>(dataArrayList);
         this.filteredList = new ArrayList<>(dataArrayList);
     }
+
 
     @NonNull
     @Override
@@ -75,6 +77,19 @@ public class ListAdapterRMA extends ArrayAdapter<RMA> {
             });
         }
 
+
+
+        //mudar cor do estado
+        if (rma.getEstadoRMAId() == 1) {
+            //completo
+            rmaEstado.setTextColor(ContextCompat.getColor(binding.getApplicationContext(),R.color.completo));
+        } else if (rma.getEstadoRMAId() == 2) {
+            //novo
+            rmaEstado.setTextColor(ContextCompat.getColor(binding.getApplicationContext(),R.color.novo));
+        } else {
+            //progresso
+            rmaEstado.setTextColor(ContextCompat.getColor(binding.getApplicationContext(),R.color.progresso));
+        }
 
 
         /*android.widget.ImageView edit = convertView.findViewById(R.id.left_view);
@@ -130,4 +145,6 @@ public class ListAdapterRMA extends ArrayAdapter<RMA> {
 
 
     }
+
+
 }
