@@ -114,6 +114,14 @@ public class MainActivity extends AppCompatActivity {
 
 
         //filtrar pelo titulo
+
+        searchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Expandir o SearchView
+                searchView.setIconified(false);
+            }
+        });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {

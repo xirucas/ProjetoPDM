@@ -28,6 +28,7 @@ import com.google.gson.JsonObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -179,12 +180,20 @@ public class Notas extends AppCompatActivity {
                 }
             });
 
-
+            if (rma.getEstadoRMAId() == 2 || rma.getEstadoRMAId() == 3){
+                novaNova_btn.setVisibility(View.VISIBLE);
+                change_status_btn.setVisibility(View.VISIBLE);
+            } else {
+                novaNova_btn.setEnabled(false);
+                novaNova_btn.setVisibility(View.INVISIBLE);
+                change_status_btn.setEnabled(false);
+            }
             novaNova_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getApplicationContext(), Nota.class);
                     intent.putExtra("RMAId", RMAId);
+                    intent.putExtra("estadoRMA", rma.getEstadoRMAId());
                     startActivityForResult(intent, MEU_REQUEST_CODE);
                 }
             });
@@ -252,8 +261,10 @@ public class Notas extends AppCompatActivity {
                             // Convertendo as strings para objetos Date
                             Date dataAbertura = format.parse(rma.getDataAbertura());
                             Date dataFechamento = format.parse(rma.getDataFecho());
+                            Date dataAberturaFinal = new Date(dataAbertura.getYear(), dataAbertura.getMonth(), dataAbertura.getDate(), dataAbertura.getHours(), dataAbertura.getMinutes());
+                            Date dataFechamentoFinal = new Date(dataFechamento.getYear(), dataFechamento.getMonth(), dataFechamento.getDate(), dataFechamento.getHours(), dataFechamento.getMinutes());
 
-                            long different = dataFechamento.getTime() - dataAbertura.getTime();
+                            /*long different = dataFechamento.getTime() - dataAbertura.getTime();
 
                             long secondsInMilli = 1000;
                             long minutesInMilli = secondsInMilli * 60;
@@ -273,11 +284,24 @@ public class Notas extends AppCompatActivity {
                             if (elapsedDays>0){
                                 horasTrabalhadas = (elapsedDays*8)+elapsedHours + ":" + elapsedMinutes;
                             } else if (elapsedHours >= 8) {
-                                horasTrabalhadas = "8:00";
-                            } else {
-                                horasTrabalhadas = elapsedHours + ":" + elapsedMinutes;
-                            }
 
+                                    horasTrabalhadas = (elapsedHours / 3) + ":" + elapsedMinutes;
+
+                            }else {
+                                horasTrabalhadas = elapsedHours + ":" + elapsedMinutes;
+                            }*/
+
+                            String horasTrabalhadas ="";
+                            //chamar worktimecalculator
+                            WorkTimeCalculator workTimeCalculator = new WorkTimeCalculator(dataAberturaFinal,dataFechamentoFinal);
+                            workTimeCalculator.setWeekends(Calendar.SATURDAY, Calendar.SUNDAY);
+                            workTimeCalculator.setWorkingTime("09:00", "18:00");
+                            Double dias = workTimeCalculator.getDays();
+                            Integer minutos = workTimeCalculator.getMinutes();
+                            //transformar os minutos em horas e minutos e os dias em horas
+                            int minutosRestantes = minutos % 60;
+                            int horas = (int) (dias * 8);
+                            horasTrabalhadas = horas + ":" + minutosRestantes;
                             rma.setHorasTrabalhadas(horasTrabalhadas);
 
                             request = "{"

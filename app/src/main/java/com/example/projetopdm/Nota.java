@@ -68,14 +68,13 @@ public class Nota extends AppCompatActivity {
     Uri image_uri;
     NotaRMA notaRMA;
     private boolean isEditMode = false;
-
+    int estadoRMA;
     ConstraintLayout loading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nota);
-
 
         imageView = (ImageView) findViewById(R.id.imageView);
         imageView.setVisibility(View.GONE);
@@ -91,6 +90,7 @@ public class Nota extends AppCompatActivity {
         popup.setVisibility(View.INVISIBLE);
         loading = findViewById(R.id.loading);
         loading.setVisibility(View.VISIBLE);
+        estadoRMA = getIntent().getIntExtra("estadoRMA", 0);
 
         if (isInternetAvailable()) {
             notaRMA = new NotaRMA();
@@ -98,33 +98,39 @@ public class Nota extends AppCompatActivity {
             if (getIntent().getIntExtra("NotaId", 0) != 0) {
                 titulo.setEnabled(false);
                 nota.setEnabled(false);
+                img_btn.setEnabled(false);
                 create_btn.setText("Editar Nota");
                 create_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.edit_icon, 0, 0, 0);
 
-                create_btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        isEditMode =! isEditMode;
+                if (estadoRMA == 2 || estadoRMA == 3) {
+                    create_btn.setVisibility(View.INVISIBLE);
+                    create_btn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            isEditMode = !isEditMode;
 
-                        if (isEditMode) {
-                            titulo.setEnabled(true);
-                            nota.setEnabled(true);
-                            img_btn.setEnabled(true);
+                            if (isEditMode) {
+                                titulo.setEnabled(true);
+                                nota.setEnabled(true);
+                                img_btn.setEnabled(true);
 
-                            create_btn.setText("Guardar Alterações");
-                            create_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.guardar_icon,0,0,0);
-                        } else {
-                            titulo.setEnabled(false);
-                            nota.setEnabled(false);
-                            img_btn.setEnabled(false);
+                                create_btn.setText("Guardar Alterações");
+                                create_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.guardar_icon, 0, 0, 0);
+                            } else {
+                                titulo.setEnabled(false);
+                                nota.setEnabled(false);
+                                img_btn.setEnabled(false);
 
-                            create_btn.setText("Editar Nota");
-                            create_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.edit_icon,0,0,0);
+                                create_btn.setText("Editar Nota");
+                                create_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.edit_icon, 0, 0, 0);
 
-                            saveChanges();
+                                saveChanges();
+                            }
                         }
-                    }
-                });
+                    });
+                }else {
+                    create_btn.setVisibility(View.INVISIBLE);
+                }
                 Call < JsonObject > call = RetrofitClient.getInstance().getMyApi().GetNotaRMAById(getIntent().getIntExtra("NotaId", 0));
 
                 call.enqueue(new Callback < JsonObject > () {
@@ -211,7 +217,10 @@ public class Nota extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (imageView.getDrawable() != null) {
+                if (imageView.getDrawable() != null ) {
+                    if (image_uri != null){
+                        imageViewPopup.setImageURI(image_uri);
+                    }
                     popup.setVisibility(View.VISIBLE);
                 } else {
                     Toast.makeText(getApplicationContext(), "Sem imagem para mostrar", Toast.LENGTH_LONG).show();
@@ -330,7 +339,6 @@ public class Nota extends AppCompatActivity {
                     Intent resultIntent = new Intent();
                     resultIntent.putExtra("AtivarAPI", true);
                     setResult(Activity.RESULT_OK, resultIntent);
-                    loading.setVisibility(View.INVISIBLE);
                     finish();
                 } else {
                     Toast.makeText(getApplicationContext(), "Erro ao criar/editar nota", Toast.LENGTH_LONG).show();

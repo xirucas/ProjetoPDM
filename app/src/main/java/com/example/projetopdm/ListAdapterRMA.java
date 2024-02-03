@@ -65,8 +65,7 @@ public class ListAdapterRMA extends ArrayAdapter<RMA> {
         LinearLayout RMA_btn = view.findViewById(R.id.RMA_btn);
 
         // Adicionar um OnClickListener ao LinearLayout
-        int estadoFuncionarioId = binding.funcionario.getEstadoFuncionarioId();
-        if (estadoFuncionarioId == 1 && (rma.getEstadoRMAId() == 2 || rma.getEstadoRMAId() == 3)) {
+
             RMA_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -75,7 +74,7 @@ public class ListAdapterRMA extends ArrayAdapter<RMA> {
                     binding.startActivityForResult(intent, binding.MEU_REQUEST_CODE);
                 }
             });
-        }
+
 
 
 
