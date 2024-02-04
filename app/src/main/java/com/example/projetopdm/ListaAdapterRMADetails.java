@@ -65,12 +65,15 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
 
         DateTimeFormatter formatoOriginal = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
+
+
         LocalDateTime data = LocalDateTime.parse(dataOriginal, formatoOriginal);
+
 
         DateTimeFormatter novoFormato = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
         String novaDataFormatada = data.format(novoFormato);
-
+        Log.e("MainActivity","aqui "+data);
         dataNota.setText(novaDataFormatada);
 
         if (notaRMA.getNota().length() > 20)

@@ -26,7 +26,7 @@ public class NotaRMA {
 
     }
     public NotaRMAEntity toNotaRMAEntity() {
-        return new NotaRMAEntity(this.Id, this.Titulo, this.dataCriacao, this.Nota, this.ImagemNota, this.RMAId);
+        return new NotaRMAEntity(this.Id, this.Titulo, this.dataCriacao, this.Nota, this.ImagemNota, this.RMAId,this.ImagemNotaId);
     }
 
 

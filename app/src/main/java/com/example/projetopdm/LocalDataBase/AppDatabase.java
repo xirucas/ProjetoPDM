@@ -10,7 +10,7 @@
     import com.example.projetopdm.LocalDataBase.Entity.NotaRMAEntity;
     import com.example.projetopdm.LocalDataBase.Entity.RMAEntity;
 
-    @Database(entities = {FuncionarioEntity.class, NotaRMAEntity.class, RMAEntity.class}, version = 1)
+    @Database(entities = {FuncionarioEntity.class, NotaRMAEntity.class, RMAEntity.class}, version = 2)
     public abstract class AppDatabase extends RoomDatabase {
         public abstract FuncionarioDao funcionarioDao();
         public abstract NotaRMADao notaRMADao();

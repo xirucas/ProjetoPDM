@@ -80,7 +80,7 @@ public class Login extends AppCompatActivity {
                         if(pin.getText().toString().equals(funcionario.getPin())){
                            chamarAPIparaMain();
                         }
-                        else{
+                        else if (!pin.getText().toString().equals(funcionario.getPin())){
                             Toast.makeText(Login.this, "Pin incorreto", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -88,8 +88,7 @@ public class Login extends AppCompatActivity {
                 if (isInternetAvailable()){
                     if(pin.getText().toString().equals(funcionario.getPin())){
                         chamarAPIparaMain();
-                    }
-                    else{
+                    } else if (!pin.getText().toString().equals(funcionario.getPin())) {
                         Toast.makeText(Login.this, "Pin incorreto", Toast.LENGTH_SHORT).show();
                     }
                 }

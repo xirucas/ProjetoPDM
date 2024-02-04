@@ -34,8 +34,9 @@ import android.widget.Toast;
 import com.example.projetopdm.BackEnd.RetrofitClient;
 import com.example.projetopdm.LocalDataBase.AppDatabase;
 import com.example.projetopdm.LocalDataBase.DAOs.NotaRMADao;
+import com.example.projetopdm.LocalDataBase.DAOs.RMADao;
 import com.example.projetopdm.LocalDataBase.Entity.NotaRMAEntity;
-import com.example.projetopdm.LocalDataBase.Repositorys.NotaRMARepository;
+
 import com.example.projetopdm.Modelos.NotaRMA;
 import com.example.projetopdm.Modelos.RMA;
 import com.google.gson.JsonObject;
@@ -45,6 +46,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -63,6 +66,7 @@ public class Nota extends AppCompatActivity {
     Button create_btn;
     Uri image_uri;
     NotaRMA notaRMA;
+    NotaRMADao notaRMADao;
 
 
     @Override
@@ -78,6 +82,11 @@ public class Nota extends AppCompatActivity {
         titulo=(EditText) findViewById(R.id.Caixa_titulo);
         nota=(EditText) findViewById(R.id.Caixa_Texto);
 
+        AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "BaseDeDadosLocal").fallbackToDestructiveMigration().allowMainThreadQueries().build();
+
+        notaRMADao = db.notaRMADao();
+
+
 
         if (intent.getStringExtra("Update").equals("Update")){
             create_btn.setText("Atualizar");
@@ -85,13 +94,11 @@ public class Nota extends AppCompatActivity {
 
 
 
-            notaRMA= new NotaRMA(intent.getIntExtra("NotaId",0),
-                    intent.getStringExtra("NotaTitulo"),
-                    intent.getStringExtra("Data"),
-                    intent.getStringExtra("Descricao"),
-                    intent.getIntExtra("ImagemID",0) ,
-                    intent.getStringExtra("Imagem"),
-                    intent.getIntExtra("RMAId",0));
+            notaRMA= new NotaRMA();
+            NotaRMAEntity x ;
+            x = notaRMADao.getNotaById(intent.getIntExtra("NotaId",0));
+            notaRMA= x.toNotaRMA();
+
 
 
             if (notaRMA.getImagemNota() != null && !notaRMA.getImagemNota().isEmpty()) {
@@ -101,10 +108,7 @@ public class Nota extends AppCompatActivity {
 
             titulo.setText(notaRMA.getTitulo());
             nota.setText(notaRMA.getNota());
-            if (isInternetAvailable()){
-                Bitmap x = StringToBitMap(notaRMA.getImagemNota());
-                imageView.setImageBitmap(x);
-            }
+
 
         }
 
@@ -143,6 +147,7 @@ public class Nota extends AppCompatActivity {
         create_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(isInternetAvailable()){
                 if (titulo.getText().toString().isEmpty() || nota.getText().toString().isEmpty()){
                     Toast.makeText(Nota.this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
                 }else {
@@ -210,29 +215,47 @@ public class Nota extends AppCompatActivity {
                         }
                     });
                 }
+            }
+                else if (!isInternetAvailable()){
+                    if (titulo.getText().toString().isEmpty() || nota.getText().toString().isEmpty()){
+                        Toast.makeText(Nota.this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
+                    }else {
+                        Log.e("Notas","entrou no if de tar sem net nome da nota "+notaRMA.getTitulo());
+                        notaRMA.setRMAId(getIntent().getIntExtra("RMAId", 0));
+                        notaRMA.setNota(nota.getText().toString());
+                        notaRMA.setTitulo(titulo.getText().toString());
+
+                        if (notaRMA.getId()==0){
+                            notaRMA.setId(notaRMADao.getAllNotasRMA().size()-1);//id temporario
+                            LocalDateTime now = LocalDateTime.now();
+                            // Formata a data e hora
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                            String formattedDateTime = now.format(formatter);
+                            notaRMA.setDataCriacao(formattedDateTime);
+                        }
+
+                        NotaRMAEntity x = notaRMA.toNotaRMAEntity();
+                        if (image_uri!=null){
+                            x.setImagemNota(image_uri.toString());
+                        }
+                        if (x.getId()==notaRMADao.getAllNotasRMA().size()-1){//ou seja id temporario
+                            x.setOffSync("novo");
+                        }else {
+                            x.setOffSync("modificado");
+                        }
+                        Log.i("Notas","teste 5 "+x.getNota()+" "+ x.getDataCriacao()+" "+x.getTitulo());
+                        notaRMADao.insert(x);
+                        finish();
+                    }
+                }
+
+
             };
+
 
         });
 
 
-    }
-    private NotaRMAEntity createNotaFromUI() {
-        NotaRMAEntity notaRMAEntity = new NotaRMAEntity();
-        // Supondo que você tenha getters e setters no NotaRMAEntity
-        notaRMAEntity.setTitulo(titulo.getText().toString());
-        notaRMAEntity.setNota(nota.getText().toString());
-        notaRMAEntity.setImagemNota(image_uri.toString());
-        notaRMAEntity.setImagemNotaId(notaRMA.getImagemNotaId());
-        notaRMAEntity.setDataCriacao(notaRMA.getDataCriacao());
-        notaRMAEntity.setRMAId(notaRMA.getRMAId());
-        // Defina outros campos necessários de acordo com os dados da UI
-
-        // Se estiver atualizando uma nota existente, defina o ID
-        if (notaRMA != null) {
-            notaRMAEntity.setId(notaRMA.getId());
-        }
-
-        return notaRMAEntity;
     }
 
 

@@ -3,11 +3,7 @@
     import static com.example.projetopdm.LocalDataBase.FuncionarioSharedPreferences.getFuncionarioData;
     import static com.example.projetopdm.LocalDataBase.FuncionarioSharedPreferences.saveFuncionarioData;
 
-    import androidx.annotation.NonNull;
     import androidx.appcompat.app.AppCompatActivity;
-    import androidx.lifecycle.LiveData;
-    import androidx.lifecycle.Observer;
-    import androidx.lifecycle.ViewModelProvider;
     import androidx.room.Room;
 
     import android.content.Context;
@@ -16,22 +12,17 @@
     import android.graphics.BitmapFactory;
     import android.net.ConnectivityManager;
     import android.net.NetworkInfo;
-    import android.os.AsyncTask;
     import android.os.Bundle;
     import android.util.Base64;
-    import android.view.View;
     import android.widget.ImageView;
-    import android.widget.LinearLayout;
     import android.widget.Toast;
-    import androidx.lifecycle.ViewModel;
 
     import com.example.projetopdm.BackEnd.Api;
     import com.example.projetopdm.BackEnd.RetrofitClient;
     import com.example.projetopdm.LocalDataBase.AppDatabase;
+    import com.example.projetopdm.LocalDataBase.DAOs.NotaRMADao;
     import com.example.projetopdm.LocalDataBase.DAOs.RMADao;
     import com.example.projetopdm.LocalDataBase.Entity.RMAEntity;
-    import com.example.projetopdm.LocalDataBase.MainViewModel;
-    import com.example.projetopdm.LocalDataBase.Repositorys.RMARepository;
     import com.example.projetopdm.Modelos.Funcionario;
     import com.example.projetopdm.Modelos.RMA;
     import com.example.projetopdm.databinding.ActivityMainBinding;
@@ -39,12 +30,8 @@
     import com.google.gson.JsonObject;
 
     import java.util.ArrayList;
-    import android.util.Log;
 
     import java.util.List;
-    import java.util.concurrent.ExecutorService;
-    import java.util.concurrent.Executors;
-    import java.util.function.Consumer;
 
     import retrofit2.Call;
     import retrofit2.Callback;
@@ -61,6 +48,7 @@
 
 
         RMADao rmaDao;
+        NotaRMADao notaRMADao;
         Api api;
 
         AppDatabase db;
@@ -112,8 +100,9 @@
         }
         private void initializeDatabaseAndViewModel() {
             retrofitClient = RetrofitClient.getInstance();
-            db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "BaseDeDadosLocal").allowMainThreadQueries().build();
+            db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "BaseDeDadosLocal").allowMainThreadQueries().fallbackToDestructiveMigration().build();
             rmaDao = db.rmaDao();
+            notaRMADao = db.notaRMADao();
             api = retrofitClient.getMyApi();
 
             if (!isInternetAvailable()){
@@ -254,9 +243,12 @@
 
                             }
 
-                            if (rmaDao.getAllRMAs()==null){
-                                rmaDao.insertAll(rmaListEnt);
-                            }
+
+                            rmaDao.insertAll(rmaListEnt);
+
+
+
+
 
 
 

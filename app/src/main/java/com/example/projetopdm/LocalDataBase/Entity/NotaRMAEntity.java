@@ -2,6 +2,8 @@ package com.example.projetopdm.LocalDataBase.Entity;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.example.projetopdm.Modelos.NotaRMA;
+
 @Entity(tableName = "notas_rma")
 public class NotaRMAEntity {
     @PrimaryKey
@@ -12,16 +14,39 @@ public class NotaRMAEntity {
     private int imagemNotaId;
     private String imagemNota;
     private int RMAId;
-    public NotaRMAEntity(int id,String titulo ,String dataCriacao ,String nota, String imagemNota, int rmaId) {
+    private String offSync; // novo/modificado/null
+
+    public NotaRMAEntity(int id,String titulo ,String dataCriacao ,String nota, String imagemNota, int rmaId,int imagemNotaId) {
         this.id = id;
         this.titulo = titulo;
         this.dataCriacao = dataCriacao;
         this.nota = nota;
         this.imagemNota = imagemNota;
         RMAId = rmaId;
+        this.imagemNotaId=imagemNotaId;
     }
+
     public NotaRMAEntity(){
 
+    }
+
+    public void setOffSync(String offSync) {
+        this.offSync = offSync;
+    }
+
+    public String getOffSync() {
+        return offSync;
+    }
+    public boolean equals(NotaRMA x) {
+        if (x.getRMAId()==this.RMAId && x.getId()==this.id && x.getNota().equals( this.nota) && x.getTitulo().equals(this.titulo) && x.getImagemNota().equals(this.imagemNota)){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    public NotaRMA toNotaRMA(){
+        return new NotaRMA(this.id,this.titulo,this.dataCriacao,this.nota,this.imagemNotaId,this.imagemNota,this.RMAId);
     }
     public void setId(int id) {
         this.id = id;

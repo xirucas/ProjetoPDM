@@ -1,6 +1,7 @@
 package com.example.projetopdm;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.projetopdm.BackEnd.RetrofitClient;
+import com.example.projetopdm.LocalDataBase.AppDatabase;
 import com.example.projetopdm.Modelos.Funcionario;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -36,10 +38,13 @@ public class Perfil extends AppCompatActivity {
     Funcionario funcionario;
     Button encerrar_btn ;
     Button pausa_btn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil);
+        AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "BaseDeDadosLocal").allowMainThreadQueries().build();
+        this.deleteDatabase("BaseDeDadosLocal");
         encerrar_btn = (Button) findViewById(R.id.encerrar_btn);
         pausa_btn = (Button) findViewById(R.id.pausa_btn);
         int Id = getIntent().getIntExtra("Id", 0);
@@ -113,6 +118,10 @@ public class Perfil extends AppCompatActivity {
                 }
 
             }
+
+
+
+
         });
         pausa_btn.setOnClickListener(new View.OnClickListener() {
             @Override
