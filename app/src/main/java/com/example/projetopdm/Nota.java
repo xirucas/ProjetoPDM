@@ -117,13 +117,14 @@ public class Nota extends AppCompatActivity {
                 if (notaRMA.getImagemNota() != null && !notaRMA.getImagemNota().isEmpty()) {
                     Uri uri = Uri.parse(notaRMA.getImagemNota());
                     imageView.setImageURI(uri);
+                    imageView.setVisibility(View.VISIBLE);
                 }
 
                 titulo.setText(notaRMA.getTitulo());
                 nota.setText(notaRMA.getNota());
 
                 if (estadoRMA == 2 || estadoRMA == 3) {
-                    create_btn.setVisibility(View.INVISIBLE);
+                    create_btn.setVisibility(View.VISIBLE);
                     create_btn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -358,6 +359,7 @@ public class Nota extends AppCompatActivity {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri);
         startActivityForResult(cameraIntent, IMAGE_CAPTURE_CODE);
+        imageView.setImageURI(image_uri);
     }
     private void checkExternalStoragePermission() {
         // Check for external storage management permission on Android 11 and above
@@ -386,38 +388,9 @@ public class Nota extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == IMAGE_CAPTURE_CODE) {
-            if (resultCode == RESULT_OK) {
-                try {
-                    // Delay the processing by a short period
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            // Attempt to decode the image from the URI
-                            Bitmap capturedBitmap = uriToBitmap(getApplicationContext(), image_uri);
-
-                            // Check if the decoding was successful
-                            if (capturedBitmap != null) {
-                                // Set the decoded bitmap to the imageView
-                                imageView.setImageBitmap(capturedBitmap);
-                                imageView.setVisibility(View.VISIBLE);
-                            } else {
-                                // Handle the case where decoding fails
-                                imageView.setVisibility(View.GONE);
-                                Toast.makeText(Nota.this, "Falha na descodificação da imagem", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }, 500); // Delay in milliseconds
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    // Handle any exceptions that may occur during the process
-                    imageView.setVisibility(View.GONE);
-                    Toast.makeText(Nota.this, "Erro no processamento da imagem", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                // Handle the case where capturing image is canceled or not successful
-                imageView.setVisibility(View.GONE);
-            }
+        if (resultCode == RESULT_OK) {
+            imageView.setImageURI(image_uri);
+            imageView.setVisibility(View.VISIBLE);
         }
     }
 
