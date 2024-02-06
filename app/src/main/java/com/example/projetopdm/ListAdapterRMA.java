@@ -70,13 +70,14 @@ public class ListAdapterRMA extends ArrayAdapter<RMA> {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(binding.getApplicationContext(), Notas.class);
-                    intent.putExtra("RMAId", rma.getId());
+                    intent.putExtra("RMAId",rma.getId());
+                    intent.putExtra("RMA",rma.getRMA());
+                    intent.putExtra("Descricao",rma.getDescricaoCliente());
+                    intent.putExtra("estadoRMA",rma.getEstadoRMAId());
+                    intent.putExtra("Data",rma.getDataCriacao());
                     binding.startActivityForResult(intent, binding.MEU_REQUEST_CODE);
                 }
             });
-
-
-
 
         //mudar cor do estado
         if (rma.getEstadoRMAId() == 1) {
@@ -89,20 +90,6 @@ public class ListAdapterRMA extends ArrayAdapter<RMA> {
             //progresso
             rmaEstado.setTextColor(ContextCompat.getColor(binding.getApplicationContext(),R.color.progresso));
         }
-
-
-        /*android.widget.ImageView edit = convertView.findViewById(R.id.left_view);
-        android.widget.ImageView delete = convertView.findViewById(R.id.right_view);*/
-
-        /*edit.setOnClickListener(view1 -> {
-            android.content.Intent intent = new android.content.Intent(getContext(), activity_db_update.class);
-            intent.putExtra("title", binding.getSessionName());
-            intent.putExtra("name", rma.getDescricaoCliente());
-            intent.putExtra("id", rma.getId());
-            getContext().startActivity(intent);
-            binding.finish();
-        });*/
-
 
         return view;
     }

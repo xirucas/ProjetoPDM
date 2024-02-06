@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,8 +33,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.exifinterface.media.ExifInterface;
+import androidx.room.Room;
 
 import com.example.projetopdm.BackEnd.RetrofitClient;
+import com.example.projetopdm.LocalDataBase.AppDatabase;
+import com.example.projetopdm.LocalDataBase.DAOs.NotaRMADao;
+import com.example.projetopdm.LocalDataBase.Entity.NotaRMAEntity;
 import com.example.projetopdm.Modelos.NotaRMA;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -67,9 +72,10 @@ public class Nota extends AppCompatActivity {
     TextView dataNota;
     Uri image_uri;
     NotaRMA notaRMA;
+    NotaRMADao notaRMADao;
     private boolean isEditMode = false;
     int estadoRMA;
-    ConstraintLayout loading;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,12 +94,15 @@ public class Nota extends AppCompatActivity {
         close_btn = findViewById(R.id.closePopup);
         popup = findViewById(R.id.popupImage);
         popup.setVisibility(View.INVISIBLE);
-        loading = findViewById(R.id.loading);
-        loading.setVisibility(View.VISIBLE);
-        estadoRMA = getIntent().getIntExtra("estadoRMA", 0);
+        Intent intent= getIntent();
 
-        if (isInternetAvailable()) {
-            notaRMA = new NotaRMA();
+        AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "BaseDeDadosLocal").fallbackToDestructiveMigration().allowMainThreadQueries().build();
+
+        notaRMADao = db.notaRMADao();
+        notaRMA = new NotaRMA();
+
+        estadoRMA = getIntent().getIntExtra("estadoRMA", 0);
+        Log.i("EstadoRMA", String.valueOf(estadoRMA));
 
             if (getIntent().getIntExtra("NotaId", 0) != 0) {
                 titulo.setEnabled(false);
@@ -101,6 +110,17 @@ public class Nota extends AppCompatActivity {
                 img_btn.setEnabled(false);
                 create_btn.setText("Editar Nota");
                 create_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.edit_icon, 0, 0, 0);
+                NotaRMAEntity x ;
+                x = notaRMADao.getNotaById(intent.getIntExtra("NotaId",0));
+                notaRMA= x.toNotaRMA();
+
+                if (notaRMA.getImagemNota() != null && !notaRMA.getImagemNota().isEmpty()) {
+                    Uri uri = Uri.parse(notaRMA.getImagemNota());
+                    imageView.setImageURI(uri);
+                }
+
+                titulo.setText(notaRMA.getTitulo());
+                nota.setText(notaRMA.getNota());
 
                 if (estadoRMA == 2 || estadoRMA == 3) {
                     create_btn.setVisibility(View.INVISIBLE);
@@ -131,64 +151,10 @@ public class Nota extends AppCompatActivity {
                 }else {
                     create_btn.setVisibility(View.INVISIBLE);
                 }
-                Call < JsonObject > call = RetrofitClient.getInstance().getMyApi().GetNotaRMAById(getIntent().getIntExtra("NotaId", 0));
 
-                call.enqueue(new Callback < JsonObject > () {
-                    @Override
-                    public void onResponse(Call < JsonObject > call, Response < JsonObject > response) {
-                        JsonObject responseObj = response.body().get("Result").getAsJsonObject();
-                        if (responseObj.get("Success").getAsBoolean()) {
-                            JsonObject notaObj = response.body().get("RMANota").getAsJsonObject();
-                            notaRMA = new NotaRMA();
-                            notaRMA.setId(notaObj.get("Id").getAsInt());
-                            notaRMA.setTitulo(notaObj.get("Titulo").getAsString());
-                            notaRMA.setDataCriacao(notaObj.get("DataCriacao").getAsString());
-                            notaRMA.setNota(notaObj.get("Nota").getAsString());
-                            notaRMA.setRMAId(notaObj.get("RMAId").getAsInt());
-                            titulo.setText(notaRMA.getTitulo());
-                            nota.setText(notaRMA.getNota());
 
-                            //textview com data de criação
-                            dataNota.setVisibility(View.VISIBLE);
-                            String dataOriginal = notaRMA.getDataCriacao();
-                            DateTimeFormatter formatoOriginal = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-                            LocalDateTime data = LocalDateTime.parse(dataOriginal, formatoOriginal);
-                            DateTimeFormatter novoFormato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                            String novaDataFormatada = data.format(novoFormato);
-                            dataNota.setText(novaDataFormatada);
 
-                            if (notaObj.has("ImagemNota")) {
-                                notaRMA.setImagemNotaId(notaObj.get("ImagemNotaId").getAsInt());
-                                notaRMA.setImagemNota(notaObj.get("ImagemNota").getAsString());
-                                Bitmap imagem = StringToBitMap(notaRMA.getImagemNota());
-                                imageView.setImageBitmap(imagem);
-                                imageViewPopup.setImageBitmap(imagem);
-                                imageView.setVisibility(View.VISIBLE);
-                                loading.setVisibility(View.INVISIBLE);
-                            } else {
-                                imageView.setVisibility(View.GONE);
-                                loading.setVisibility(View.INVISIBLE);
-                            }
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Erro ao carregar nota", Toast.LENGTH_LONG).show();
-                            loading.setVisibility(View.INVISIBLE);
-                        }
-                        loading.setVisibility(View.INVISIBLE);
-                    }
 
-                    @Override
-                    public void onFailure(Call < JsonObject > call, Throwable t) {
-                        Toast.makeText(getApplicationContext(), "Erro ao carregar nota", Toast.LENGTH_LONG).show();
-                        loading.setVisibility(View.INVISIBLE);
-                    }
-                });
-
-                /* if (binding.notaRMA.getImagemNota() != null) {
-                     notaRMA.setImagemNota(getIntent().getStringExtra("ImagemNota"));
-                     notaRMA.setImagemNotaId(getIntent().getIntExtra("ImagemNotaId", 0));
-                     Bitmap imagem = StringToBitMap(notaRMA.getImagemNota());
-                     imageView.setImageBitmap(imagem);
-                 }*/
             } else {
                 create_btn.setText("Guardar Nota");
                 create_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.guardar_icon, 0, 0, 0);
@@ -198,7 +164,7 @@ public class Nota extends AppCompatActivity {
                 nota.setFocusableInTouchMode(true);
                 dataNota.setVisibility(View.GONE);
                 imageView.setVisibility(View.GONE);
-                loading.setVisibility(View.INVISIBLE);
+
 
                 create_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -208,10 +174,7 @@ public class Nota extends AppCompatActivity {
                 });
 
             }
-        } else {
-            Toast.makeText(getApplicationContext(), "Sem conexão com a internet", Toast.LENGTH_LONG).show();
-            loading.setVisibility(View.INVISIBLE);
-        }
+
 
 
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -268,95 +231,124 @@ public class Nota extends AppCompatActivity {
     }
 
     private void saveChanges() {
-        loading.setVisibility(View.VISIBLE);
+
 
         // Check if both title and note are not empty
         if (titulo.getText().toString().isEmpty() || nota.getText().toString().isEmpty()) {
-            loading.setVisibility(View.INVISIBLE);
+
             Toast.makeText(Nota.this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
             return; // Exit the method if validation fails
         }
 
-        String request = "";
-        if (getIntent().getIntExtra("NotaId", 0) != 0) {
-            //Editar nota existente
-            notaRMA.setNota(nota.getText().toString());
-            notaRMA.setTitulo(titulo.getText().toString());
 
-            if (image_uri != null) {
-                Bitmap imagem = uriToBitmap(getApplicationContext(), image_uri);
-                String imagemString = bitmapToString(imagem);
-                notaRMA.setImagemNota(imagemString);
-            }
+        if (isInternetAvailable()) {
+            String request = "";
+            if (getIntent().getIntExtra("NotaId", 0) != 0) {
+                //Editar nota existente
+                notaRMA.setNota(nota.getText().toString());
+                notaRMA.setTitulo(titulo.getText().toString());
 
-            request = "{" +
-                    " \"Id\": \"" + notaRMA.getId() + "\", " +
-                    " \"Titulo\": \"" + notaRMA.getTitulo() + "\", " +
-                    " \"Nota\": \"" + notaRMA.getNota() + "\", " +
-                    " \"RMAId\": \"" + getIntent().getIntExtra("RMAId", 0) + "\", " +
-                    " \"IdImagem\": \"" + notaRMA.getImagemNotaId() + "\", " +
-                    " \"Imagem\": \"" + notaRMA.getImagemNota() + "\" }";
-        } else {
-            //Criação nova nota
-            if (image_uri != null) {
-                Bitmap imagem = uriToBitmap(getApplicationContext(), image_uri);
-                String imagemString = bitmapToString(imagem);
-                notaRMA.setImagemNota(imagemString);
+                if (image_uri != null) {
+                    Bitmap imagem = uriToBitmap(getApplicationContext(), image_uri);
+                    String imagemString = bitmapToString(imagem);
+                    notaRMA.setImagemNota(imagemString);
+                }
 
                 request = "{" +
-                        " \"Id\": \"" + 0 + "\", " +
-                        " \"Titulo\": \"" + titulo.getText().toString() + "\", " +
-                        " \"Nota\": \"" + nota.getText().toString() + "\", " +
+                        " \"Id\": \"" + notaRMA.getId() + "\", " +
+                        " \"Titulo\": \"" + notaRMA.getTitulo() + "\", " +
+                        " \"Nota\": \"" + notaRMA.getNota() + "\", " +
                         " \"RMAId\": \"" + getIntent().getIntExtra("RMAId", 0) + "\", " +
-                        " \"IdImagem\": \"" + 0 + "\", " +
-                        " \"Imagem\": \"" + imagemString + "\" }";
+                        " \"IdImagem\": \"" + notaRMA.getImagemNotaId() + "\", " +
+                        " \"Imagem\": \"" + notaRMA.getImagemNota() + "\" }";
             } else {
-                request = "{" +
-                        " \"Id\": \"" + 0 + "\", " +
-                        " \"Titulo\": \"" + titulo.getText().toString() + "\", " +
-                        " \"Nota\": \"" + nota.getText().toString() + "\", " +
-                        " \"RMAId\": \"" + getIntent().getIntExtra("RMAId", 0) + "\", " +
-                        " \"IdImagem\": \"" + 0 + "\", " +
-                        " \"Imagem\": \"" + "" + "\" }";
-            }
-        }
+                //Criação nova nota
+                if (image_uri != null) {
+                    Bitmap imagem = uriToBitmap(getApplicationContext(), image_uri);
+                    String imagemString = bitmapToString(imagem);
+                    notaRMA.setImagemNota(imagemString);
 
-        JsonObject body = new JsonParser().parse(request).getAsJsonObject();
-        Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().CreateOrUpdateNotaRMA(body);
-
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                JsonObject responseObj = response.body().get("Result").getAsJsonObject();
-                loading.setVisibility(View.VISIBLE);
-                if (responseObj.get("Success").getAsBoolean()) {
-                    if (getIntent().getIntExtra("NotaId", 0) != 0) {
-                        Toast.makeText(getApplicationContext(), "Nota alterada com sucesso", Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Nota criada com sucesso", Toast.LENGTH_LONG).show();
-                    }
-
-                    Intent resultIntent = new Intent();
-                    resultIntent.putExtra("AtivarAPI", true);
-                    setResult(Activity.RESULT_OK, resultIntent);
-                    finish();
+                    request = "{" +
+                            " \"Id\": \"" + 0 + "\", " +
+                            " \"Titulo\": \"" + titulo.getText().toString() + "\", " +
+                            " \"Nota\": \"" + nota.getText().toString() + "\", " +
+                            " \"RMAId\": \"" + getIntent().getIntExtra("RMAId", 0) + "\", " +
+                            " \"IdImagem\": \"" + 0 + "\", " +
+                            " \"Imagem\": \"" + imagemString + "\" }";
                 } else {
-                    Toast.makeText(getApplicationContext(), "Erro ao criar/editar nota", Toast.LENGTH_LONG).show();
-                    loading.setVisibility(View.INVISIBLE);
+                    request = "{" +
+                            " \"Id\": \"" + 0 + "\", " +
+                            " \"Titulo\": \"" + titulo.getText().toString() + "\", " +
+                            " \"Nota\": \"" + nota.getText().toString() + "\", " +
+                            " \"RMAId\": \"" + getIntent().getIntExtra("RMAId", 0) + "\", " +
+                            " \"IdImagem\": \"" + 0 + "\", " +
+                            " \"Imagem\": \"" + "" + "\" }";
                 }
             }
 
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "Erro ao criar/editar nota", Toast.LENGTH_LONG).show();
-                loading.setVisibility(View.INVISIBLE);
+            JsonObject body = new JsonParser().parse(request).getAsJsonObject();
+            Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().CreateOrUpdateNotaRMA(body);
+
+            call.enqueue(new Callback<JsonObject>() {
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                    JsonObject responseObj = response.body().get("Result").getAsJsonObject();
+
+                    if (responseObj.get("Success").getAsBoolean()) {
+                        if (getIntent().getIntExtra("NotaId", 0) != 0) {
+                            Toast.makeText(getApplicationContext(), "Nota alterada com sucesso", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Nota criada com sucesso", Toast.LENGTH_LONG).show();
+                        }
+
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("AtivarAPI", true);
+                        setResult(Activity.RESULT_OK, resultIntent);
+                        finish();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Erro ao criar/editar nota", Toast.LENGTH_LONG).show();
+
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), "Erro ao criar/editar nota", Toast.LENGTH_LONG).show();
+
+                }
+            });
+        } else if (!isInternetAvailable()) {
+            notaRMA.setRMAId(getIntent().getIntExtra("RMAId", 0));
+            notaRMA.setNota(nota.getText().toString());
+            notaRMA.setTitulo(titulo.getText().toString());
+
+            if (notaRMA.getId()==0){
+                notaRMA.setId(notaRMADao.getAllNotasRMA().size()-1);//id temporario
+                LocalDateTime now = LocalDateTime.now();
+                // Formata a data e hora
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                String formattedDateTime = now.format(formatter);
+                notaRMA.setDataCriacao(formattedDateTime);
             }
-        });
+
+            NotaRMAEntity x = notaRMA.toNotaRMAEntity();
+            if (image_uri!=null){
+                x.setImagemNota(image_uri.toString());
+            }
+            if (x.getId()==notaRMADao.getAllNotasRMA().size()-1){//ou seja id temporario
+                x.setOffSync("novo");
+            }else {
+                x.setOffSync("modificado");
+            }
+            Log.i("Notas","teste 5 "+x.getNota()+" "+ x.getDataCriacao()+" "+x.getTitulo());
+            notaRMADao.insert(x);
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("AtivarAPI", true);
+            setResult(Activity.RESULT_OK, resultIntent);
+            finish();
+        }
     }
 
-    private void openPopup() {
-        popup.setVisibility(View.VISIBLE);
-    }
 
     private void openCamera() {
         ContentValues values = new ContentValues();

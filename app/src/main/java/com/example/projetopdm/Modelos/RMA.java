@@ -1,5 +1,7 @@
 package com.example.projetopdm.Modelos;
 
+import com.example.projetopdm.LocalDataBase.Entity.RMAEntity;
+
 public class RMA {
     int Id;
     String RMA;
@@ -37,6 +39,10 @@ public class RMA {
         EstadoRMA = estadoRMA;
         EstadoRMAId = estadoRMAId;
         FuncionarioId = funicionarioId;
+    }
+
+    public RMAEntity toRMAEntity(){
+        return new RMAEntity(this.Id,this.RMA,this.DescricaoCliente,this.DataCriacao,this.DataAbertura,this.DataFecho,this.EstadoRMA,this.EstadoRMAId,this.FuncionarioId);
     }
 
     public int getId() {

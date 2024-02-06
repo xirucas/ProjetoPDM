@@ -38,7 +38,6 @@ import retrofit2.Response;
 public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
 
     Notas binding;
-
     LinearLayout notas ;
     public ListaAdapterRMADetails(@NonNull Context context, ArrayList<NotaRMA> dataArrayList, Notas binding) {
         super(context, R.layout.list_detalhes_rma, dataArrayList);
@@ -84,6 +83,10 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
         Button deleteBt = view.findViewById(R.id.deleteBt);
 
         // Adicionar um OnClickListener ao LinearLayout
+        if (!(binding.rma.getEstadoRMAId() == 2 || binding.rma.getEstadoRMAId() == 3)){
+            deleteBt.setVisibility(View.INVISIBLE);
+            deleteBt.setEnabled(false);
+        }
         deleteBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -125,7 +128,7 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
                         }else {
                             RelativeLayout popup = binding.findViewById(R.id.popup);
                             popup.setVisibility(View.INVISIBLE);
-                            Toast.makeText(binding, "Não tem acesso à internet", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(binding, "Não tem acesso à internet, só poderá eliminar quando estiver no modo online", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -142,24 +145,15 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
                 Intent intent = new Intent(binding.getApplicationContext(), Nota.class);
                 intent.putExtra("NotaId",notaRMA.getId());
                 intent.putExtra("RMAId",notaRMA.getRMAId());
+                intent.putExtra("NotaTitulo",notaRMA.getTitulo());
+                intent.putExtra("Descricao",notaRMA.getNota());
+                intent.putExtra("Data",notaRMA.getDataCriacao());
+                intent.putExtra("ImagemID",notaRMA.getImagemNotaId());
+                intent.putExtra("estadoRMA",binding.rma.getEstadoRMAId());
+                intent.putExtra("Update","Update");
                 binding.startActivityForResult(intent, binding.MEU_REQUEST_CODE);
             }
         });
-
-
-
-        /*android.widget.ImageView edit = convertView.findViewById(R.id.left_view);
-        android.widget.ImageView delete = convertView.findViewById(R.id.right_view);*/
-
-        /*edit.setOnClickListener(view1 -> {
-            android.content.Intent intent = new android.content.Intent(getContext(), activity_db_update.class);
-            intent.putExtra("title", binding.getSessionName());
-            intent.putExtra("name", rma.getDescricaoCliente());
-            intent.putExtra("id", rma.getId());
-            getContext().startActivity(intent);
-            binding.finish();
-        });*/
-
 
         return view;
     }

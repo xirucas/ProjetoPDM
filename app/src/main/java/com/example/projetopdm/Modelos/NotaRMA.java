@@ -1,5 +1,7 @@
 package com.example.projetopdm.Modelos;
 
+import com.example.projetopdm.LocalDataBase.Entity.NotaRMAEntity;
+
 public class NotaRMA {
     int Id;
     String Titulo;
@@ -53,6 +55,10 @@ public class NotaRMA {
         Titulo = titulo;
         this.dataCriacao = dataCriacao;
         Nota = nota;
+    }
+
+    public NotaRMAEntity toNotaRMAEntity() {
+        return new NotaRMAEntity(this.Id, this.Titulo, this.dataCriacao, this.Nota, this.ImagemNota, this.RMAId,this.ImagemNotaId);
     }
 
 

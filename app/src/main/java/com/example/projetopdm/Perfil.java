@@ -1,6 +1,7 @@
 package com.example.projetopdm;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.projetopdm.BackEnd.RetrofitClient;
+import com.example.projetopdm.LocalDataBase.AppDatabase;
 import com.example.projetopdm.Modelos.Funcionario;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -42,6 +44,9 @@ public class Perfil extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil);
+
+        //AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "BaseDeDadosLocal").allowMainThreadQueries().build();
+        //this.deleteDatabase("BaseDeDadosLocal");
 
         encerrar_btn = (Button) findViewById(R.id.encerrar_btn);
         backButton = (Button) findViewById(R.id.back_button);
