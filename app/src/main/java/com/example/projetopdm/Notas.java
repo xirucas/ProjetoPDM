@@ -3,6 +3,7 @@ package com.example.projetopdm;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.exifinterface.media.ExifInterface;
 import androidx.room.Room;
 
 import android.annotation.SuppressLint;
@@ -11,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -40,6 +42,7 @@ import com.google.gson.JsonObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -77,7 +80,9 @@ public class Notas extends AppCompatActivity {
     Button change_status_btn;
     RetrofitClient retrofitClient;
     Context context;
-
+    int estadoId;
+    RMA rmaX = new RMA();
+    boolean secondTimeApi = false;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -86,8 +91,7 @@ public class Notas extends AppCompatActivity {
             // A variável está contida nos dados da Intent
             if (data.hasExtra("AtivarAPI")){
                 if (data.getBooleanExtra("AtivarAPI", false)){
-                    rmaList.clear();
-                    loadNotas();
+                    secondTime();
                 }
             }
         }
@@ -115,6 +119,8 @@ public class Notas extends AppCompatActivity {
         rmaDataTxtView.setText(rmaDataTxt);
         rmaDescricaoTxtView.setText(rmaDescricao);
 
+
+
         RelativeLayout popup = findViewById(R.id.popup);
         Button closePopup = findViewById(R.id.closePopup);
         novaNova_btn = (Button) findViewById(R.id.novaNota_btn);
@@ -127,7 +133,9 @@ public class Notas extends AppCompatActivity {
 
         notaRMADao = db.notaRMADao();
         rmaDao = db.rmaDao();
+        rmaX = rmaDao.getRMAById(RMAId).toRMA();
 
+        estadoId = rmaX.getEstadoRMAId();
         closePopup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -382,7 +390,7 @@ public class Notas extends AppCompatActivity {
         if (!isInternetAvailable()){
             Log.e("Notas","sem net, tentar carregar local");
             loadNotas();
-            RMA rmaX = rmaDao.getRMAById(RMAId).toRMA();
+
             if (rmaX.getEstadoRMAId() == 2 || rmaX.getEstadoRMAId() == 3){
                 novaNova_btn.setVisibility(View.VISIBLE);
                 change_status_btn.setVisibility(View.VISIBLE);
@@ -402,117 +410,142 @@ public class Notas extends AppCompatActivity {
         }
 
         if (isInternetAvailable()) {
-
-            Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().GetRMAById(RMAId);
-
-
-            call.enqueue(new Callback<JsonObject>(){
-                @SuppressLint("SuspiciousIndentation")
-                @Override
-                public void onResponse(Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
-                    JsonObject responseObj = response.body().get("Result").getAsJsonObject();
-                    Log.d("Notas", "Chamada para a API GetRMAById realizada com sucesso.");
-
-                    if (responseObj.get("Success").getAsBoolean()){
-                        Log.d("Notas", "Dados do RMA obtidos da API com sucesso.");
-                        JsonObject rmaObj = response.body().get("RMA").getAsJsonObject();
-                        RMA rma =new RMA();
-
-                        rma.setId(rmaObj.get("Id").getAsInt());
-                        rma.setRMA(rmaObj.get("RMA").getAsString());
-                        rma.setDescricaoCliente(rmaObj.get("DescricaoCliente").getAsString());
-                        rma.setDataCriacao(rmaObj.get("DataCriacao").getAsString());
-                        if (rmaObj.get("DataAbertura")!=null) rma.setDataAbertura(rmaObj.get("DataAbertura").getAsString());
-                        if (rmaObj.get("DataFecho")!=null) rma.setDataFecho(rmaObj.get("DataFecho").getAsString());
-                        rma.setEstadoRMA(rmaObj.get("EstadoRMA").getAsString());
-                        rma.setEstadoRMAId(rmaObj.get("EstadoRMAId").getAsInt());
-                        rma.setFuncionarioId(rmaObj.get("FuncionarioId").getAsInt());
-
-                        if (rma.getEstadoRMAId() == 2 || rma.getEstadoRMAId() == 3){
-                            novaNova_btn.setVisibility(View.VISIBLE);
-                            change_status_btn.setVisibility(View.VISIBLE);
-                            if (rma.getEstadoRMAId() == 2) {
-                                change_status_btn.setText("Iniciar RMA");
-                                change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.main_blue));
-                            } else if (rma.getEstadoRMAId() == 3) {
-                                change_status_btn.setText("Concluir RMA");
-                                change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.completo));
-                            }
-                        } else {
-                            novaNova_btn.setEnabled(false);
-                            novaNova_btn.setVisibility(View.INVISIBLE);
-                            change_status_btn.setText("RMA Concluido");
-                            change_status_btn.setEnabled(false);
-                        }
-
-                        String imgBitMap= null;
-                        int imgID;
-
-                        if (response.body().has("RMANotas")) {
-                            JsonArray NotasRMA = response.body().get("RMANotas").getAsJsonArray();
-                            Log.d("Notas", "Notas RMA obtidas da API com sucesso.");
-                            List<NotaRMAEntity> rmaListEntity = new ArrayList<>();
-                            if (NotasRMA.get(0).getAsJsonObject().get("Id").getAsInt() != 0) {
-                                for (int i = 0; i < NotasRMA.size(); i++) {
-                                    JsonObject notaRMAObj = NotasRMA.get(i).getAsJsonObject();
-                                    NotaRMA notaRMA = new NotaRMA();
-                                    notaRMA.setId(notaRMAObj.get("Id").getAsInt());
-                                    notaRMA.setTitulo(notaRMAObj.get("Titulo").getAsString());
-                                    notaRMA.setDataCriacao(notaRMAObj.get("DataCriacao").getAsString());
-                                    notaRMA.setNota(notaRMAObj.get("Nota").getAsString());
-                                    notaRMA.setRMAId(RMAId);
-                                    if (notaRMAObj.get("ImagemNotaId") != null)
-                                        notaRMA.setImagemNotaId(notaRMAObj.get("ImagemNotaId").getAsInt());
-                                    imgID=notaRMAObj.get("ImagemNotaId").getAsInt();
-                                    if (notaRMAObj.get("ImagemNota") != null){
-                                        Log.i("Notas","Imagem " + notaRMAObj.get("ImagemNota").getAsString());
-                                        notaRMA.setImagemNota(notaRMAObj.get("ImagemNota").getAsString());
-                                        imgBitMap = notaRMAObj.get("ImagemNota").getAsString();
-
-                                    }
-                                    NotaRMAEntity notaRMAEntiTy = new NotaRMAEntity();
-                                    if (imgBitMap==null){
-                                        notaRMAEntiTy = notaRMA.toNotaRMAEntity();
-                                    } else if (imgBitMap!=null) {
-                                        Uri img = saveImageToStorage(imgBitMap,context,notaRMA.getTitulo()+" "+notaRMA.getId());
-                                        notaRMAEntiTy = notaRMA.toNotaRMAEntity();
-                                        Log.e("Notas","Imagem " + img.toString());
-                                        notaRMAEntiTy.setImagemNota(img.toString());
-                                    }
-
-
-                                    rmaListEntity.add(notaRMAEntiTy);
-
-                                    rmaList.add(notaRMA);
-
-                                }
-                                notaRMADao.insertAllNotas(rmaListEntity);
-                                loadNotas();
-                            }
-                        }
-
-
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<JsonObject> call, Throwable t) {
-                    Log.d("Notas", "Sem conectividade de rede. Não foi possível sincronizar os dados.");
-                }
-            });
-
-
-
-
-
+            loadNotasAPI();
         }else {// vai buscar os dados á base de dados online e coloca na BDLocal
             //nah net
         }
     }
 
+    private void loadNotasAPI(){
+        Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().GetRMAById(RMAId);
+
+
+        call.enqueue(new Callback<JsonObject>(){
+            @SuppressLint("SuspiciousIndentation")
+            @Override
+            public void onResponse(Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
+                JsonObject responseObj = response.body().get("Result").getAsJsonObject();
+                Log.d("Notas", "Chamada para a API GetRMAById realizada com sucesso.");
+
+                if (responseObj.get("Success").getAsBoolean()){
+                    Log.d("Notas", "Dados do RMA obtidos da API com sucesso.");
+                    JsonObject rmaObj = response.body().get("RMA").getAsJsonObject();
+                    RMA rma =new RMA();
+
+                    rma.setId(rmaObj.get("Id").getAsInt());
+                    rma.setRMA(rmaObj.get("RMA").getAsString());
+                    rma.setDescricaoCliente(rmaObj.get("DescricaoCliente").getAsString());
+                    rma.setDataCriacao(rmaObj.get("DataCriacao").getAsString());
+                    if (rmaObj.get("DataAbertura")!=null) rma.setDataAbertura(rmaObj.get("DataAbertura").getAsString());
+                    if (rmaObj.get("DataFecho")!=null) rma.setDataFecho(rmaObj.get("DataFecho").getAsString());
+                    rma.setEstadoRMA(rmaObj.get("EstadoRMA").getAsString());
+                    rma.setEstadoRMAId(rmaObj.get("EstadoRMAId").getAsInt());
+                    rma.setFuncionarioId(rmaObj.get("FuncionarioId").getAsInt());
+
+                    if (rma.getEstadoRMAId() == 2 || rma.getEstadoRMAId() == 3){
+                        novaNova_btn.setVisibility(View.VISIBLE);
+                        change_status_btn.setVisibility(View.VISIBLE);
+                        if (rma.getEstadoRMAId() == 2) {
+                            change_status_btn.setText("Iniciar RMA");
+                            change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.main_blue));
+                        } else if (rma.getEstadoRMAId() == 3) {
+                            change_status_btn.setText("Concluir RMA");
+                            change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.completo));
+                        }
+                    } else {
+                        novaNova_btn.setEnabled(false);
+                        novaNova_btn.setVisibility(View.INVISIBLE);
+                        change_status_btn.setText("RMA Concluido");
+                        change_status_btn.setEnabled(false);
+                    }
+
+                    String imgBitMap= null;
+                    int imgID;
+
+                    if (response.body().has("RMANotas")) {
+                        JsonArray NotasRMA = response.body().get("RMANotas").getAsJsonArray();
+                        Log.d("Notas", "Notas RMA obtidas da API com sucesso.");
+                        List<NotaRMAEntity> rmaListEntity = new ArrayList<>();
+                        if (NotasRMA.get(0).getAsJsonObject().get("Id").getAsInt() != 0) {
+                            for (int i = 0; i < NotasRMA.size(); i++) {
+                                JsonObject notaRMAObj = NotasRMA.get(i).getAsJsonObject();
+                                NotaRMA notaRMA = new NotaRMA();
+                                notaRMA.setId(notaRMAObj.get("Id").getAsInt());
+                                notaRMA.setTitulo(notaRMAObj.get("Titulo").getAsString());
+                                notaRMA.setDataCriacao(notaRMAObj.get("DataCriacao").getAsString());
+                                notaRMA.setNota(notaRMAObj.get("Nota").getAsString());
+                                notaRMA.setRMAId(RMAId);
+                                if (notaRMAObj.get("ImagemNotaId") != null)
+                                    notaRMA.setImagemNotaId(notaRMAObj.get("ImagemNotaId").getAsInt());
+                                imgID=notaRMAObj.get("ImagemNotaId").getAsInt();
+                                if (notaRMAObj.get("ImagemNota") != null){
+                                    Log.i("Notas","Imagem " + notaRMAObj.get("ImagemNota").getAsString());
+                                    notaRMA.setImagemNota(notaRMAObj.get("ImagemNota").getAsString());
+                                    imgBitMap = notaRMAObj.get("ImagemNota").getAsString();
+
+                                }
+                                NotaRMAEntity notaRMAEntiTy = new NotaRMAEntity();
+                                if (imgBitMap==null){
+                                    notaRMAEntiTy = notaRMA.toNotaRMAEntity();
+                                } else if (imgBitMap!=null) {
+                                    Uri img = saveImageToStorage(imgBitMap,context,notaRMA.getTitulo()+" "+notaRMA.getId());
+                                    notaRMAEntiTy = notaRMA.toNotaRMAEntity();
+                                    Log.e("Notas","Imagem " + img.toString());
+                                    notaRMAEntiTy.setImagemNota(img.toString());
+                                }
+
+
+                                rmaListEntity.add(notaRMAEntiTy);
+
+                                rmaList.add(notaRMA);
+
+                            }
+                            for(NotaRMAEntity x : notaRMADao.getNotasByRMAId(RMAId)) {
+                                if (x != null && x.getOffSync() != null) {
+                                    if (x.getOffSync().equals("modificado")) {
+                                        //retirar x do rmaListEntity
+                                        for (NotaRMAEntity y : rmaListEntity) {
+                                            if (x.getId() == y.getId()) {
+                                                rmaListEntity.remove(y);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            notaRMADao.insertAllNotas(rmaListEntity);
+                            if (secondTimeApi){
+                                secondTime();
+                            }else{
+                                loadNotas();
+                            }
+
+                        }
+                    }
+
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Log.d("Notas", "Sem conectividade de rede. Não foi possível sincronizar os dados.");
+            }
+        });
+    }
+
+    public void secondTime(){
+        rmaList.clear();
+        if(!isInternetAvailable()){
+            loadNotas();
+        }
+        if (isInternetAvailable()) {
+            loadNotasAPI();
+        }
+    }
+
     private void loadNotas() {
         if(!isInternetAvailable()){
-            Log.i("Notas"," "+notaRMADao.getAllNotasRMA().size());
+
             ArrayList<NotaRMA> notasDoRMAX = new ArrayList<>();
             Log.e("Notas","id do rma "+ RMAId);
             for (NotaRMA x:convertNotaRMAEntityListToNotaRMAList(notaRMADao.getAllNotasRMA())) {
@@ -532,13 +565,14 @@ public class Notas extends AppCompatActivity {
             if (notaRMADao.getNotasByRMAId(RMAId)!=null){
                 if (mudancasNaBD()){
                     updateBaseDeDados();
+                    loadNotasAPI();
                 }
             }
             listAdapter = new ListaAdapterRMADetails(Notas.this, rmaList, Notas.this);
             binding.notas.setAdapter(listAdapter);
-
         }
 
+        secondTimeApi=true;
 
     }
 
@@ -587,7 +621,8 @@ public class Notas extends AppCompatActivity {
         for (NotaRMA x:novos) {
             String request ="";
             if (x.getImagemNota() != null) {
-                Bitmap imagem = uriToBitmap(x.getImagemNota(),getApplicationContext() );
+                Uri uri = Uri.parse(x.getImagemNota());
+                Bitmap imagem = uriToBitmap(getApplicationContext(), uri);
                 String imagemString = bitmapToString(imagem);
                 x.setImagemNota(imagemString);
                 request = "{"
@@ -636,9 +671,9 @@ public class Notas extends AppCompatActivity {
             String request ="";
 
             if (x.getImagemNota() != null) {
-                Bitmap imagem = uriToBitmap(x.getImagemNota(),getApplicationContext() );
+                Uri uri = Uri.parse(x.getImagemNota());
+                Bitmap imagem = uriToBitmap(getApplicationContext(), uri);
                 String imagemString = bitmapToString(imagem);
-                x.setImagemNota(imagemString);
                 x.setImagemNota(imagemString);
             }
             request = "{"
@@ -687,7 +722,7 @@ public class Notas extends AppCompatActivity {
         boolean encontrouMod = false;
         for (NotaRMAEntity x : notaRMADao.getNotasByRMAId(RMAId)) {
             if (x.getOffSync()!=null){
-                if (x.getOffSync()!=null && x.getOffSync().equals("modificado")){
+                if (x.getOffSync().equals("modificado")){
                     encontrouMod = true;
                 }
             }
@@ -724,21 +759,65 @@ public class Notas extends AppCompatActivity {
         return connected;
     }
 
-    public static Bitmap uriToBitmap(String uriString, Context context) {
+    public Bitmap uriToBitmap(Context context, Uri uri) {
+        Bitmap bitmap = null;
         try {
-            Uri imageUri = Uri.parse(uriString);
-            InputStream imageStream = context.getContentResolver().openInputStream(imageUri);
-            return BitmapFactory.decodeStream(imageStream);
-        } catch (Exception e) {
+            // Abre um InputStream a partir da URI
+            InputStream imageStream = context.getContentResolver().openInputStream(uri);
+
+            // Obtém a rotação da imagem a partir das informações EXIF
+            int rotation = getRotationFromExif(context, uri);
+
+            // Converte o InputStream em um Bitmap considerando a rotação
+            bitmap = BitmapFactory.decodeStream(imageStream);
+            if (rotation != 0) {
+                Matrix matrix = new Matrix();
+                matrix.postRotate(rotation);
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            }
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
-            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        return bitmap;
     }
 
-    public static String bitmapToString(Bitmap bitmap) {
+    private int getRotationFromExif(Context context, Uri uri) {
+        int rotation = 0;
+        try {
+            InputStream input = context.getContentResolver().openInputStream(uri);
+            ExifInterface exifInterface = new ExifInterface(input);
+
+            int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    rotation = 90;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    rotation = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    rotation = 270;
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return rotation;
+    }
+
+    public String bitmapToString(Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        // Comprime a imagem em um formato específico (PNG, JPEG, etc.)
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
         byte[] byteArray = byteArrayOutputStream.toByteArray();
-        return Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+        // Converte os bytes para Base64
+        String encodedImage = Base64.encodeToString(byteArray, Base64.DEFAULT);
+        return encodedImage;
     }
 }

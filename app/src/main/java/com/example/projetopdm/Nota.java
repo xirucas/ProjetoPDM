@@ -76,6 +76,7 @@ public class Nota extends AppCompatActivity {
     private boolean isEditMode = false;
     int estadoRMA;
 
+    Uri uri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +116,7 @@ public class Nota extends AppCompatActivity {
                 notaRMA= x.toNotaRMA();
 
                 if (notaRMA.getImagemNota() != null && !notaRMA.getImagemNota().isEmpty()) {
-                    Uri uri = Uri.parse(notaRMA.getImagemNota());
+                    uri = Uri.parse(notaRMA.getImagemNota());
                     imageView.setImageURI(uri);
                     imageView.setVisibility(View.VISIBLE);
                 }
@@ -246,11 +247,16 @@ public class Nota extends AppCompatActivity {
             String request = "";
             if (getIntent().getIntExtra("NotaId", 0) != 0) {
                 //Editar nota existente
+                notaRMA.setRMAId(getIntent().getIntExtra("RMAId", 0));
                 notaRMA.setNota(nota.getText().toString());
                 notaRMA.setTitulo(titulo.getText().toString());
 
                 if (image_uri != null) {
                     Bitmap imagem = uriToBitmap(getApplicationContext(), image_uri);
+                    String imagemString = bitmapToString(imagem);
+                    notaRMA.setImagemNota(imagemString);
+                } else if (notaRMA.getImagemNota() != null || !notaRMA.getImagemNota().isEmpty()) {
+                    Bitmap imagem = uriToBitmap(getApplicationContext(), uri);
                     String imagemString = bitmapToString(imagem);
                     notaRMA.setImagemNota(imagemString);
                 }
@@ -269,6 +275,17 @@ public class Nota extends AppCompatActivity {
                     String imagemString = bitmapToString(imagem);
                     notaRMA.setImagemNota(imagemString);
 
+                    request = "{" +
+                            " \"Id\": \"" + 0 + "\", " +
+                            " \"Titulo\": \"" + titulo.getText().toString() + "\", " +
+                            " \"Nota\": \"" + nota.getText().toString() + "\", " +
+                            " \"RMAId\": \"" + getIntent().getIntExtra("RMAId", 0) + "\", " +
+                            " \"IdImagem\": \"" + 0 + "\", " +
+                            " \"Imagem\": \"" + imagemString + "\" }";
+                }else if (notaRMA.getImagemNota() != null || !notaRMA.getImagemNota().isEmpty()) {
+                    Bitmap imagem = uriToBitmap(getApplicationContext(), uri);
+                    String imagemString = bitmapToString(imagem);
+                    notaRMA.setImagemNota(imagemString);
                     request = "{" +
                             " \"Id\": \"" + 0 + "\", " +
                             " \"Titulo\": \"" + titulo.getText().toString() + "\", " +

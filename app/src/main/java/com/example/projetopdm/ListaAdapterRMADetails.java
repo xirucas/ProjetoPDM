@@ -149,7 +149,7 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
                 intent.putExtra("Descricao",notaRMA.getNota());
                 intent.putExtra("Data",notaRMA.getDataCriacao());
                 intent.putExtra("ImagemID",notaRMA.getImagemNotaId());
-                intent.putExtra("estadoRMA",binding.rma.getEstadoRMAId());
+                intent.putExtra("estadoRMA",binding.estadoId);
                 intent.putExtra("Update","Update");
                 binding.startActivityForResult(intent, binding.MEU_REQUEST_CODE);
             }
