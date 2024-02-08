@@ -531,9 +531,16 @@ public class Notas extends AppCompatActivity {
                             }
 
 
-                            loadNotas();
+
                         }
                     }
+                    if (mudancasNaBD() && !mudancas) {
+                        Log.i("Notas","test "+notaRMADao.getNotasByRMAId(RMAId).get(0).getOffSync() + " " + notaRMADao.getNotasByRMAId(RMAId).get(0).getNota());
+                        updateBaseDeDados();
+                        mudancas=true;
+
+                    }
+                    loadNotas();
 
 
                 }
@@ -672,7 +679,11 @@ public class Notas extends AppCompatActivity {
                         Intent resultIntent = new Intent();
                         resultIntent.putExtra("AtivarAPI", true);
                         setResult(Activity.RESULT_OK, resultIntent);
-                        notaRMADao.deleteById(x.getId());//depois deleta o mesmo da local
+
+                        notaRMADao.deleteById(x.getId());
+                        int id= response.body().get("NotaRMAId").getAsInt();
+                        x.setId(id);
+                        notaRMADao.insert(x.toNotaRMAEntity());;//depois deleta o mesmo da local
                     } else {
                         Toast.makeText(getApplicationContext(), "Erro ao criar nota", Toast.LENGTH_LONG).show();
                     }
@@ -714,15 +725,10 @@ public class Notas extends AppCompatActivity {
                         Intent resultIntent = new Intent();
                         resultIntent.putExtra("AtivarAPI", true);
                         setResult(Activity.RESULT_OK, resultIntent);
-
-
-
                         notaRMADao.deleteById(x.getId());
                     } else {
                         Toast.makeText(getApplicationContext(), "Erro ao alterar nota", Toast.LENGTH_LONG).show();
                     }
-
-
                 }
 
                 @Override
@@ -741,7 +747,7 @@ public class Notas extends AppCompatActivity {
         boolean encontrouMod = false;
         for (NotaRMAEntity x : notaRMADao.getNotasByRMAId(RMAId)) {
             if (x.getOffSync()!=null){
-                if (x.getOffSync().equals("modificado")){
+                if (x.getOffSync().equals("modificado") || x.getOffSync().equals("novo")){
                     encontrouMod = true;
                 }
             }
