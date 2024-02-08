@@ -24,6 +24,9 @@
 
         @Query("SELECT * FROM notas_rma WHERE RMAId = :RMAId")
         List<NotaRMAEntity> getNotasByRMAId(int RMAId);
+
+        @Query("SELECT * FROM notas_rma WHERE Id = :Id")
+        NotaRMAEntity getNotaRMAById(int Id);
         @Query("SELECT * FROM notas_rma WHERE RMAId = :rmaId")
         List<NotaRMAEntity> getNotasByRMAIdWithLimit(int rmaId);
         @Query("SELECT * FROM notas_rma WHERE id = :id")
@@ -35,6 +38,8 @@
 
         @Update
         void update(NotaRMAEntity notaRMA);
+
+
 
 
 

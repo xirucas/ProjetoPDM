@@ -93,13 +93,7 @@ public class Notas extends AppCompatActivity {
             if (data.hasExtra("AtivarAPI")){
                 if (data.getBooleanExtra("AtivarAPI", false)){
                     rmaList.clear();
-                    if(!isInternetAvailable()){
-                        loadNotas();
-                    }
-                    if (isInternetAvailable()) {
-
-                        loadNotas();
-                    }
+                    loadNotas();
                 }
             }
         }
@@ -143,7 +137,10 @@ public class Notas extends AppCompatActivity {
 
         notaRMADao = db.notaRMADao();
         rmaDao = db.rmaDao();
-        rmaX = rmaDao.getRMAById(RMAId).toRMA();
+        if (rmaDao.getRMAById(RMAId).toRMA()!=null){
+            rmaX = rmaDao.getRMAById(RMAId).toRMA();
+        }
+
 
         estadoId = rmaX.getEstadoRMAId();
         closePopup.setOnClickListener(new View.OnClickListener() {
@@ -505,6 +502,11 @@ public class Notas extends AppCompatActivity {
                                     notaRMAEntiTy.setImagemNota(img.toString());
                                 }
 
+                                if (notaRMADao.getNotaRMAById(notaRMAEntiTy.getId())!=null){
+                                    if (notaRMADao.getNotaRMAById(notaRMAEntiTy.getId()).getOffSync()!=null){
+                                        notaRMAEntiTy.setOffSync(notaRMADao.getNotaRMAById(notaRMAEntiTy.getId()).getOffSync());
+                                    }
+                                }
 
                                 rmaListEntity.add(notaRMAEntiTy);
 
@@ -543,7 +545,10 @@ public class Notas extends AppCompatActivity {
 
     private void loadNotas() {
 
+
         if (mudancas){
+            /*context.deleteDatabase("BaseDeDadosLocal");
+            loadNotasAPI();*/
             ArrayList<NotaRMA> notasDoRMAX = new ArrayList<>();
             Log.e("Notas","id do rma "+ RMAId);
             for (NotaRMA x:convertNotaRMAEntityListToNotaRMAList(notaRMADao.getAllNotasRMA())) {
@@ -612,9 +617,11 @@ public class Notas extends AppCompatActivity {
     }
 
     public void updateBaseDeDados(){
+        Log.e("Notas","aqui gayyyyyyyyy");
 
         ArrayList<NotaRMA> novos= new ArrayList<>();
         ArrayList<NotaRMA> modificados = new ArrayList<>();
+
         for (NotaRMAEntity x : notaRMADao.getNotasByRMAId(RMAId)) {
             if (x.getOffSync()!=null){
                 if (x.getOffSync().equals("novo")){
@@ -702,12 +709,15 @@ public class Notas extends AppCompatActivity {
                         Intent resultIntent = new Intent();
                         resultIntent.putExtra("AtivarAPI", true);
                         setResult(Activity.RESULT_OK, resultIntent);
-                        NotaRMAEntity y= x.toNotaRMAEntity();
-                        y.setOffSync("null");
-                        notaRMADao.update(y);
+
+
+
+                        notaRMADao.deleteById(x.getId());
                     } else {
                         Toast.makeText(getApplicationContext(), "Erro ao alterar nota", Toast.LENGTH_LONG).show();
                     }
+
+
                 }
 
                 @Override
@@ -717,6 +727,7 @@ public class Notas extends AppCompatActivity {
             });
 
         }
+
 
     }
 
