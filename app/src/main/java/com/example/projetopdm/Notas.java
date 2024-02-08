@@ -93,7 +93,12 @@ public class Notas extends AppCompatActivity {
             if (data.hasExtra("AtivarAPI")){
                 if (data.getBooleanExtra("AtivarAPI", false)){
                     rmaList.clear();
-                    loadNotas();
+                    if(!isInternetAvailable()){
+                        loadNotas();
+                    }
+                    if (isInternetAvailable()) {
+                        loadNotasAPI();
+                    }
                 }
             }
         }
