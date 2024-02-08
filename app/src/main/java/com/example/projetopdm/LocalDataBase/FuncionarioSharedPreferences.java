@@ -36,7 +36,6 @@ public class FuncionarioSharedPreferences {
         funcionario.setImagemFuncionario(sharedPreferences.getString("imagemFuncionario", null));
         funcionario.setEstadoFuncionarioId(sharedPreferences.getInt("estadoFuncionarioId", -1));
         funcionario.setEstadoFuncionario(sharedPreferences.getString("estadoFuncionario", null));
-
         return funcionario;
     }
 }

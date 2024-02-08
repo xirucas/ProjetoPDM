@@ -10,6 +10,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -82,7 +83,7 @@ public class Notas extends AppCompatActivity {
     Context context;
     int estadoId;
     RMA rmaX = new RMA();
-    boolean secondTimeApi = false;
+    boolean mudancas = false;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -91,7 +92,14 @@ public class Notas extends AppCompatActivity {
             // A variável está contida nos dados da Intent
             if (data.hasExtra("AtivarAPI")){
                 if (data.getBooleanExtra("AtivarAPI", false)){
-                    secondTime();
+                    rmaList.clear();
+                    if(!isInternetAvailable()){
+                        loadNotas();
+                    }
+                    if (isInternetAvailable()) {
+
+                        loadNotas();
+                    }
                 }
             }
         }
@@ -126,10 +134,12 @@ public class Notas extends AppCompatActivity {
         novaNova_btn = (Button) findViewById(R.id.novaNota_btn);
         change_status_btn = (Button) findViewById(R.id.change_status_btn);
         popup.setVisibility(View.INVISIBLE);
+        mudancas= false;
 
         retrofitClient = RetrofitClient.getInstance();
 
         AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "BaseDeDadosLocal").fallbackToDestructiveMigration().allowMainThreadQueries().build();
+
 
         notaRMADao = db.notaRMADao();
         rmaDao = db.rmaDao();
@@ -410,9 +420,10 @@ public class Notas extends AppCompatActivity {
         }
 
         if (isInternetAvailable()) {
-            loadNotasAPI();
-        }else {// vai buscar os dados á base de dados online e coloca na BDLocal
-            //nah net
+            if (notaRMADao.getNotasByRMAId(RMAId)!=null){
+                loadNotasAPI();
+
+            }
         }
     }
 
@@ -500,25 +511,20 @@ public class Notas extends AppCompatActivity {
                                 rmaList.add(notaRMA);
 
                             }
-                            for(NotaRMAEntity x : notaRMADao.getNotasByRMAId(RMAId)) {
-                                if (x != null && x.getOffSync() != null) {
-                                    if (x.getOffSync().equals("modificado")) {
-                                        //retirar x do rmaListEntity
-                                        for (NotaRMAEntity y : rmaListEntity) {
-                                            if (x.getId() == y.getId()) {
-                                                rmaListEntity.remove(y);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            notaRMADao.insertAllNotas(rmaListEntity);
-                            if (secondTimeApi){
-                                secondTime();
-                            }else{
-                                loadNotas();
+
+
+
+
+                            if (mudancasNaBD()){
+
+                                updateBaseDeDados();
+                                mudancas=true;
+                            }else {
+                                notaRMADao.insertAllNotas(rmaListEntity);
                             }
 
+
+                            loadNotas();
                         }
                     }
 
@@ -533,18 +539,23 @@ public class Notas extends AppCompatActivity {
         });
     }
 
-    public void secondTime(){
-        rmaList.clear();
-        if(!isInternetAvailable()){
-            loadNotas();
-        }
-        if (isInternetAvailable()) {
-            loadNotasAPI();
-        }
-    }
+
 
     private void loadNotas() {
-        if(!isInternetAvailable()){
+
+        if (mudancas){
+            ArrayList<NotaRMA> notasDoRMAX = new ArrayList<>();
+            Log.e("Notas","id do rma "+ RMAId);
+            for (NotaRMA x:convertNotaRMAEntityListToNotaRMAList(notaRMADao.getAllNotasRMA())) {
+                if (x.getRMAId()==RMAId){
+                    Log.e("Notas","id do RMA da nota  "+ x.getRMAId());
+                    notasDoRMAX.add(x);
+                }
+            }
+
+            listAdapter = new ListaAdapterRMADetails(Notas.this,notasDoRMAX , Notas.this);
+            binding.notas.setAdapter(listAdapter);
+        }else if(!isInternetAvailable()){
 
             ArrayList<NotaRMA> notasDoRMAX = new ArrayList<>();
             Log.e("Notas","id do rma "+ RMAId);
@@ -558,21 +569,16 @@ public class Notas extends AppCompatActivity {
             listAdapter = new ListaAdapterRMADetails(Notas.this,notasDoRMAX , Notas.this);
             binding.notas.setAdapter(listAdapter);
 
-        }
-
-
-        if (isInternetAvailable()){
+        }else if (isInternetAvailable()){
             if (notaRMADao.getNotasByRMAId(RMAId)!=null){
-                if (mudancasNaBD()){
-                    updateBaseDeDados();
-                    loadNotasAPI();
-                }
+
             }
             listAdapter = new ListaAdapterRMADetails(Notas.this, rmaList, Notas.this);
             binding.notas.setAdapter(listAdapter);
+
         }
 
-        secondTimeApi=true;
+
 
     }
 
@@ -716,9 +722,6 @@ public class Notas extends AppCompatActivity {
 
     public boolean mudancasNaBD(){
 
-        if(notaRMADao.getNotasByRMAId(RMAId).size()>rmaList.size()){
-            return true;
-        }
         boolean encontrouMod = false;
         for (NotaRMAEntity x : notaRMADao.getNotasByRMAId(RMAId)) {
             if (x.getOffSync()!=null){

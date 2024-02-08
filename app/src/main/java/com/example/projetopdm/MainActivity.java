@@ -147,11 +147,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private void initializeDatabaseAndViewModel() {
-        retrofitClient = RetrofitClient.getInstance();
+
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "BaseDeDadosLocal").allowMainThreadQueries().fallbackToDestructiveMigration().build();
         rmaDao = db.rmaDao();
         notaRMADao = db.notaRMADao();
-        api = retrofitClient.getMyApi();
+
 
         if (!isInternetAvailable()){
             rmaList = convertRMAEntityListToRMAList(rmaDao.getAllRMAs());
