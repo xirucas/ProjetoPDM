@@ -104,7 +104,7 @@ public class Nota extends AppCompatActivity {
 
         estadoRMA = getIntent().getIntExtra("estadoRMA", 0);
         Log.i("EstadoRMA", String.valueOf(estadoRMA));
-
+        Log.i("cu", " fe "+intent.getIntExtra("NotaId",0));
             if (getIntent().getIntExtra("NotaId", 0) != 0) {
                 titulo.setEnabled(false);
                 nota.setEnabled(false);
@@ -112,7 +112,7 @@ public class Nota extends AppCompatActivity {
                 create_btn.setText("Editar Nota");
                 create_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.edit_icon, 0, 0, 0);
                 NotaRMAEntity x ;
-                Log.i("cu", " fe "+intent.getIntExtra("NotaId",0));
+
 
                 x = notaRMADao.getNotaById(intent.getIntExtra("NotaId",0));
                 Log.i("cu2"," yh isso "+x.getId());

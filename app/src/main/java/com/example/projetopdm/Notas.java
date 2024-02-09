@@ -667,7 +667,7 @@ public class Notas extends AppCompatActivity {
                         x.setId(id);
                         notaRMADao.insert(x.toNotaRMAEntity());
 
-                        for (NotaRMA x:convertNotaRMAEntityListToNotaRMAList(notaRMADao.getAllNotasRMA())) {
+                        for (NotaRMA x:convertNotaRMAEntityListToNotaRMAList(notaRMADao.getNotasByRMAId(RMAId))) {
                             if (x.getRMAId()==RMAId){
                                 if (notaRMADao.getNotaById(x.getId()).getOffSync() != null){
                                     if (!notaRMADao.getNotaById(x.getId()).getOffSync().equals("apagado")){
