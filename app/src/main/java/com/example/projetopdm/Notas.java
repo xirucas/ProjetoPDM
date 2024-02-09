@@ -495,13 +495,16 @@ public class Notas extends AppCompatActivity {
 
                         }
                     }
-                    if (mudancasNaBD() && !mudancas) {
+                    if (mudancasNaBD()) {
                         Log.i("Notas","test "+notaRMADao.getNotasByRMAId(RMAId).get(0).getOffSync() + " " + notaRMADao.getNotasByRMAId(RMAId).get(0).getNota());
                         updateBaseDeDados();
                         mudancas=true;
 
+                    }else {
+                        loadNotas();
                     }
-                    loadNotas();
+
+
 
 
                 }
@@ -623,6 +626,7 @@ public class Notas extends AppCompatActivity {
         }
         for (NotaRMA x:novos) {
             String request ="";
+            Log.e("Notas","teste img  "+x.getImagemNota());
             if (x.getImagemNota() != null) {
                 Uri uri = Uri.parse(x.getImagemNota());
                 Bitmap imagem = uriToBitmap(getApplicationContext(), uri);
@@ -661,7 +665,29 @@ public class Notas extends AppCompatActivity {
                         notaRMADao.deleteById(x.getId());
                         int id= response.body().get("NotaRMAId").getAsInt();
                         x.setId(id);
-                        notaRMADao.insert(x.toNotaRMAEntity());;//depois deleta o mesmo da local
+                        notaRMADao.insert(x.toNotaRMAEntity());
+
+                        for (NotaRMA x:convertNotaRMAEntityListToNotaRMAList(notaRMADao.getAllNotasRMA())) {
+                            if (x.getRMAId()==RMAId){
+                                if (notaRMADao.getNotaById(x.getId()).getOffSync() != null){
+                                    if (!notaRMADao.getNotaById(x.getId()).getOffSync().equals("apagado")){
+                                        Log.e("Notas","id do RMA da nota  "+ x.getRMAId());
+                                        notasDoRMAX.add(x);
+                                    }
+                                }else {
+                                    Log.e("Notas","id do RMA da nota  "+ x.getRMAId());
+                                    notasDoRMAX.add(x);
+                                }
+                            }
+                        }
+
+                        listAdapter = new ListaAdapterRMADetails(Notas.this,notasDoRMAX , Notas.this);
+                        binding.notas.setAdapter(listAdapter);
+                        //teste apagar depois
+
+
+
+
                     } else {
                         Toast.makeText(getApplicationContext(), "Erro ao criar nota", Toast.LENGTH_LONG).show();
                     }

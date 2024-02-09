@@ -112,9 +112,13 @@ public class Nota extends AppCompatActivity {
                 create_btn.setText("Editar Nota");
                 create_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.edit_icon, 0, 0, 0);
                 NotaRMAEntity x ;
-                x = notaRMADao.getNotaById(intent.getIntExtra("NotaId",0));
-                notaRMA= x.toNotaRMA();
+                Log.i("cu", " fe "+intent.getIntExtra("NotaId",0));
 
+                x = notaRMADao.getNotaById(intent.getIntExtra("NotaId",0));
+                Log.i("cu2"," yh isso "+x.getId());
+
+                notaRMA= x.toNotaRMA();
+                Log.e("notas"," img + "+notaRMA.getImagemNota());
                 if (notaRMA.getImagemNota() != null && !notaRMA.getImagemNota().isEmpty()) {
                     uri = Uri.parse(notaRMA.getImagemNota());
                     imageView.setImageURI(uri);

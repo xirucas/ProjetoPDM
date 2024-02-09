@@ -161,6 +161,7 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
         notas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent intent = new Intent(bindingNotas.getApplicationContext(), Nota.class);
                 intent.putExtra("NotaId",notaRMA.getId());
                 intent.putExtra("RMAId",notaRMA.getRMAId());
