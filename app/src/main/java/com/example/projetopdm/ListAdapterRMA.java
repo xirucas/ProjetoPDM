@@ -1,5 +1,7 @@
 package com.example.projetopdm;
+import android.widget.BaseAdapter;
 import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.LinearLayout;
 
 import android.content.Context;
@@ -23,8 +25,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 
-public class ListAdapterRMA extends ArrayAdapter<RMA> {
+public class ListAdapterRMA extends ArrayAdapter<RMA> implements Filterable {
     MainActivity binding;
+    private Context context;
     private ArrayList<RMA> originalList;
     private ArrayList<RMA> filteredList;
     private ItemFilter mFilter = new ItemFilter();
@@ -36,6 +39,11 @@ public class ListAdapterRMA extends ArrayAdapter<RMA> {
         this.filteredList = new ArrayList<>(dataArrayList);
     }
 
+    public void updateList(ArrayList<RMA> newList) {
+        originalList.clear();
+        originalList.addAll(newList);
+        notifyDataSetChanged();
+    }
 
     @NonNull
     @Override
@@ -112,6 +120,7 @@ public class ListAdapterRMA extends ArrayAdapter<RMA> {
         return mFilter;
     }
 
+
     private class ItemFilter extends Filter {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
@@ -135,6 +144,7 @@ public class ListAdapterRMA extends ArrayAdapter<RMA> {
             return results;
         }
 
+
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             binding.listAdapter.clear();
@@ -144,6 +154,4 @@ public class ListAdapterRMA extends ArrayAdapter<RMA> {
 
 
     }
-
-
 }

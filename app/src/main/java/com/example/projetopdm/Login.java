@@ -3,6 +3,7 @@ package com.example.projetopdm;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
 import android.content.Context;
 import android.content.Intent;
@@ -94,7 +95,6 @@ public class Login extends AppCompatActivity {
             loading.setVisibility(View.INVISIBLE);
 
         }
-
 
 
         Button submit = findViewById(R.id.submit_btn);

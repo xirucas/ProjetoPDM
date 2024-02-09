@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".Perfil">
 
     <Button
@@ -45,7 +46,7 @@
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:fontFamily="@font/medium"
         android:text="nome funcionário"
         android:textColor="@color/black"
@@ -57,16 +58,20 @@
     <Button
         android:id="@+id/encerrar_btn"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginStart="100dp"
-        android:layout_marginEnd="100dp"
-        android:layout_marginBottom="32dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
         android:clickable="true"
         android:fontFamily="@font/bold"
+        android:paddingVertical="10dp"
         android:text="Encerrar"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
+        android:textSize="16sp"
         app:icon="@drawable/log_out_icon"
         app:iconGravity="textStart"
+        app:iconSize="25dp"
+        app:iconTint="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

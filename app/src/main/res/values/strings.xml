@@ -4,7 +4,7 @@
     <string name="app_name">SweetRepair</string>
     <string name="greeting">Welcome 👋</string>
     <string name="login">Login ></string>
-    <string name="pin">_ _ _ _</string>
+    <string name="pin">● ● ● ●</string>
     <string name="title_activity_notas">Notas</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
@@ -51,4 +51,11 @@
     <string name="lorem">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</string>
     <string name="empty" />
     <string name="editar_perfil">Perfil</string>
+    <string name="pop_up">Tem a certeza que pretende eliminar esta nota?</string>
+    <string name="confirmar">Confirmar</string>
+    <string name="adicionar_nota">Adicionar nota</string>
+    <string name="notas">Notas</string>
+    <string name="descri_o">Descrição</string>
+    <string name="data">Data</string>
+    <string name="rma">RMA</string>
 </resources>

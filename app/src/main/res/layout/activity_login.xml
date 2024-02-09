@@ -62,16 +62,17 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="32dp"
-        android:background="@drawable/round_corners"
-        android:backgroundTint="@color/input"
+        android:background="@drawable/input"
+        android:backgroundTint="#182340"
         android:ems="10"
         android:fontFamily="@font/regular"
         android:hint="@string/pin"
         android:inputType="numberPassword"
-        android:paddingVertical="15dp"
+        android:paddingVertical="10dp"
         android:singleLine="true"
         android:textAlignment="center"
         android:textColor="@color/black"
+        android:textColorHint="#536280"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -84,7 +85,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:fontFamily="@font/medium"
-        android:paddingVertical="15dp"
+        android:paddingVertical="10dp"
         android:text="@string/login"
         android:textColor="@color/black"
         android:textSize="18sp"
@@ -96,7 +97,7 @@
         android:id="@+id/introduzir_pin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="80dp"
         android:fontFamily="@font/regular"
         android:text="Introduza o seu PIN pessoal"
         android:textSize="16sp"
@@ -111,8 +112,6 @@
         layout="@layout/loading_page"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
