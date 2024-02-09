@@ -75,6 +75,7 @@ public class ListAdapterRMA extends ArrayAdapter<RMA> {
                     intent.putExtra("Descricao",rma.getDescricaoCliente());
                     intent.putExtra("estadoRMA",rma.getEstadoRMAId());
                     intent.putExtra("Data",rma.getDataCriacao());
+                    intent.putExtra("horas",rma.getHorasTrabalhadas());
                     binding.startActivityForResult(intent, binding.MEU_REQUEST_CODE);
                 }
             });

@@ -20,6 +20,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.projetopdm.BackEnd.RetrofitClient;
+import com.example.projetopdm.LocalDataBase.DAOs.NotaRMADao;
+import com.example.projetopdm.LocalDataBase.Entity.NotaRMAEntity;
+import com.example.projetopdm.LocalDataBase.Entity.RMAEntity;
 import com.example.projetopdm.Modelos.NotaRMA;
 import com.example.projetopdm.Modelos.RMA;
 import com.google.android.material.button.MaterialButton;
@@ -34,14 +37,16 @@ import java.util.jar.JarEntry;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import com.example.projetopdm.databinding.ListDetalhesRmaBinding;
 
 public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
+    ListDetalhesRmaBinding binding;
 
-    Notas binding;
+    Notas bindingNotas;
     LinearLayout notas ;
     public ListaAdapterRMADetails(@NonNull Context context, ArrayList<NotaRMA> dataArrayList, Notas binding) {
         super(context, R.layout.list_detalhes_rma, dataArrayList);
-        this.binding = binding;
+        this.bindingNotas = binding;
     }
 
     @NonNull
@@ -83,25 +88,40 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
         Button deleteBt = view.findViewById(R.id.deleteBt);
 
         // Adicionar um OnClickListener ao LinearLayout
-        if (!(binding.rma.getEstadoRMAId() == 2 || binding.rma.getEstadoRMAId() == 3)){
-            deleteBt.setVisibility(View.INVISIBLE);
-            deleteBt.setEnabled(false);
+        if (!(bindingNotas.estadoId == 2 || bindingNotas.estadoId == 3)){
+            if (!isInternetAvailable()){
+                deleteBt.setVisibility(View.INVISIBLE);
+                deleteBt.setEnabled(false);
+            }
+
         }
         deleteBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                RelativeLayout popup = binding.findViewById(R.id.popup);
+                RelativeLayout popup = bindingNotas.findViewById(R.id.popup);
                 popup.setVisibility(View.VISIBLE);
 
-                TextView confirmarid = binding.findViewById(R.id.confirmarid);
+                TextView confirmarid = bindingNotas.findViewById(R.id.confirmarid);
 
                 confirmarid.setText("Tem a certeza que pretende eliminar a nota " + notaRMA.getTitulo() + "?");
 
-                Button confirm = binding.findViewById(R.id.confirmar);
+                Button confirm = bindingNotas.findViewById(R.id.confirmar);
 
                 confirm.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        if (!isInternetAvailable()){
+                            NotaRMADao notaRMADao = bindingNotas.db.notaRMADao();
+                            NotaRMAEntity notaRMAEntity = notaRMA.toNotaRMAEntity();
+                            notaRMAEntity.setOffSync("apagado");
+                            notaRMADao.insert(notaRMAEntity);
+                            if (bindingNotas.listAdapter.getPosition(notaRMA) != -1){
+                                bindingNotas.listAdapter.remove(notaRMA);
+                                popup.setVisibility(View.INVISIBLE);
+                                bindingNotas.listAdapter.notifyDataSetChanged();
+                                Toast.makeText(bindingNotas, "Nota eliminada com sucesso", Toast.LENGTH_SHORT).show();
+                            }
+                        }
                         if (isInternetAvailable()){
                             Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().DeleteNotaRMA(notaRMA.getId());
                             call.enqueue(new Callback<JsonObject>() {
@@ -109,26 +129,25 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
                                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                                     JsonObject responseObj = response.body().get("Result").getAsJsonObject();
                                     if (responseObj.get("Success").getAsBoolean()){
-                                        int pos = binding.listAdapter.getPosition(notaRMA);
-                                        binding.listAdapter.remove(notaRMA);
+                                        NotaRMADao notaRMADao = bindingNotas.db.notaRMADao();
+                                        notaRMADao.deleteById(notaRMA.getId());
+
+                                        int pos = bindingNotas.listAdapter.getPosition(notaRMA);
+                                        bindingNotas.listAdapter.remove(notaRMA);
                                         popup.setVisibility(View.INVISIBLE);
-                                        binding.listAdapter.notifyDataSetChanged();
-                                        Toast.makeText(binding, "Nota eliminada com sucesso", Toast.LENGTH_SHORT).show();
+                                        bindingNotas.listAdapter.notifyDataSetChanged();
+                                        Toast.makeText(bindingNotas, "Nota eliminada com sucesso", Toast.LENGTH_SHORT).show();
                                     }else {
-                                        Toast.makeText(binding, "Erro ao eliminar nota", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(bindingNotas, "Erro ao eliminar nota", Toast.LENGTH_SHORT).show();
                                     }
                                 }
 
                                 @Override
                                 public void onFailure(Call<JsonObject> call, Throwable t) {
-                                    Toast.makeText(binding, "Erro ao eliminar nota", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(bindingNotas, "Erro ao eliminar nota", Toast.LENGTH_SHORT).show();
                                 }
                             });
 
-                        }else {
-                            RelativeLayout popup = binding.findViewById(R.id.popup);
-                            popup.setVisibility(View.INVISIBLE);
-                            Toast.makeText(binding, "Não tem acesso à internet, só poderá eliminar quando estiver no modo online", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -142,16 +161,16 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
         notas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(binding.getApplicationContext(), Nota.class);
+                Intent intent = new Intent(bindingNotas.getApplicationContext(), Nota.class);
                 intent.putExtra("NotaId",notaRMA.getId());
                 intent.putExtra("RMAId",notaRMA.getRMAId());
                 intent.putExtra("NotaTitulo",notaRMA.getTitulo());
                 intent.putExtra("Descricao",notaRMA.getNota());
                 intent.putExtra("Data",notaRMA.getDataCriacao());
                 intent.putExtra("ImagemID",notaRMA.getImagemNotaId());
-                intent.putExtra("estadoRMA",binding.estadoId);
+                intent.putExtra("estadoRMA",bindingNotas.estadoId);
                 intent.putExtra("Update","Update");
-                binding.startActivityForResult(intent, binding.MEU_REQUEST_CODE);
+                bindingNotas.startActivityForResult(intent, bindingNotas.MEU_REQUEST_CODE);
             }
         });
 
@@ -160,7 +179,7 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
 
     private boolean isInternetAvailable(){
         boolean connected = false;
-        ConnectivityManager connectivityManager = (ConnectivityManager)binding.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager)bindingNotas.getSystemService(Context.CONNECTIVITY_SERVICE);
         if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
             //we are connected to a network

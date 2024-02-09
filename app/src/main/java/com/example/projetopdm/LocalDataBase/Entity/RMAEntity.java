@@ -15,8 +15,9 @@ public class RMAEntity {
     private String estadoRMA;
     private int estadoRMAId;
     private int funcionarioId;
+    private String horasTrabalhadas;
 
-    public RMAEntity(int id, String rma, String descricaoCliente, String dataCriacao, String dataAbertura, String dataFecho, String estadoRMA, int estadoRMAId, int funcionarioId) {
+    public RMAEntity(int id, String rma, String descricaoCliente, String dataCriacao, String dataAbertura, String dataFecho, String estadoRMA, int estadoRMAId, int funcionarioId, String horasTrabalhadas) {
         this.id = id;
         this.RMA = rma;
         this.descricaoCliente = descricaoCliente;
@@ -26,13 +27,14 @@ public class RMAEntity {
         this.estadoRMA = estadoRMA;
         this.estadoRMAId = estadoRMAId;
         this.funcionarioId = funcionarioId;
+        this.horasTrabalhadas = horasTrabalhadas;
     }
     public RMAEntity(){
 
     }
 
     public RMA toRMA(){
-        return new RMA(this.id,this.RMA,this.descricaoCliente,this.dataCriacao,this.dataAbertura,this.dataFecho,this.estadoRMA,this.estadoRMAId,this.funcionarioId);
+        return new RMA(this.id,this.RMA,this.descricaoCliente,this.dataCriacao,this.dataAbertura,this.dataFecho,this.estadoRMA,this.estadoRMAId,this.funcionarioId,this.horasTrabalhadas);
     }
 
     public String getDataCriacao() {
@@ -105,5 +107,13 @@ public class RMAEntity {
 
     public void setRMA(String RMA) {
         this.RMA = RMA;
+    }
+
+    public void setHorasTrabalhadas(String horasTrabalhadas) {
+        this.horasTrabalhadas = horasTrabalhadas;
+    }
+
+    public String getHorasTrabalhadas() {
+        return horasTrabalhadas;
     }
 }

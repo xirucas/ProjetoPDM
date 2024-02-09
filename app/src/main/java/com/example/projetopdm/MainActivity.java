@@ -202,7 +202,8 @@ public class MainActivity extends AppCompatActivity {
                     rmaEntity.getDataFecho(),
                     rmaEntity.getEstadoRMA(),
                     rmaEntity.getEstadoRMAId(),
-                    rmaEntity.getFuncionarioId()
+                    rmaEntity.getFuncionarioId(),
+                    rmaEntity.getHorasTrabalhadas()
             );
             rmaList.add(rma);
         }
@@ -249,6 +250,7 @@ public class MainActivity extends AppCompatActivity {
                             JsonObject rmaObj = rmaListObj.get(i).getAsJsonObject();
                             String dataAb = "";
                             String dataF = "";
+                            String horas = "";
                             if (rmaObj.get("DataAbertura") != null){
                                 dataAb = (rmaObj.get("DataAbertura").getAsString());
                             } else {
@@ -259,11 +261,15 @@ public class MainActivity extends AppCompatActivity {
                             } else {
                                 dataF = "null";
                             }
-                            RMAEntity rma = new RMAEntity(rmaObj.get("Id").getAsInt(), rmaObj.get("RMA").getAsString(), rmaObj.get("DescricaoCliente").getAsString(), rmaObj.get("DataCriacao").getAsString(), dataAb, dataF, rmaObj.get("EstadoRMA").getAsString(), rmaObj.get("EstadoRMAId").getAsInt(), rmaObj.get("FuncionarioId").getAsInt());
-                            RMA x =  new RMA(rmaObj.get("Id").getAsInt(), rmaObj.get("RMA").getAsString(), rmaObj.get("DescricaoCliente").getAsString(), rmaObj.get("DataCriacao").getAsString(), dataAb, dataF, rmaObj.get("EstadoRMA").getAsString(), rmaObj.get("EstadoRMAId").getAsInt(), rmaObj.get("FuncionarioId").getAsInt());
+                            if (rmaObj.get("HorasTrabalhadas") != null){
+                                horas = (rmaObj.get("HorasTrabalhadas").getAsString());
+                            } else {
+                                horas = "null";
+                            }
+                            RMAEntity rma = new RMAEntity(rmaObj.get("Id").getAsInt(), rmaObj.get("RMA").getAsString(), rmaObj.get("DescricaoCliente").getAsString(), rmaObj.get("DataCriacao").getAsString(), dataAb, dataF, rmaObj.get("EstadoRMA").getAsString(), rmaObj.get("EstadoRMAId").getAsInt(), rmaObj.get("FuncionarioId").getAsInt(),horas);
+                            RMA x =  new RMA(rmaObj.get("Id").getAsInt(), rmaObj.get("RMA").getAsString(), rmaObj.get("DescricaoCliente").getAsString(), rmaObj.get("DataCriacao").getAsString(), dataAb, dataF, rmaObj.get("EstadoRMA").getAsString(), rmaObj.get("EstadoRMAId").getAsInt(), rmaObj.get("FuncionarioId").getAsInt(),horas);
                             rmaListEnt.add(rma);
                             rmaList.add(x);
-
                         }
 
 

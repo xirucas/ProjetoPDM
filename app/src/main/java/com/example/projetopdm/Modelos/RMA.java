@@ -18,7 +18,7 @@ public class RMA {
 
     }
 
-    public RMA(int id, String rma, String descricaoCliente,String dataCriacao , String dataAbertura, String dataFecho, String estadoRMA, int estadoRMAId, int funicionarioId) {
+    public RMA(int id, String rma, String descricaoCliente,String dataCriacao , String dataAbertura, String dataFecho, String estadoRMA, int estadoRMAId, int funicionarioId, String horasTrabalhadas) {
         Id = id;
         RMA = rma;
         DescricaoCliente = descricaoCliente;
@@ -28,6 +28,7 @@ public class RMA {
         EstadoRMA = estadoRMA;
         EstadoRMAId = estadoRMAId;
         FuncionarioId = funicionarioId;
+        HorasTrabalhadas = horasTrabalhadas;
     }
 
     public RMA(String rma, String descricaoCliente,String dataCriacao , String dataAbertura, String dataFecho, String estadoRMA, int estadoRMAId, int funicionarioId) {
@@ -42,7 +43,7 @@ public class RMA {
     }
 
     public RMAEntity toRMAEntity(){
-        return new RMAEntity(this.Id,this.RMA,this.DescricaoCliente,this.DataCriacao,this.DataAbertura,this.DataFecho,this.EstadoRMA,this.EstadoRMAId,this.FuncionarioId);
+        return new RMAEntity(this.Id,this.RMA,this.DescricaoCliente,this.DataCriacao,this.DataAbertura,this.DataFecho,this.EstadoRMA,this.EstadoRMAId,this.FuncionarioId,this.HorasTrabalhadas);
     }
 
     public int getId() {
