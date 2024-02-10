@@ -18,6 +18,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
@@ -32,6 +33,7 @@ import com.example.projetopdm.LocalDataBase.AppDatabase;
 import com.example.projetopdm.LocalDataBase.DAOs.NotaRMADao;
 import com.example.projetopdm.LocalDataBase.DAOs.RMADao;
 import com.example.projetopdm.LocalDataBase.Entity.NotaRMAEntity;
+import com.example.projetopdm.LocalDataBase.UpdateBD;
 import com.example.projetopdm.Modelos.NotaRMA;
 import com.example.projetopdm.Modelos.RMA;
 import com.example.projetopdm.databinding.ActivityMainBinding;
@@ -68,7 +70,7 @@ public class Notas extends AppCompatActivity {
     ActivityMainBinding bindingMain;
     int RMAId;
     RMA rma = new RMA();
-    NotaRMA notaRMA;
+    UpdateBD updateBD;
     RMADao rmaDao;
     NotaRMADao notaRMADao;
     ArrayList<NotaRMA> rmaList = new ArrayList<NotaRMA>();
@@ -101,39 +103,7 @@ public class Notas extends AppCompatActivity {
             }
         }
     }
-    protected void onStart() {
-        super.onStart();
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(networkChangeReceiver, filter);
-    }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        unregisterReceiver(networkChangeReceiver);
-    }
-
-    private BroadcastReceiver networkChangeReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-
-            if (isInternetAvailable()) {
-                // Internet is connected
-                Toast.makeText(context, "Internet is connected", Toast.LENGTH_SHORT).show();
-                //Intent intent2 = new Intent(contextPrincipal, MainActivity.class);
-                //startActivity(intent2);
-
-            } else {
-                // Internet is disconnected
-                Toast.makeText(context, "Internet is disconnected", Toast.LENGTH_SHORT).show();
-                //Intent intent2 = new Intent(contextPrincipal, MainActivity.class);
-                //startActivity(intent2);
-            }
-        }
-    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -191,8 +161,13 @@ public class Notas extends AppCompatActivity {
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "BaseDeDadosLocal").fallbackToDestructiveMigration().allowMainThreadQueries().build();
 
 
+
         notaRMADao = db.notaRMADao();
         rmaDao = db.rmaDao();
+
+
+        updateBD =new UpdateBD(this);
+
         if (rmaDao.getRMAById(RMAId).toRMA()!=null){
             rmaX = rmaDao.getRMAById(RMAId).toRMA();
         }
@@ -413,8 +388,24 @@ public class Notas extends AppCompatActivity {
         }
 
         if (isInternetAvailable()) {
-            if (notaRMADao.getNotasByRMAId(RMAId)!=null){
+            if (!updateBD.mudancas()){
                 loadNotasAPI();
+            }
+            if (updateBD.mudancas()){
+                updateBD.updateBaseDeDados();
+                /*new CountDownTimer(3000, 1000) { // 30000ms = 30s total, 1000ms = 1s intervalo
+
+                    public void onTick(long millisUntilFinished) {
+                        // Código a executar em cada intervalo do timer, por exemplo, atualizar um TextView.
+                    }
+
+                    public void onFinish() {
+                        recreate();
+                    }
+                }.start();
+                */
+                loadNotasAPI();
+
 
             }
         }
@@ -564,9 +555,7 @@ public class Notas extends AppCompatActivity {
             binding.notas.setAdapter(listAdapter);
 
         }else if (isInternetAvailable()){
-            if (notaRMADao.getNotasByRMAId(RMAId)!=null){
 
-            }
             listAdapter = new ListaAdapterRMADetails(Notas.this, rmaList, Notas.this);
             binding.notas.setAdapter(listAdapter);
 
@@ -784,6 +773,8 @@ public class Notas extends AppCompatActivity {
         return encontrouMod;
 
     }
+
+
 
     private ArrayList<NotaRMA> convertNotaRMAEntityListToNotaRMAList(List<NotaRMAEntity> notaRmaEntities) {
         ArrayList<NotaRMA> notaRmaList = new ArrayList<>();

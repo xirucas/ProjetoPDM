@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        justDoIT();
+        //justDoIT();
 
 
     }

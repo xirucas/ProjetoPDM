@@ -1,5 +1,6 @@
 package com.example.projetopdm.BackEnd;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import okhttp3.ResponseBody;
@@ -45,4 +46,6 @@ public interface Api {
 
     @DELETE("DeleteNotaRMA")
     Call<JsonObject> DeleteNotaRMA(@Query("Id") int Id);
+    @POST("CreateALL_NotasRMA")
+    Call<JsonObject> CreateALL_NotasRMA(@Body JsonArray body);
 }

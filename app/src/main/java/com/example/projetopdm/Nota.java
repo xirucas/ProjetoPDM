@@ -80,39 +80,9 @@ public class Nota extends AppCompatActivity {
     private Context contextPrincipal;
 
     Uri uri;
-    protected void onStart() {
-        super.onStart();
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(networkChangeReceiver, filter);
-    }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        unregisterReceiver(networkChangeReceiver);
-    }
 
-    private BroadcastReceiver networkChangeReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 
-            if (isInternetAvailable()) {
-                // Internet is connected
-                Toast.makeText(context, "Internet is connected", Toast.LENGTH_SHORT).show();
-                //Intent intent2 = new Intent(contextPrincipal, MainActivity.class);
-                //startActivity(intent2);
-
-            } else {
-                // Internet is disconnected
-                Toast.makeText(context, "Internet is disconnected", Toast.LENGTH_SHORT).show();
-                //Intent intent2 = new Intent(contextPrincipal, MainActivity.class);
-                //startActivity(intent2);
-            }
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
