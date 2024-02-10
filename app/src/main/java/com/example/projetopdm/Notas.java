@@ -1,16 +1,16 @@
 package com.example.projetopdm;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.exifinterface.media.ExifInterface;
 import androidx.room.Room;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -23,13 +23,10 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.projetopdm.BackEnd.Api;
 import com.example.projetopdm.BackEnd.RetrofitClient;
 import com.example.projetopdm.LocalDataBase.AppDatabase;
 import com.example.projetopdm.LocalDataBase.DAOs.NotaRMADao;
@@ -53,7 +50,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -80,7 +76,7 @@ public class Notas extends AppCompatActivity {
     Button novaNova_btn;
     Button change_status_btn;
     RetrofitClient retrofitClient;
-    Context context;
+    Context contextPrincipal;
     int estadoId;
     RMA rmaX = new RMA();
     AppDatabase db;
@@ -105,12 +101,44 @@ public class Notas extends AppCompatActivity {
             }
         }
     }
+    protected void onStart() {
+        super.onStart();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeReceiver, filter);
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(networkChangeReceiver);
+    }
+
+    private BroadcastReceiver networkChangeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
+            if (isInternetAvailable()) {
+                // Internet is connected
+                Toast.makeText(context, "Internet is connected", Toast.LENGTH_SHORT).show();
+                //Intent intent2 = new Intent(contextPrincipal, MainActivity.class);
+                //startActivity(intent2);
+
+            } else {
+                // Internet is disconnected
+                Toast.makeText(context, "Internet is disconnected", Toast.LENGTH_SHORT).show();
+                //Intent intent2 = new Intent(contextPrincipal, MainActivity.class);
+                //startActivity(intent2);
+            }
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityNotasBinding.inflate(getLayoutInflater());
-        context = this;
+        contextPrincipal = this;
         setContentView(binding.getRoot());
 
         bindingMain = ActivityMainBinding.inflate(getLayoutInflater());
@@ -360,6 +388,8 @@ public class Notas extends AppCompatActivity {
             }
         });
 
+
+
         if (!isInternetAvailable()){
             Log.e("Notas","sem net, tentar carregar local");
             loadNotas();
@@ -462,7 +492,7 @@ public class Notas extends AppCompatActivity {
                                 if (imgBitMap==null){
                                     notaRMAEntiTy = notaRMA.toNotaRMAEntity();
                                 } else if (imgBitMap!=null) {
-                                    Uri img = saveImageToStorage(imgBitMap,context,notaRMA.getTitulo()+" "+notaRMA.getId());
+                                    Uri img = saveImageToStorage(imgBitMap, contextPrincipal,notaRMA.getTitulo()+" "+notaRMA.getId());
                                     notaRMAEntiTy = notaRMA.toNotaRMAEntity();
                                     Log.e("Notas","Imagem " + img.toString());
                                     notaRMAEntiTy.setImagemNota(img.toString());
@@ -480,29 +510,18 @@ public class Notas extends AppCompatActivity {
 
                             }
 
+                            notaRMADao.insertAllNotas(rmaListEntity);
 
 
 
-                            if (mudancasNaBD()){
-
-                                updateBaseDeDados();
-                                mudancas=true;
-                            }else {
-                                notaRMADao.insertAllNotas(rmaListEntity);
-                            }
 
 
 
                         }
                     }
-                    if (mudancasNaBD()) {
-                        Log.i("Notas","test "+notaRMADao.getNotasByRMAId(RMAId).get(0).getOffSync() + " " + notaRMADao.getNotasByRMAId(RMAId).get(0).getNota());
-                        updateBaseDeDados();
-                        mudancas=true;
 
-                    }else {
-                        loadNotas();
-                    }
+                    loadNotas();
+
 
 
 
@@ -522,28 +541,8 @@ public class Notas extends AppCompatActivity {
     private void loadNotas() {
 
 
-        if (mudancas){
-            /*context.deleteDatabase("BaseDeDadosLocal");
-            loadNotasAPI();*/
-            notasDoRMAX.clear();
-            Log.e("Notas","id do rma "+ RMAId);
-            for (NotaRMA x:convertNotaRMAEntityListToNotaRMAList(notaRMADao.getAllNotasRMA())) {
-                if (x.getRMAId()==RMAId){
-                    if (notaRMADao.getNotaById(x.getId()).getOffSync() != null){
-                        if (!notaRMADao.getNotaById(x.getId()).getOffSync().equals("apagado")){
-                            Log.e("Notas","id do RMA da nota  "+ x.getRMAId());
-                            notasDoRMAX.add(x);
-                        }
-                    }else {
-                        Log.e("Notas","id do RMA da nota  "+ x.getRMAId());
-                        notasDoRMAX.add(x);
-                    }
-                }
-            }
 
-            listAdapter = new ListaAdapterRMADetails(Notas.this,notasDoRMAX , Notas.this);
-            binding.notas.setAdapter(listAdapter);
-        }else if(!isInternetAvailable()){
+        if(!isInternetAvailable()){
 
             notasDoRMAX.clear();
             Log.e("Notas","id do rma "+ RMAId);
