@@ -149,11 +149,12 @@ public class UpdateBD {
                                 for (int j = 0; j < novos.size(); j++) {
                                     NotaRMAEntity nota = notaRMADao.getNotaById(novos.get(j).getId());
                                     int idantigo= nota.getId();
-                                    nota.setRMAId(idNota);
+                                    nota.setId(idNota);
                                     nota.setOffSync(null);
 
-                                    Log.i("nota antiga ")
+                                    Log.i("notas",notaRMADao.getNotaById(idantigo).getOffSync()+" id-> "+notaRMADao.getNotaById(idantigo).getId() );
                                     notaRMADao.insert(nota);
+                                    Log.i("notas",notaRMADao.getNotaById(idNota).getOffSync()+" id-> "+notaRMADao.getNotaById(idNota).getId() );
                                     notaRMADao.deleteById(idantigo);
                                 }
 
