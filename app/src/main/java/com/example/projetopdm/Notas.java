@@ -388,11 +388,11 @@ public class Notas extends AppCompatActivity {
         }
 
         if (isInternetAvailable()) {
-            if (!updateBD.mudancas()){
-                loadNotasAPI();
+            if (!updateBD.mudancas(rmaX.getId())){
+              loadNotasAPI();
             }
-            if (updateBD.mudancas()){
-                updateBD.updateBaseDeDados();
+            if (updateBD.mudancas(rmaX.getId())){
+               updateBD.updateBaseDeDados(rmaX.getId());
                 /*new CountDownTimer(3000, 1000) { // 30000ms = 30s total, 1000ms = 1s intervalo
 
                     public void onTick(long millisUntilFinished) {
@@ -404,7 +404,7 @@ public class Notas extends AppCompatActivity {
                     }
                 }.start();
                 */
-                loadNotasAPI();
+              loadNotasAPI();
 
 
             }
@@ -454,7 +454,7 @@ public class Notas extends AppCompatActivity {
                         change_status_btn.setEnabled(false);
                     }
 
-                    String imgBitMap= null;
+
                     int imgID;
 
                     if (response.body().has("RMANotas")) {
@@ -463,6 +463,7 @@ public class Notas extends AppCompatActivity {
                         List<NotaRMAEntity> rmaListEntity = new ArrayList<>();
                         if (NotasRMA.get(0).getAsJsonObject().get("Id").getAsInt() != 0) {
                             for (int i = 0; i < NotasRMA.size(); i++) {
+                                String imgBitMap= null;
                                 JsonObject notaRMAObj = NotasRMA.get(i).getAsJsonObject();
                                 NotaRMA notaRMA = new NotaRMA();
                                 notaRMA.setId(notaRMAObj.get("Id").getAsInt());
@@ -485,7 +486,7 @@ public class Notas extends AppCompatActivity {
                                 } else if (imgBitMap!=null) {
                                     Uri img = saveImageToStorage(imgBitMap, contextPrincipal,notaRMA.getTitulo()+" "+notaRMA.getId());
                                     notaRMAEntiTy = notaRMA.toNotaRMAEntity();
-                                    Log.e("Notas","Imagem " + img.toString());
+
                                     notaRMAEntiTy.setImagemNota(img.toString());
                                 }
 
@@ -560,6 +561,7 @@ public class Notas extends AppCompatActivity {
             binding.notas.setAdapter(listAdapter);
 
         }
+        listAdapter.notifyDataSetChanged();
 
 
 

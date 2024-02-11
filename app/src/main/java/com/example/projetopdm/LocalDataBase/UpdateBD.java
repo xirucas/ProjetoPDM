@@ -32,6 +32,7 @@ import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 
 public class UpdateBD {
     NotaRMADao notaRMADao;
@@ -48,10 +49,10 @@ public class UpdateBD {
     }
 
 
-    public boolean mudancas() {
+    public boolean mudancas(int RMAId) {
         ArrayList<RMAEntity> rmasModificados = new ArrayList<>();
 
-        if(notaRMADao.getAllNotasRMA()!=null){
+        if(notaRMADao.getALLNotasByRMAId(RMAId)!=null){
             for (NotaRMAEntity x:notaRMADao.getAllNotasRMA()) {
                 if(x.getOffSync()!=null){
                     if (x.getOffSync().equals("modificado")||x.getOffSync().equals("novo")||x.getOffSync().equals("apagado")){
@@ -70,14 +71,14 @@ public class UpdateBD {
         return false;
     }
 
-    public void updateBaseDeDados(){
+    public void updateBaseDeDados(int RMAid){
         Log.e("Notas","aqui gayyyyyyyyy");
 
         ArrayList<NotaRMA> novos= new ArrayList<>();
         ArrayList<NotaRMA> modificados = new ArrayList<>();
         ArrayList<NotaRMA> apagados = new ArrayList<>();
 
-        for (NotaRMAEntity x : notaRMADao.getAllNotasRMA()) {
+        for (NotaRMAEntity x : notaRMADao.getALLNotasByRMAId(RMAid)) {
             if (x.getOffSync()!=null){
                 if (x.getOffSync().equals("novo")){
                     novos.add(x.toNotaRMA());
@@ -126,7 +127,7 @@ public class UpdateBD {
 
 
 
-            Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().CreateALL_NotasRMA(body);
+            Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().CreateOrUpdateALL_NotasRMA(body);
             call.enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
@@ -146,70 +147,139 @@ public class UpdateBD {
 
                             for (int i = 0; i < NotasRMAId.size(); i++) {
                                 int idNota = NotasRMAId.get(i).getAsInt();
-                                for (int j = 0; j < novos.size(); j++) {
-                                    NotaRMAEntity nota = notaRMADao.getNotaById(novos.get(j).getId());
+
+                                    NotaRMAEntity nota = notaRMADao.getNotaById(novos.get(i).getId());
                                     int idantigo= nota.getId();
                                     nota.setId(idNota);
                                     nota.setOffSync(null);
 
-                                    Log.i("notas",notaRMADao.getNotaById(idantigo).getOffSync()+" id-> "+notaRMADao.getNotaById(idantigo).getId() );
+
                                     notaRMADao.insert(nota);
-                                    Log.i("notas",notaRMADao.getNotaById(idNota).getOffSync()+" id-> "+notaRMADao.getNotaById(idNota).getId() );
+
                                     notaRMADao.deleteById(idantigo);
-                                }
+
 
                             }
                         }
+                    }else {
+                        Toast.makeText(contextoprincipal, "Erro no update de notas novas", Toast.LENGTH_LONG).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
-
+                    Toast.makeText(contextoprincipal, "Erro no update de notas novas", Toast.LENGTH_LONG).show();
                 }
             });
         }
 
-        for (NotaRMA x:modificados){
-            String request ="";
+        if (modificados.size()!=0){
+            String requestArray = "[";
+            int count=0;
+            for (NotaRMA x:modificados){
+                String request ="";
 
-            if (x.getImagemNota() != null) {
-                Uri uri = Uri.parse(x.getImagemNota());
-                Bitmap imagem = uriToBitmap(contextoprincipal, uri);
-                String imagemString = bitmapToString(imagem);
-                x.setImagemNota(imagemString);
+                if (x.getImagemNota() != null) {
+                    Uri uri = Uri.parse(x.getImagemNota());
+                    Bitmap imagem = uriToBitmap(contextoprincipal, uri);
+                    String imagemString = bitmapToString(imagem);
+                    x.setImagemNota(imagemString);
+                }
+                request = "{"
+                        + " \"Id\": \"" + x.getId() + "\", "
+                        + " \"Titulo\": \"" + x.getTitulo() + "\", "
+                        + " \"Nota\": \"" + x.getNota() + "\", "
+                        + " \"RMAId\": \"" + x.getRMAId() + "\", "
+                        + " \"IdImagem\": \"" + x.getImagemNotaId() + "\", "
+                        + " \"Imagem\": \"" + x.getImagemNota() + "\" }";
+
+                if(count>0){
+                    requestArray += "," + request;
+                }else {
+                    requestArray += request;
+                }
+                count +=1;
             }
-            request = "{"
-                    + " \"Id\": \"" + x.getId() + "\", "
-                    + " \"Titulo\": \"" + x.getTitulo() + "\", "
-                    + " \"Nota\": \"" + x.getNota() + "\", "
-                    + " \"RMAId\": \"" + x.getRMAId() + "\", "
-                    + " \"IdImagem\": \"" + x.getImagemNotaId() + "\", "
-                    + " \"Imagem\": \"" + x.getImagemNota() + "\" }";
+            requestArray += "]";//passar os novos da local para a online
 
-            JsonObject body = new JsonParser().parse(request).getAsJsonObject();
-            Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().CreateOrUpdateNotaRMA(body);
+            JsonArray body = new JsonParser().parse(requestArray).getAsJsonArray();
+            Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().CreateOrUpdateALL_NotasRMA(body);
 
             call.enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
+
+                    JsonObject responseObj = response.body().get("Result").getAsJsonObject();
+
+                    Log.d("Notas", "Chamada para a API GetRMAById realizada com sucesso.");
+
+
+                    if (responseObj.get("Success").getAsBoolean()) {
+
+                        }else {
+                            Toast.makeText(contextoprincipal, "Erro no update de notas modificadas", Toast.LENGTH_LONG).show();
+                        }
+
+                }
+
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) {
+                    Toast.makeText(contextoprincipal, "Erro no update de notas modificadas", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+        if (apagados.size()!=0){
+            String requestArray = "[";
+            int count=0;
+            for (NotaRMA x:apagados){
+                String request = String.valueOf(x.getId());
+                if(count>0){
+                    requestArray += "," + request;
+                }else {
+                    requestArray += request;
+                }
+                count +=1;
+            }
+            requestArray += "]";//passar os novos da local para a online
+
+            JsonArray body = new JsonParser().parse(requestArray).getAsJsonArray();
+            Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().DeleteALLNotaRMAByListRMAId(body);
+
+            call.enqueue(new Callback<JsonObject>(){
+
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     JsonObject responseObj = response.body().get("Result").getAsJsonObject();
                     if (responseObj.get("Success").getAsBoolean()) {
-                        Toast.makeText(contextoprincipal, "Nota alterada com sucesso", Toast.LENGTH_LONG).show();
 
-                        notaRMADao.deleteById(x.getId());
+
+                        if (response.body().has("ListaNotaRMAId")) {
+
+                            JsonArray NotasRMAId = response.body().get("ListaNotaRMAId").getAsJsonArray();
+
+
+                            for (int i = 0; i < NotasRMAId.size(); i++) {
+                                int idNota = NotasRMAId.get(i).getAsInt();
+
+                                notaRMADao.deleteById(idNota);
+
+                            }
+                        }
+                        Toast.makeText(contextoprincipal, "Notas apagadas com sucesso", Toast.LENGTH_LONG).show();
                     } else {
-                        Toast.makeText(contextoprincipal, "Erro ao alterar nota", Toast.LENGTH_LONG).show();
+                        Toast.makeText(contextoprincipal, "Erro ao apagar notas", Toast.LENGTH_LONG).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
-                    Toast.makeText(contextoprincipal, "Erro ao alterar nota", Toast.LENGTH_LONG).show();
+                    Toast.makeText(contextoprincipal, "Erro ao apagar notas", Toast.LENGTH_LONG).show();
                 }
             });
 
         }
+
         for (NotaRMA x:apagados){
 
             Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().DeleteNotaRMA(x.getId());

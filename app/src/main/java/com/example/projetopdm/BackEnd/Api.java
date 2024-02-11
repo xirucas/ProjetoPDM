@@ -46,6 +46,8 @@ public interface Api {
 
     @DELETE("DeleteNotaRMA")
     Call<JsonObject> DeleteNotaRMA(@Query("Id") int Id);
-    @POST("CreateALL_NotasRMA")
-    Call<JsonObject> CreateALL_NotasRMA(@Body JsonArray body);
+    @DELETE("DeleteALLNotaRMAByListRMAId")
+    Call<JsonObject> DeleteALLNotaRMAByListRMAId(@Body JsonArray body);
+    @POST("CreateOrUpdateALL_NotasRMA")
+    Call<JsonObject> CreateOrUpdateALL_NotasRMA(@Body JsonArray body);
 }

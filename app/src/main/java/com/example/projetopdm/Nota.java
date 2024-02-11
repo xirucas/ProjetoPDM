@@ -245,6 +245,7 @@ public class Nota extends AppCompatActivity {
     private void saveChanges() {
 
 
+
         // Check if both title and note are not empty
         if (titulo.getText().toString().isEmpty() || nota.getText().toString().isEmpty()) {
 
@@ -265,7 +266,7 @@ public class Nota extends AppCompatActivity {
                     Bitmap imagem = uriToBitmap(getApplicationContext(), image_uri);
                     String imagemString = bitmapToString(imagem);
                     notaRMA.setImagemNota(imagemString);
-                } else if (notaRMA.getImagemNota() != null || !notaRMA.getImagemNota().isEmpty()) {
+                } else if (notaRMA.getImagemNota() != null) {
                     Bitmap imagem = uriToBitmap(getApplicationContext(), uri);
                     String imagemString = bitmapToString(imagem);
                     notaRMA.setImagemNota(imagemString);
@@ -292,7 +293,7 @@ public class Nota extends AppCompatActivity {
                             " \"RMAId\": \"" + getIntent().getIntExtra("RMAId", 0) + "\", " +
                             " \"IdImagem\": \"" + 0 + "\", " +
                             " \"Imagem\": \"" + imagemString + "\" }";
-                }else if (notaRMA.getImagemNota() != null || !notaRMA.getImagemNota().isEmpty()) {
+                }else if (notaRMA.getImagemNota() != null) {
                     Bitmap imagem = uriToBitmap(getApplicationContext(), uri);
                     String imagemString = bitmapToString(imagem);
                     notaRMA.setImagemNota(imagemString);
