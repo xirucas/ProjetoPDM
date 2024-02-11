@@ -1,6 +1,7 @@
 package com.example.projetopdm;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.exifinterface.media.ExifInterface;
 import androidx.room.Room;
@@ -22,6 +23,7 @@ import android.os.CountDownTimer;
 import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -52,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -68,6 +71,7 @@ public class Notas extends AppCompatActivity {
     public static final int MEU_REQUEST_CODE = 1;
     ActivityNotasBinding binding;
     ActivityMainBinding bindingMain;
+    ConstraintLayout loading;
     int RMAId;
     RMA rma = new RMA();
     UpdateBD updateBD;
@@ -84,6 +88,8 @@ public class Notas extends AppCompatActivity {
     AppDatabase db;
     ArrayList<NotaRMA> notasDoRMAX = new ArrayList<>();
     boolean mudancas = false;
+    boolean atualizarLista=false;
+    RelativeLayout popup;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -92,6 +98,7 @@ public class Notas extends AppCompatActivity {
             // A variável está contida nos dados da Intent
             if (data.hasExtra("AtivarAPI")){
                 if (data.getBooleanExtra("AtivarAPI", false)){
+                    loading.setVisibility(View.VISIBLE);
                     rmaList.clear();
                     if(!isInternetAvailable()){
                         loadNotas();
@@ -112,6 +119,16 @@ public class Notas extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         bindingMain = ActivityMainBinding.inflate(getLayoutInflater());
+
+        loading = findViewById(R.id.loading);
+        loading.setVisibility(View.VISIBLE);
+        loading.setClickable(true);
+        loading.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true; // Consumir o toque aqui
+            }
+        });
 
         Button backButton = findViewById(R.id.back_button);
         RMAId = getIntent().getIntExtra("RMAId",0);
@@ -149,7 +166,15 @@ public class Notas extends AppCompatActivity {
         }
 
 
-        RelativeLayout popup = findViewById(R.id.popup);
+        popup = findViewById(R.id.popup);
+
+        popup.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true; // Consumir o toque aqui
+            }
+        });
+
         Button closePopup = findViewById(R.id.closePopup);
         novaNova_btn = (Button) findViewById(R.id.novaNota_btn);
         change_status_btn = (Button) findViewById(R.id.change_status_btn);
@@ -208,7 +233,7 @@ public class Notas extends AppCompatActivity {
                 String horaAtual = new SimpleDateFormat("HH:mm").format(new Date());
 
                 //verificar se está dentro do horário de trabalho
-                /*if (TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaEntrada.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaEntrada.split(":")[1]))) <= TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaAtual.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaAtual.split(":")[1]))) &&
+                if (TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaEntrada.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaEntrada.split(":")[1]))) <= TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaAtual.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaAtual.split(":")[1]))) &&
                         TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaSaida.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaSaida.split(":")[1]))) >= TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaAtual.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaAtual.split(":")[1])))) {
                     //verificar se está dentro do horário de pausa
                     if (TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaPausa.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaPausa.split(":")[1]))) <= TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaAtual.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaAtual.split(":")[1]))) &&
@@ -230,7 +255,7 @@ public class Notas extends AppCompatActivity {
                             return;
                         }
                     }
-                }*/
+                }
 
 
                 String dataAtual = new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date());
@@ -385,6 +410,7 @@ public class Notas extends AppCompatActivity {
                 change_status_btn.setText("RMA Concluido");
                 change_status_btn.setEnabled(false);
             }
+            loading.setVisibility(View.INVISIBLE);
 
         }
 
@@ -518,7 +544,9 @@ public class Notas extends AppCompatActivity {
 
                     listAdapter.notifyDataSetChanged();
 
+
                 }
+                loading.setVisibility(View.INVISIBLE);
             }
 
             @Override
@@ -554,12 +582,12 @@ public class Notas extends AppCompatActivity {
 
             listAdapter = new ListaAdapterRMADetails(Notas.this,notasDoRMAX , Notas.this);
             binding.notas.setAdapter(listAdapter);
-
+            loading.setVisibility(View.INVISIBLE);
         }else if (isInternetAvailable()){
 
             listAdapter = new ListaAdapterRMADetails(Notas.this, rmaList, Notas.this);
             binding.notas.setAdapter(listAdapter);
-
+            loading.setVisibility(View.INVISIBLE);
         }
 
 

@@ -5,6 +5,7 @@ import static com.example.projetopdm.LocalDataBase.FuncionarioSharedPreferences.
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.exifinterface.media.ExifInterface;
 import androidx.room.Room;
 
@@ -27,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -75,8 +77,11 @@ public class MainActivity extends AppCompatActivity {
     private boolean isConnectedPreviously = false;
 
     ArrayList<RMA> rmaList = new ArrayList<RMA>();
+    ArrayList<RMA> originalRmaList = new ArrayList<RMA>();
     ListAdapterRMA listAdapter;
     RMA rma;
+    Button allButton, novoButton, progressoButton, completoButton;
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -147,8 +152,128 @@ public class MainActivity extends AppCompatActivity {
 
         //justDoIT();
 
+        //filtrar por estados
 
+        allButton = findViewById(R.id.all_button);
+        novoButton = findViewById(R.id.novo_button);
+        progressoButton = findViewById(R.id.progresso_button);
+        completoButton = findViewById(R.id.completo_button);
+
+        allButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                filterListByEstado(0);
+                Context context = v.getContext();
+
+                allButton.setBackgroundResource(R.drawable.button_active);
+                allButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.main_blue));
+
+                novoButton.setBackgroundResource(R.drawable.button_deactivated);
+                novoButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.secondary_blue));
+
+                progressoButton.setBackgroundResource(R.drawable.button_deactivated);
+                progressoButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.secondary_blue));
+
+                completoButton.setBackgroundResource(R.drawable.button_deactivated);
+                completoButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.secondary_blue));
+            }
+        });
+
+        novoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                filterListByEstado(2);
+
+                Context context = v.getContext();
+
+                novoButton.setBackgroundResource(R.drawable.button_active);
+                novoButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.main_blue));
+
+                allButton.setBackgroundResource(R.drawable.button_deactivated);
+                allButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.secondary_blue));
+
+                progressoButton.setBackgroundResource(R.drawable.button_deactivated);
+                progressoButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.secondary_blue));
+
+                completoButton.setBackgroundResource(R.drawable.button_deactivated);
+                completoButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.secondary_blue));
+            }
+        });
+
+        progressoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                filterListByEstado(3);
+
+                Context context = v.getContext();
+
+                progressoButton.setBackgroundResource(R.drawable.button_active);
+                progressoButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.main_blue));
+
+                allButton.setBackgroundResource(R.drawable.button_deactivated);
+                allButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.secondary_blue));
+
+                novoButton.setBackgroundResource(R.drawable.button_deactivated);
+                novoButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.secondary_blue));
+
+                completoButton.setBackgroundResource(R.drawable.button_deactivated);
+                completoButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.secondary_blue));
+            }
+        });
+
+        completoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                filterListByEstado(1);
+
+                Context context = v.getContext();
+
+                completoButton.setBackgroundResource(R.drawable.button_active);
+                completoButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.main_blue));
+
+                novoButton.setBackgroundResource(R.drawable.button_deactivated);
+                novoButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.secondary_blue));
+
+                progressoButton.setBackgroundResource(R.drawable.button_deactivated);
+                progressoButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.secondary_blue));
+
+                allButton.setBackgroundResource(R.drawable.button_deactivated);
+                allButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.secondary_blue));
+            }
+        });
     }
+
+    private void filterListByEstado(int estadoId) {
+        // Create a new list to store filtered items
+
+
+        // Check if estadoId is 0 (representing "Todos")
+        if (estadoId == 0) {
+            // Show all states
+            showAllStates();
+            return;
+        }
+
+        // Loop through the original list and add items that match the selected filter
+        ArrayList<RMA> filteredData = new ArrayList<>();
+        for (RMA rma : originalRmaList) {
+            if (rma.getEstadoRMAId() == estadoId) {
+                filteredData.add(rma);
+            }
+        }
+        listAdapter.clear();
+        listAdapter.addAll(filteredData);
+        listAdapter.notifyDataSetChanged();
+    }
+
+    private void showAllStates() {
+        listAdapter.clear();
+        listAdapter.addAll(originalRmaList);
+        listAdapter.notifyDataSetChanged();
+    }
+
+
+
 
     private void justDoIT() {
         ArrayList<RMAEntity> rmasModificados = new ArrayList<>();
@@ -357,6 +482,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (!isInternetAvailable()){
             rmaList = convertRMAEntityListToRMAList(rmaDao.getAllRMAs());
+            for (RMA rma:rmaList){
+                originalRmaList.add(rma);
+            }
         }
 
         listAdapter = new ListAdapterRMA(MainActivity.this, rmaList, MainActivity.this);
@@ -422,6 +550,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (!isInternetAvailable()){
             rmaList = convertRMAEntityListToRMAList(rmaEntities);
+            for (RMA rma:rmaList){
+                originalRmaList.add(rma);
+            }
         }
 
         listAdapter = new ListAdapterRMA(MainActivity.this, rmaList, MainActivity.this);
@@ -472,6 +603,7 @@ public class MainActivity extends AppCompatActivity {
                             RMA x =  new RMA(rmaObj.get("Id").getAsInt(), rmaObj.get("RMA").getAsString(), rmaObj.get("DescricaoCliente").getAsString(), rmaObj.get("DataCriacao").getAsString(), dataAb, dataF, rmaObj.get("EstadoRMA").getAsString(), rmaObj.get("EstadoRMAId").getAsInt(), rmaObj.get("FuncionarioId").getAsInt(),horas);
                             rmaListEnt.add(rma);
                             rmaList.add(x);
+                            originalRmaList.add(x);
                         }
 
 

@@ -110,6 +110,7 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
                 confirm.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        bindingNotas.popup.setClickable(true);
                         if (!isInternetAvailable()){
                             NotaRMADao notaRMADao = bindingNotas.db.notaRMADao();
 

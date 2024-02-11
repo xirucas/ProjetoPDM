@@ -193,10 +193,13 @@ public class Nota extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (imageView.getDrawable() != null ) {
-                    if (image_uri != null){
+                    if (image_uri != null) {
                         imageViewPopup.setImageURI(image_uri);
+                        popup.setVisibility(View.VISIBLE);
+                    } else {
+                        imageViewPopup.setImageURI(Uri.parse(notaRMA.getImagemNota()));
+                        popup.setVisibility(View.VISIBLE);
                     }
-                    popup.setVisibility(View.VISIBLE);
                 } else {
                     Toast.makeText(getApplicationContext(), "Sem imagem para mostrar", Toast.LENGTH_LONG).show();
 
@@ -243,7 +246,13 @@ public class Nota extends AppCompatActivity {
     }
 
     private void saveChanges() {
+        titulo.setEnabled(false);
+        nota.setEnabled(false);
+        img_btn.setEnabled(false);
 
+        create_btn.setText("Editar Nota");
+        create_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.edit_icon, 0, 0, 0);
+        create_btn.setEnabled(false);
 
 
         // Check if both title and note are not empty
@@ -324,19 +333,20 @@ public class Nota extends AppCompatActivity {
                     JsonObject responseObj = response.body().get("Result").getAsJsonObject();
 
                     if (responseObj.get("Success").getAsBoolean()) {
+
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra("AtivarAPI", true);
+                        setResult(Activity.RESULT_OK, resultIntent);
                         if (getIntent().getIntExtra("NotaId", 0) != 0) {
                             Toast.makeText(getApplicationContext(), "Nota alterada com sucesso", Toast.LENGTH_LONG).show();
                         } else {
                             Toast.makeText(getApplicationContext(), "Nota criada com sucesso", Toast.LENGTH_LONG).show();
                         }
-
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra("AtivarAPI", true);
-                        setResult(Activity.RESULT_OK, resultIntent);
                         finish();
+
                     } else {
                         Toast.makeText(getApplicationContext(), "Erro ao criar/editar nota", Toast.LENGTH_LONG).show();
-
+                        create_btn.setEnabled(true);
                     }
                 }
 
@@ -376,6 +386,11 @@ public class Nota extends AppCompatActivity {
             Intent resultIntent = new Intent();
             resultIntent.putExtra("AtivarAPI", true);
             setResult(Activity.RESULT_OK, resultIntent);
+            if (getIntent().getIntExtra("NotaId", 0) != 0) {
+                Toast.makeText(getApplicationContext(), "Nota alterada com sucesso", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "Nota criada com sucesso", Toast.LENGTH_LONG).show();
+            }
             finish();
         }
     }

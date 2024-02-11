@@ -9,11 +9,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/card_round_corners"
-        android:backgroundTint="@color/main_blue"
+        android:backgroundTint="@color/secondary_blue"
         android:orientation="vertical"
-        android:paddingHorizontal="20dp"
-        android:paddingVertical="20dp"
+        android:paddingStart="20dp"
         android:paddingTop="20dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="25dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -46,7 +47,7 @@
                     android:fontFamily="@font/regular"
                     android:gravity="end"
                     android:text="Data"
-                    android:textColor="#B5C8FB"
+                    android:textColor="@color/text"
                     android:textSize="12sp" />
 
             </LinearLayout>
@@ -57,7 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:icon="@drawable/delete_icon"
-                app:iconSize="30dp"
+                app:iconSize="25dp"
                 app:iconTint="@color/black" />
 
 
