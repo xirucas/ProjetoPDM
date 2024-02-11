@@ -112,9 +112,16 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
                     public void onClick(View view) {
                         if (!isInternetAvailable()){
                             NotaRMADao notaRMADao = bindingNotas.db.notaRMADao();
+
                             NotaRMAEntity notaRMAEntity = notaRMA.toNotaRMAEntity();
-                            notaRMAEntity.setOffSync("apagado");
-                            notaRMADao.insert(notaRMAEntity);
+                            String helpOffSync = notaRMADao.getNotaById(notaRMA.getId()).getOffSync();
+                            if(!helpOffSync.equals("novo")){
+                                notaRMAEntity.setOffSync("apagado");
+                                notaRMADao.insert(notaRMAEntity);
+                            }else{
+                                notaRMAEntity.setOffSync("novoApagado");
+                                notaRMADao.insert(notaRMAEntity);
+                            }
                             if (bindingNotas.listAdapter.getPosition(notaRMA) != -1){
                                 bindingNotas.listAdapter.remove(notaRMA);
                                 popup.setVisibility(View.INVISIBLE);

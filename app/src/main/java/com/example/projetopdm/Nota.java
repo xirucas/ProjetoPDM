@@ -367,7 +367,9 @@ public class Nota extends AppCompatActivity {
             if (x.getId()==notaRMADao.getAllNotasRMA().size()-1){//ou seja id temporario
                 x.setOffSync("novo");
             }else {
-                x.setOffSync("modificado");
+                if (!x.getOffSync().equals("novo")) {
+                    x.setOffSync("modificado");
+                }
             }
             Log.i("Notas","teste 5 "+x.getNota()+" "+ x.getDataCriacao()+" "+x.getTitulo());
             notaRMADao.insert(x);

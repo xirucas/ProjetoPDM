@@ -29,10 +29,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 
 public class UpdateBD {
     NotaRMADao notaRMADao;
@@ -50,24 +52,20 @@ public class UpdateBD {
 
 
     public boolean mudancas(int RMAId) {
-        ArrayList<RMAEntity> rmasModificados = new ArrayList<>();
 
-        if(notaRMADao.getALLNotasByRMAId(RMAId)!=null){
-            for (NotaRMAEntity x:notaRMADao.getAllNotasRMA()) {
+        List<NotaRMAEntity> notas = notaRMADao.getALLNotasByRMAId(RMAId);
+
+        if(notas!=null){
+            for (NotaRMAEntity x:notas) {
                 if(x.getOffSync()!=null){
-                    if (x.getOffSync().equals("modificado")||x.getOffSync().equals("novo")||x.getOffSync().equals("apagado")){
-                        if(!rmasModificados.contains(rmaDao.getRMAById(x.getRMAId()))){
-                            rmasModificados.add(rmaDao.getRMAById(x.getRMAId()));
-                        }
+                    if (x.getOffSync().equals("modificado")||x.getOffSync().equals("novo")||x.getOffSync().equals("apagado") || x.getOffSync().equals("novoApagado")){
+                        return true;
                     }
                 }
 
             }
         }
 
-        if (rmasModificados.size()!=0){
-            return true;
-        }
         return false;
     }
 
@@ -78,7 +76,9 @@ public class UpdateBD {
         ArrayList<NotaRMA> modificados = new ArrayList<>();
         ArrayList<NotaRMA> apagados = new ArrayList<>();
 
-        for (NotaRMAEntity x : notaRMADao.getALLNotasByRMAId(RMAid)) {
+        List<NotaRMAEntity> notas = notaRMADao.getALLNotasByRMAId(RMAid);
+
+        for (NotaRMAEntity x : notas ) {
             if (x.getOffSync()!=null){
                 if (x.getOffSync().equals("novo")){
                     novos.add(x.toNotaRMA());
@@ -86,6 +86,8 @@ public class UpdateBD {
                     modificados.add(x.toNotaRMA());
                 } else if (x.getOffSync().equals("apagado")) {
                     apagados.add(x.toNotaRMA());
+                } else if(x.getOffSync().equals("novoApagado")){
+                    notaRMADao.deleteById(x.getId());
                 }
             }
         }

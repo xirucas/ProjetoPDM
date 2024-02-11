@@ -385,6 +385,7 @@ public class Notas extends AppCompatActivity {
                 change_status_btn.setText("RMA Concluido");
                 change_status_btn.setEnabled(false);
             }
+
         }
 
         if (isInternetAvailable()) {
@@ -409,6 +410,7 @@ public class Notas extends AppCompatActivity {
 
             }
         }
+
     }
 
     private void loadNotasAPI(){
@@ -514,9 +516,7 @@ public class Notas extends AppCompatActivity {
 
                     loadNotas();
 
-
-
-
+                    listAdapter.notifyDataSetChanged();
 
                 }
             }
@@ -541,7 +541,7 @@ public class Notas extends AppCompatActivity {
             for (NotaRMA x:convertNotaRMAEntityListToNotaRMAList(notaRMADao.getAllNotasRMA())) {
                 if (x.getRMAId()==RMAId){
                     if (notaRMADao.getNotaById(x.getId()).getOffSync() != null){
-                        if (!notaRMADao.getNotaById(x.getId()).getOffSync().equals("apagado")){
+                        if (!notaRMADao.getNotaById(x.getId()).getOffSync().equals("apagado") || !notaRMADao.getNotaRMAById(x.getId()).getOffSync().equals("novoApagado")){
                             Log.e("Notas","id do RMA da nota  "+ x.getRMAId());
                             notasDoRMAX.add(x);
                         }
@@ -561,8 +561,6 @@ public class Notas extends AppCompatActivity {
             binding.notas.setAdapter(listAdapter);
 
         }
-        listAdapter.notifyDataSetChanged();
-
 
 
     }
