@@ -140,7 +140,7 @@ public class Notas extends AppCompatActivity {
         TextView rmaTxtView = findViewById(R.id.ticketsTitle);
         TextView rmaDataTxtView = findViewById(R.id.datarma);
         TextView rmaDescricaoTxtView = findViewById(R.id.textView3);
-        TextView rmaHorasTrabalhadas = findViewById(R.id.tempoTrabalhado);
+        //TextView rmaHorasTrabalhadas = findViewById(R.id.change_status_btn);
         rmaTxtView.setText(rmaTxt);
         rmaDataTxtView.setText(rmaDataTxt);
         rmaDescricaoTxtView.setText(rmaDescricao);
@@ -151,7 +151,7 @@ public class Notas extends AppCompatActivity {
             String horasTrabalhadas = horas[0];
 
             //se for menos de uma hora
-            if (Integer.parseInt(horasTrabalhadas) == 0) {
+            /*if (Integer.parseInt(horasTrabalhadas) == 0) {
                 rmaHorasTrabalhadas.setText("Tempo de trabalho: " + minutos + "min");
             }else if (Integer.parseInt(horasTrabalhadas) >= 8) {
                 //se for mais de 8 horas conta como dia
@@ -160,9 +160,9 @@ public class Notas extends AppCompatActivity {
                 rmaHorasTrabalhadas.setText("Tempo de trabalho: " + dias + " dias " + horasRestantes + "h:" + minutos + "min");
             } else {
                 rmaHorasTrabalhadas.setText("Tempo de trabalho: " + horasTrabalhadas + "h:" + minutos + "min");
-            }
+            }*/
         }else {
-         rmaHorasTrabalhadas.setVisibility(View.INVISIBLE);
+         //rmaHorasTrabalhadas.setVisibility(View.INVISIBLE);
         }
 
 
@@ -531,11 +531,6 @@ public class Notas extends AppCompatActivity {
                             }
 
                             notaRMADao.insertAllNotas(rmaListEntity);
-
-
-
-
-
 
                         }
                     }
