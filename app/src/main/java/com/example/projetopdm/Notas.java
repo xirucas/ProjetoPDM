@@ -121,9 +121,6 @@ public class Notas extends AppCompatActivity {
     }
 
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -153,7 +150,7 @@ public class Notas extends AppCompatActivity {
         TextView rmaTxtView = findViewById(R.id.ticketsTitle);
         TextView rmaDataTxtView = findViewById(R.id.datarma);
         TextView rmaDescricaoTxtView = findViewById(R.id.textView3);
-        //TextView rmaHorasTrabalhadas = findViewById(R.id.change_status_btn);
+        TextView rmaHorasTrabalhadas = findViewById(R.id.completo);
         rmaTxtView.setText(rmaTxt);
         rmaDataTxtView.setText(rmaDataTxt);
         rmaDescricaoTxtView.setText(rmaDescricao);
@@ -164,18 +161,18 @@ public class Notas extends AppCompatActivity {
             String horasTrabalhadas = horas[0];
 
             //se for menos de uma hora
-            /*if (Integer.parseInt(horasTrabalhadas) == 0) {
-                rmaHorasTrabalhadas.setText("Tempo de trabalho: " + minutos + "min");
+            if (Integer.parseInt(horasTrabalhadas) == 0) {
+                rmaHorasTrabalhadas.setText("Concluído em: " + minutos + " min");
             }else if (Integer.parseInt(horasTrabalhadas) >= 8) {
                 //se for mais de 8 horas conta como dia
                 int dias = Integer.parseInt(horasTrabalhadas) / 8;
                 int horasRestantes = Integer.parseInt(horasTrabalhadas) % 8;
-                rmaHorasTrabalhadas.setText("Tempo de trabalho: " + dias + " dias " + horasRestantes + "h:" + minutos + "min");
+                rmaHorasTrabalhadas.setText("Concluído em: " + dias + " dias " + horasRestantes + "h:" + minutos + "min");
             } else {
-                rmaHorasTrabalhadas.setText("Tempo de trabalho: " + horasTrabalhadas + "h:" + minutos + "min");
-            }*/
+                rmaHorasTrabalhadas.setText("Concluído em: " + horasTrabalhadas + "h:" + minutos + "min");
+            }
         }else {
-         //rmaHorasTrabalhadas.setVisibility(View.INVISIBLE);
+         rmaHorasTrabalhadas.setVisibility(View.GONE);
         }
 
 
@@ -279,7 +276,7 @@ public class Notas extends AppCompatActivity {
 
 
 
-                String dataAtual = new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date());
+                String dataAtual = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(new Date());
 
                 if (isInternetAvailable()) {
                     change_status_btn.setEnabled(false);
@@ -305,7 +302,7 @@ public class Notas extends AppCompatActivity {
                         rmaX.setEstadoRMA("Completo");
                         rmaX.setDataFecho(dataAtual);
 
-                        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+                        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
                         try {
                             // Convertendo as strings para objetos Date
                             Date dataAbertura = format.parse(rmaX.getDataAbertura());
@@ -416,22 +413,25 @@ public class Notas extends AppCompatActivity {
             Log.e("Notas","sem net, tentar carregar local");
             loadNotas();
 
-            if (rmaX.getEstadoRMAId() == 2 || rmaX.getEstadoRMAId() == 3){
+            if (rmaX.getEstadoRMAId() == 2 || rmaX.getEstadoRMAId() == 3) {
                 novaNova_btn.setVisibility(View.VISIBLE);
                 change_status_btn.setVisibility(View.VISIBLE);
+
                 if (rmaX.getEstadoRMAId() == 2) {
                     change_status_btn.setText("Iniciar RMA");
-                    change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.main_blue));
+                    change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.main_blue));
                 } else if (rmaX.getEstadoRMAId() == 3) {
                     change_status_btn.setText("Concluir RMA");
-                    change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.completo));
+                    change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.completo));
                 }
             } else {
                 novaNova_btn.setEnabled(false);
                 novaNova_btn.setVisibility(View.INVISIBLE);
+
                 change_status_btn.setText("RMA Concluido");
                 change_status_btn.setEnabled(false);
             }
+
             loading.setVisibility(View.INVISIBLE);
 
         }

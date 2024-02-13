@@ -154,19 +154,28 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginBottom="10dp"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/change_status_btn"
             android:layout_width="match_parent"
-            android:paddingVertical="15dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:backgroundTint="@color/main_blue"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/button_concluido"
             android:fontFamily="@font/regular"
-            android:textColor="@color/black" />
+            android:paddingVertical="10dp"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/completo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="Concluído em "
+            android:textSize="16sp" />
 
     </LinearLayout>
 

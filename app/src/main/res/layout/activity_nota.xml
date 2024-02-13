@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".Nota">
 
         <ScrollView
@@ -60,7 +61,7 @@
                             style="?attr/materialIconButtonStyle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
+                            android:layout_marginStart="10dp"
                             android:layout_marginTop="20dp"
                             app:icon="@drawable/arrow_left_icon"
                             app:iconSize="30dp"

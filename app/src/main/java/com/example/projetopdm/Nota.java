@@ -180,7 +180,6 @@ public class Nota extends AppCompatActivity {
                 dataNota.setVisibility(View.GONE);
                 imageView.setVisibility(View.GONE);
 
-
                 create_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

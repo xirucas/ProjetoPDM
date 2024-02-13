@@ -82,9 +82,9 @@ public class Login extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 EditText pin = findViewById(R.id.pin);
-                if(x.getGUID()!=null){
-                    if (pin.getText().toString().equals(x.getPin())){
-                        Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                if (x.getGUID() != null) {
+                    if (pin.getText().toString().equals(x.getPin())) {
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         intent.putExtra("Id", x.getId());
                         intent.putExtra("Nome", x.getNome());
                         intent.putExtra("Email", x.getEmail());
@@ -98,27 +98,30 @@ public class Login extends AppCompatActivity {
                         intent.putExtra("Localizacao", x.getLocalizacao());
                         startActivity(intent);
                         Toast.makeText(getApplicationContext(), "Logado via local", Toast.LENGTH_LONG).show();
-                    }
-                    if (isInternetAvailable()){
-                        if(pin.getText().toString().equals(funcionario.getPin())){
+
+                    } else if (isInternetAvailable()) {
+
+                        if (pin.getText().toString().equals(funcionario.getPin())) {
                             chamarAPIparaMain();
-                        }
-                        else if (!pin.getText().toString().equals(funcionario.getPin())){
+                        } else {
                             Toast.makeText(Login.this, "Pin incorreto", Toast.LENGTH_SHORT).show();
                         }
-                    }else {
+
+                    } else {
                         Toast.makeText(Login.this, "Sem ligação à internet", Toast.LENGTH_SHORT).show();
                     }
-                }else if (isInternetAvailable()){
-                    if(pin.getText().toString().equals(funcionario.getPin())){
+
+                } else if (isInternetAvailable()) {
+
+                    if (pin.getText().toString().equals(funcionario.getPin())) {
                         chamarAPIparaMain();
-                    } else if (!pin.getText().toString().equals(funcionario.getPin())) {
+                    } else {
                         Toast.makeText(Login.this, "Pin incorreto", Toast.LENGTH_SHORT).show();
                     }
-                }else {
+
+                } else {
                     Toast.makeText(Login.this, "Sem ligação à internet", Toast.LENGTH_SHORT).show();
                 }
-
             }
         });
 
