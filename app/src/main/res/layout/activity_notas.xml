@@ -153,7 +153,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginHorizontal="20dp"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -162,8 +161,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginHorizontal="20dp"
             android:layout_marginBottom="10dp"
-            android:background="@drawable/button_concluido"
             android:fontFamily="@font/regular"
             android:paddingVertical="10dp"
             android:textColor="@color/black"
@@ -171,11 +170,15 @@
 
         <TextView
             android:id="@+id/completo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_concluido"
+            android:fontFamily="@font/bold"
+            android:paddingVertical="25dp"
             android:text="Concluído em "
-            android:textSize="16sp" />
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
 
     </LinearLayout>
 

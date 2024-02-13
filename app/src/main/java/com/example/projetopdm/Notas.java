@@ -162,14 +162,14 @@ public class Notas extends AppCompatActivity {
 
             //se for menos de uma hora
             if (Integer.parseInt(horasTrabalhadas) == 0) {
-                rmaHorasTrabalhadas.setText("Concluído em: " + minutos + " min");
+                rmaHorasTrabalhadas.setText("RMA concluído em: " + minutos + " min");
             }else if (Integer.parseInt(horasTrabalhadas) >= 8) {
                 //se for mais de 8 horas conta como dia
                 int dias = Integer.parseInt(horasTrabalhadas) / 8;
                 int horasRestantes = Integer.parseInt(horasTrabalhadas) % 8;
-                rmaHorasTrabalhadas.setText("Concluído em: " + dias + " dias " + horasRestantes + "h:" + minutos + "min");
+                rmaHorasTrabalhadas.setText("RMA concluído em: " + dias + " dias " + horasRestantes + "h:" + minutos + "min");
             } else {
-                rmaHorasTrabalhadas.setText("Concluído em: " + horasTrabalhadas + "h:" + minutos + "min");
+                rmaHorasTrabalhadas.setText("RMA concluído em: " + horasTrabalhadas + "h:" + minutos + "min");
             }
         }else {
          rmaHorasTrabalhadas.setVisibility(View.GONE);
@@ -427,9 +427,7 @@ public class Notas extends AppCompatActivity {
             } else {
                 novaNova_btn.setEnabled(false);
                 novaNova_btn.setVisibility(View.INVISIBLE);
-
-                change_status_btn.setText("RMA Concluido");
-                change_status_btn.setEnabled(false);
+                change_status_btn.setVisibility(View.GONE);
             }
 
             loading.setVisibility(View.INVISIBLE);
@@ -508,8 +506,8 @@ public class Notas extends AppCompatActivity {
                     } else {
                         novaNova_btn.setEnabled(false);
                         novaNova_btn.setVisibility(View.INVISIBLE);
-                        change_status_btn.setText("RMA Concluido");
-                        change_status_btn.setEnabled(false);
+
+                        change_status_btn.setVisibility(View.GONE);
                     }
 
 
