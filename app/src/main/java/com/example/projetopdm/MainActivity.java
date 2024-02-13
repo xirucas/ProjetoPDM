@@ -54,6 +54,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,6 +84,9 @@ public class MainActivity extends AppCompatActivity {
     ListAdapterRMA listAdapter;
     RMA rma;
     Button allButton, novoButton, progressoButton, completoButton;
+    int estadoId = 0;
+    int rmasCompletos = 0;
+    String horasTotais="";
 
 
     @Override
@@ -91,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
             if (data.hasExtra("AtivarAPI")){
                 if (data.getBooleanExtra("AtivarAPI", false)){
                     rmaList.clear();
+                    originalRmaList.clear();
                     initializeDatabaseAndViewModel();
                 }
             }
@@ -98,7 +105,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 
 
 
@@ -162,7 +173,8 @@ public class MainActivity extends AppCompatActivity {
         allButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                filterListByEstado(0);
+                estadoId = 0;
+                filterListByEstado(estadoId);
                 Context context = v.getContext();
 
                 allButton.setBackgroundResource(R.drawable.button_active);
@@ -182,7 +194,8 @@ public class MainActivity extends AppCompatActivity {
         novoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                filterListByEstado(2);
+                estadoId = 2;
+                filterListByEstado(estadoId);
 
                 Context context = v.getContext();
 
@@ -201,9 +214,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         progressoButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-                filterListByEstado(3);
+                estadoId = 3;
+                filterListByEstado(estadoId);
 
                 Context context = v.getContext();
 
@@ -224,7 +239,8 @@ public class MainActivity extends AppCompatActivity {
         completoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                filterListByEstado(1);
+                estadoId = 1;
+                filterListByEstado(estadoId);
 
                 Context context = v.getContext();
 
@@ -272,184 +288,6 @@ public class MainActivity extends AppCompatActivity {
         listAdapter.notifyDataSetChanged();
     }
 
-
-
-
-    private void justDoIT() {
-        ArrayList<RMAEntity> rmasModificados = new ArrayList<>();
-        if(notaRMADao.getAllNotasRMA()!=null){
-            for (NotaRMAEntity x:notaRMADao.getAllNotasRMA()) {
-                if(x.getOffSync()!=null){
-                    if (x.getOffSync().equals("modificado")||x.getOffSync().equals("novo")||x.getOffSync().equals("apagado")){
-                        if(!rmasModificados.contains(rmaDao.getRMAById(x.getRMAId()))){
-                            rmasModificados.add(rmaDao.getRMAById(x.getRMAId()));
-                        }
-                    }
-                }
-
-            }
-        }
-
-        if (rmasModificados.size()!=0){
-            updateBaseDeDados();
-        }
-
-    }
-
-    public void updateBaseDeDados(){
-        Log.e("Notas","aqui gayyyyyyyyy");
-
-        ArrayList<NotaRMA> novos= new ArrayList<>();
-        ArrayList<NotaRMA> modificados = new ArrayList<>();
-        ArrayList<NotaRMA> apagados = new ArrayList<>();
-
-        for (NotaRMAEntity x : notaRMADao.getAllNotasRMA()) {
-            if (x.getOffSync()!=null){
-                if (x.getOffSync().equals("novo")){
-                    novos.add(x.toNotaRMA());
-                } else if (x.getOffSync().equals("modificado")) {
-                    modificados.add(x.toNotaRMA());
-                } else if (x.getOffSync().equals("apagado")) {
-                    apagados.add(x.toNotaRMA());
-                }
-            }
-        }
-        for (NotaRMA x:novos) {
-            String request ="";
-            Log.e("Notas","teste img  "+x.getImagemNota());
-            if (x.getImagemNota() != null) {
-                Uri uri = Uri.parse(x.getImagemNota());
-                Bitmap imagem = uriToBitmap(getApplicationContext(), uri);
-                String imagemString = bitmapToString(imagem);
-                x.setImagemNota(imagemString);
-                request = "{"
-                        + " \"Id\": \"" + 0 + "\", "
-                        + " \"Titulo\": \"" + x.getTitulo() + "\", "
-                        + " \"Nota\": \"" + x.getNota() + "\", "
-                        + " \"RMAId\": \"" + x.getRMAId() + "\", "
-                        + " \"IdImagem\": \"" + 0 + "\", "
-                        + " \"Imagem\": \"" + imagemString + "\" }";
-            } else {
-                request = "{"
-                        + " \"Id\": \"" + 0 + "\", "
-                        + " \"Titulo\": \"" + x.getTitulo() + "\", "
-                        + " \"Nota\": \"" + x.getNota() + "\", "
-                        + " \"RMAId\": \"" + x.getRMAId() + "\", "
-                        + " \"IdImagem\": \"" + 0 + "\", "
-                        + " \"Imagem\": \"" + "" + "\" }";
-            }
-
-            JsonObject body = new JsonParser().parse(request).getAsJsonObject();
-            Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().CreateOrUpdateNotaRMA(body);
-
-            call.enqueue(new Callback<JsonObject>() {
-                @Override
-                public void onResponse(Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
-                    JsonObject responseObj = response.body().get("Result").getAsJsonObject();
-                    if (responseObj.get("Success").getAsBoolean()) {
-                        Toast.makeText(getApplicationContext(), "Nota criada com sucesso", Toast.LENGTH_LONG).show();
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra("AtivarAPI", true);
-                        setResult(Activity.RESULT_OK, resultIntent);
-
-                        notaRMADao.deleteById(x.getId());
-                        int id= response.body().get("NotaRMAId").getAsInt();
-                        x.setId(id);
-                        notaRMADao.insert(x.toNotaRMAEntity());
-
-
-
-
-                        //teste apagar depois
-
-
-
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Erro ao criar nota", Toast.LENGTH_LONG).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<JsonObject> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Erro ao criar nota", Toast.LENGTH_LONG).show();
-                }
-            });
-
-        }//passar os novos da local para a online
-        for (NotaRMA x:modificados){
-            String request ="";
-
-            if (x.getImagemNota() != null) {
-                Uri uri = Uri.parse(x.getImagemNota());
-                Bitmap imagem = uriToBitmap(getApplicationContext(), uri);
-                String imagemString = bitmapToString(imagem);
-                x.setImagemNota(imagemString);
-            }
-            request = "{"
-                    + " \"Id\": \"" + x.getId() + "\", "
-                    + " \"Titulo\": \"" + x.getTitulo() + "\", "
-                    + " \"Nota\": \"" + x.getNota() + "\", "
-                    + " \"RMAId\": \"" + x.getRMAId() + "\", "
-                    + " \"IdImagem\": \"" + x.getImagemNotaId() + "\", "
-                    + " \"Imagem\": \"" + x.getImagemNota() + "\" }";
-
-            JsonObject body = new JsonParser().parse(request).getAsJsonObject();
-            Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().CreateOrUpdateNotaRMA(body);
-
-            call.enqueue(new Callback<JsonObject>() {
-                @Override
-                public void onResponse(Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
-                    JsonObject responseObj = response.body().get("Result").getAsJsonObject();
-                    if (responseObj.get("Success").getAsBoolean()) {
-                        Toast.makeText(getApplicationContext(), "Nota alterada com sucesso", Toast.LENGTH_LONG).show();
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra("AtivarAPI", true);
-                        setResult(Activity.RESULT_OK, resultIntent);
-                        notaRMADao.deleteById(x.getId());
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Erro ao alterar nota", Toast.LENGTH_LONG).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<JsonObject> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Erro ao alterar nota", Toast.LENGTH_LONG).show();
-                }
-            });
-
-        }
-        for (NotaRMA x:apagados){
-
-            Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().DeleteNotaRMA(x.getId());
-
-            call.enqueue(new Callback<JsonObject>() {
-                @Override
-                public void onResponse(Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
-                    JsonObject responseObj = response.body().get("Result").getAsJsonObject();
-                    if (responseObj.get("Success").getAsBoolean()) {
-                        Toast.makeText(getApplicationContext(), "Nota apagada com sucesso", Toast.LENGTH_LONG).show();
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra("AtivarAPI", true);
-                        setResult(Activity.RESULT_OK, resultIntent);
-                        notaRMADao.deleteById(x.getId());
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Erro ao apagar nota", Toast.LENGTH_LONG).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<JsonObject> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Erro ao apagar nota", Toast.LENGTH_LONG).show();
-                }
-            });
-
-        }
-
-    }
-
-
-
     private void initializeFuncionarioFromIntent() {
         Funcionario x = getFuncionarioData(this);
 
@@ -482,8 +320,16 @@ public class MainActivity extends AppCompatActivity {
 
         if (!isInternetAvailable()){
             rmaList = convertRMAEntityListToRMAList(rmaDao.getAllRMAs());
+            rmasCompletos = rmaDao.getRMAsCompletosByFuncionarioId(funcionario.getId());
+            List<String> horas = new ArrayList<>();
             for (RMA rma:rmaList){
                 originalRmaList.add(rma);
+                if(!rma.getHorasTrabalhadas().equals("null")){
+                    horas.add(rma.getHorasTrabalhadas());
+                }
+            }
+            if (!horas.isEmpty()){
+                horasTotais = somaHoras(horas);
             }
         }
 
@@ -507,6 +353,8 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("ImagemFuncionario", funcionario.getImagemFuncionario());
             intent.putExtra("EstadoFuncionario", funcionario.getEstadoFuncionario());
             intent.putExtra("EstadoFuncionarioId", funcionario.getEstadoFuncionarioId());
+            intent.putExtra("RMACompletos", rmasCompletos);
+            intent.putExtra("HorasTotais", horasTotais);
             startActivity(intent);
         });
     }
@@ -576,6 +424,7 @@ public class MainActivity extends AppCompatActivity {
                     JsonObject responseObject = response.body();
 
                     if (responseObject.has("RMA")) {
+                        List<String> horasTotal = new ArrayList<>();
                         JsonArray rmaListObj = response.body().get("RMA").getAsJsonArray();
                         List<RMAEntity> rmaListEnt = new ArrayList<>();
 
@@ -596,6 +445,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                             if (rmaObj.get("HorasTrabalhadas") != null){
                                 horas = (rmaObj.get("HorasTrabalhadas").getAsString());
+                                horasTotal.add(horas);
                             } else {
                                 horas = "null";
                             }
@@ -606,9 +456,15 @@ public class MainActivity extends AppCompatActivity {
                             originalRmaList.add(x);
                         }
 
+                        if (!horasTotal.isEmpty()){
+                             horasTotais = somaHoras(horasTotal);
+                        }
 
                         rmaDao.insertAll(rmaListEnt);
                         SincronizarRMAsTask();
+                    }
+                    if (response.body().get("RMACompletos").getAsInt()!=0){
+                        rmasCompletos = response.body().get("RMACompletos").getAsInt();
                     }
 
                 }
@@ -708,5 +564,43 @@ public class MainActivity extends AppCompatActivity {
         return encodedImage;
     }
 
+    public static String somaHoras(List<String> horas) {
+        // Inicializa a soma como zero
+        LocalTime sum = LocalTime.of(0, 0);
 
+        // Itera sobre a lista de horários e soma
+        for (String h : horas) {
+            LocalTime localTime = parseFlexibleTimeFormat(h);
+            if (localTime != null) {
+                sum = sum.plusHours(localTime.getHour()).plusMinutes(localTime.getMinute());
+            }
+        }
+
+        // Formata a soma para saída
+        return formatTimeBasedOnPattern(sum);
+    }
+
+    public static LocalTime parseFlexibleTimeFormat(String timeString) {
+        // Define múltiplos padrões para tentar o parse
+        String[] patterns = {"H:m", "HH:mm", "H:mm", "HH:m"};
+
+        for (String pattern : patterns) {
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+                return LocalTime.parse(timeString, formatter);
+            } catch (DateTimeParseException e) {
+                // Se o parse falhar, tente o próximo padrão
+            }
+        }
+        // Retorna null se nenhum padrão for bem-sucedido
+        return null;
+    }
+    public static String formatTimeBasedOnPattern(LocalTime time) {
+        boolean hourNeedsPadding = time.getHour() < 10;
+        boolean minuteNeedsPadding = time.getMinute() < 10;
+
+        String pattern = (hourNeedsPadding ? "HH" : "H") + ":" + (minuteNeedsPadding ? "mm" : "m");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        return time.format(formatter);
+    }
 }

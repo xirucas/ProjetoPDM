@@ -82,7 +82,11 @@ public class Nota extends AppCompatActivity {
     Uri uri;
 
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -17,6 +17,7 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +41,12 @@ public class Perfil extends AppCompatActivity {
     Funcionario funcionario;
     Button encerrar_btn ;
     Button backButton;
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +57,11 @@ public class Perfil extends AppCompatActivity {
 
         encerrar_btn = (Button) findViewById(R.id.encerrar_btn);
         backButton = (Button) findViewById(R.id.back_button);
+        LinearLayout layoutRMA = findViewById(R.id.layoutRMA);
+        TextView textRmasConcluidos = findViewById(R.id.rmasConcluidos);
+        TextView textHorasConcluidos = findViewById(R.id.horasConcluidos);
+
+        layoutRMA.setVisibility(View.INVISIBLE);
 
         int Id = getIntent().getIntExtra("Id", 0);
         String nome = getIntent().getStringExtra("Nome");
@@ -60,6 +72,29 @@ public class Perfil extends AppCompatActivity {
         String imagemFuncionario = getIntent().getStringExtra("ImagemFuncionario");
         String estadoFuncionario = getIntent().getStringExtra("EstadoFuncionario");
         int estadoFuncionarioId = getIntent().getIntExtra("EstadoFuncionarioId", 0); //1 é online
+        int rmaCompletos = getIntent().getIntExtra("RMACompletos", 0);
+        String HorasTotais = getIntent().getStringExtra("HorasTotais");
+
+        if (!HorasTotais.equals("")) {
+            //separar em horas e minutos
+            String[] horas = HorasTotais.split(":");
+            String minutos = horas[1];
+            String horasTrabalhadas = horas[0];
+
+            //se for menos de uma hora
+            if (Integer.parseInt(horasTrabalhadas) == 0) {
+                textHorasConcluidos.setText(minutos + "min");
+            }else if (Integer.parseInt(horasTrabalhadas) >= 8) {
+                //se for mais de 8 horas conta como dia
+                int dias = Integer.parseInt(horasTrabalhadas) / 8;
+                int horasRestantes = Integer.parseInt(horasTrabalhadas) % 8;
+                textHorasConcluidos.setText(dias + " dias " + horasRestantes + "h:" + minutos + "min");
+            } else {
+                textHorasConcluidos.setText(horasTrabalhadas + "h:" + minutos + "min");
+            }
+            textRmasConcluidos.setText(String.valueOf(rmaCompletos));
+            layoutRMA.setVisibility(View.VISIBLE);
+        }
 
         funcionario = new Funcionario(Id, GUID, nome, email, contacto, pin, imagemFuncionario, estadoFuncionarioId, estadoFuncionario);
 

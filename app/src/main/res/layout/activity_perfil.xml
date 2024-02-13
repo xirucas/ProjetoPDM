@@ -76,6 +76,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView2">
 
         <LinearLayout
+            android:id="@+id/layoutRMA"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -92,6 +93,7 @@
                     android:text="Total RMAs Concluídos" />
 
                 <TextView
+                    android:id="@+id/rmasConcluidos"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -112,6 +114,7 @@
                     android:text="Horas Concluídos" />
 
                 <TextView
+                    android:id="@+id/horasConcluidos"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"

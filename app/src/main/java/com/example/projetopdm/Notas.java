@@ -112,6 +112,16 @@ public class Notas extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("AtivarAPI", true);
+        setResult(Activity.RESULT_OK, resultIntent);
+        finish();
+    }
+
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityNotasBinding.inflate(getLayoutInflater());
@@ -208,6 +218,9 @@ public class Notas extends AppCompatActivity {
 
         backButton.setOnClickListener(new View.OnClickListener() {
             public void onClick (View v) {
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("AtivarAPI", true);
+                setResult(Activity.RESULT_OK, resultIntent);
                 finish();
             }
         });
@@ -358,12 +371,13 @@ public class Notas extends AppCompatActivity {
                                 Intent resultIntent = new Intent();
                                 resultIntent.putExtra("AtivarAPI", true);
                                 setResult(Activity.RESULT_OK, resultIntent);
-                                change_status_btn.setText("Concluir RMA");
-                                change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.completo));
+
                                 if (rmaX.getEstadoRMAId() == 1) {
                                     //encerrar esta janela e voltar para a main
                                     finish();
                                 }
+                                change_status_btn.setText("Concluir RMA");
+                                change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.completo));
 
                                 Toast.makeText(getApplicationContext(), "Estado do RMA alterado para: " + rmaX.getEstadoRMA(), Toast.LENGTH_LONG).show();
                             } else {

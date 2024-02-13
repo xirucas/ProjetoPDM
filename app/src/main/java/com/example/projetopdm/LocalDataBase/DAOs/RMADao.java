@@ -26,6 +26,8 @@ public interface RMADao {
     @Query("SELECT * FROM rmas WHERE Id = :rmaId")
     RMAEntity getRMAById(int rmaId);
 
+    //contagem de rmas ja completos por funcionario
+    @Query("SELECT COUNT(*) FROM rmas WHERE funcionarioId = :funcionarioId AND EstadoRMAId = 3")
+    int getRMAsCompletosByFuncionarioId(int funcionarioId);
 
-    // Métodos adicionais conforme necessário
 }
