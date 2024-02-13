@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
     public static final int MEU_REQUEST_CODE = 1;
     ActivityMainBinding binding;
     Funcionario funcionario;
-
     SearchView searchView;
     RMADao rmaDao;
     NotaRMADao notaRMADao;

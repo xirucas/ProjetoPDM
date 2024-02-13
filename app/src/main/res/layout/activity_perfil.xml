@@ -9,141 +9,24 @@
 
     <Button
         android:id="@+id/back_button"
+        style="?attr/materialIconButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:backgroundTint="@color/transparent"
-        android:text="@string/empty"
         app:icon="@drawable/arrow_left_icon"
         app:iconSize="30dp"
         app:iconTint="@color/black"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></Button>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/user"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="32dp"
-        app:cardBackgroundColor="@color/transparent"
-        app:cardCornerRadius="250dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2">
-
-        <ImageView
-            android:id="@+id/perfil_btn2"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/user" />
-
-    </androidx.cardview.widget.CardView>
-
-    <Button
-        android:id="@+id/encerrar_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
-        android:clickable="true"
-        android:fontFamily="@font/bold"
-        android:paddingVertical="10dp"
-        android:text="Encerrar"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:icon="@drawable/log_out_icon"
-        app:iconGravity="textStart"
-        app:iconSize="25dp"
-        app:iconTint="@color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-
-    <FrameLayout
-        android:id="@+id/frameLayout"
-        android:layout_width="match_parent"
-        android:layout_height="227dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="80dp"
-        android:layout_marginEnd="20dp"
-        android:background="@drawable/card_round_corners"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2">
-
-        <LinearLayout
-            android:id="@+id/layoutRMA"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Total RMAs Concluídos" />
-
-                <TextView
-                    android:id="@+id/rmasConcluidos"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="100" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_gravity="end"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Horas Concluídos" />
-
-                <TextView
-                    android:id="@+id/horasConcluidos"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="8h" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-
-
-    </FrameLayout>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/name"
+        android:id="@+id/perfil"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/medium"
-        android:text="nome funcionário"
-        android:textColor="@color/black"
-        android:textSize="22sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/back_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="15dp"
         android:fontFamily="@font/bold"
         android:text="@string/editar_perfil"
         android:textColor="@color/black"
@@ -153,79 +36,295 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/back_button" />
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/user"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="32dp"
+        android:layout_centerHorizontal="true"
+        app:cardBackgroundColor="@color/transparent"
+        app:cardCornerRadius="250dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/perfil">
+
+        <ImageView
+            android:id="@+id/perfil_btn2"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/user" />
+
+    </androidx.cardview.widget.CardView>
+
+    <RelativeLayout
+        android:id="@+id/informacoes"
+        android:layout_width="match_parent"
+        android:layout_height="210dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="92dp"
+        android:background="@drawable/card_round_corners"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/perfil" />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/medium"
+        android:text="Nome Funcionário"
+        android:textColor="@color/black"
+        android:textSize="25sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/user" />
+
+    <LinearLayout
+        android:id="@+id/layoutRMA"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="24dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/name"
+        tools:layout_editor_absoluteX="15dp">
+
+        <LinearLayout
+            android:id="@+id/horas_totais"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/bold"
+                android:text="Horas Totais"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/horasConcluidos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="8h"
+                android:textAlignment="center"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="5dp"
+            android:background="#7194A8" />
+
+        <LinearLayout
+            android:id="@+id/total_rmas"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/bold"
+                android:paddingHorizontal="5dp"
+                android:text="@string/total_rmas_concluidos"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/rmasConcluidos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="100"
+                android:textAlignment="center"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/email_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/informacoes"
+        app:srcCompat="@drawable/mail_icon"
+        app:tint="@color/black" />
+
     <TextView
         android:id="@+id/email_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="5dp"
         android:fontFamily="@font/regular"
         android:text="Email"
-        android:textColor="@color/text"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/email_icon"
+        app:layout_constraintStart_toEndOf="@+id/email_icon"
+        app:layout_constraintTop_toTopOf="@+id/email_icon" />
 
     <TextView
         android:id="@+id/email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="2dp"
         android:fontFamily="@font/regular"
         android:text="email"
-        android:textColor="@color/black"
-        android:textSize="16sp"
+        android:textColor="@color/text"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/email_title" />
 
-    <TextView
-        android:id="@+id/contacto_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/regular"
-        android:text="Contacto"
-        android:textColor="@color/text"
-        android:textSize="16sp"
+    <ImageView
+        android:id="@+id/phone_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/email" />
+        app:layout_constraintTop_toBottomOf="@+id/email"
+        app:srcCompat="@drawable/phone_icon"
+        app:tint="@color/black" />
 
     <TextView
-        android:id="@+id/contacto"
+        android:id="@+id/phone_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="5dp"
+        android:fontFamily="@font/regular"
+        android:text="Contacto"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/phone_icon"
+        app:layout_constraintStart_toEndOf="@+id/phone_icon"
+        app:layout_constraintTop_toTopOf="@+id/phone_icon" />
+
+    <TextView
+        android:id="@+id/phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="2dp"
         android:fontFamily="@font/regular"
         android:text="contacto"
-        android:textColor="@color/black"
-        android:textSize="16sp"
+        android:textColor="@color/text"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/contacto_title" />
+        app:layout_constraintTop_toBottomOf="@+id/phone_title" />
+
+    <ImageView
+        android:id="@+id/departmento_icon"
+        android:layout_width="20dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/phone"
+        app:srcCompat="@drawable/department_icon"
+        app:tint="@color/black" />
 
     <TextView
         android:id="@+id/departamento_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="5dp"
         android:fontFamily="@font/regular"
         android:text="Departamento"
-        android:textColor="@color/text"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/contacto" />
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/departmento_icon"
+        app:layout_constraintStart_toEndOf="@+id/departmento_icon"
+        app:layout_constraintTop_toTopOf="@+id/departmento_icon" />
 
     <TextView
         android:id="@+id/departamento"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="2dp"
         android:fontFamily="@font/regular"
-        android:text="departamento"
-        android:textColor="@color/black"
-        android:textSize="16sp"
+        android:text="dept"
+        android:textColor="@color/text"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/departamento_title" />
 
+    <ImageView
+        android:id="@+id/location_icon"
+        android:layout_width="20dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/departamento"
+        app:srcCompat="@drawable/location_icon"
+        app:tint="@color/black" />
+
+    <TextView
+        android:id="@+id/location_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:fontFamily="@font/regular"
+        android:text="Localização"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/location_icon"
+        app:layout_constraintStart_toEndOf="@+id/location_icon"
+        app:layout_constraintTop_toTopOf="@+id/location_icon" />
+
+    <TextView
+        android:id="@+id/location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="2dp"
+        android:fontFamily="@font/regular"
+        android:text="Viseu, Portugal"
+        android:textColor="@color/text"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/location_title" />
+
+    <Button
+        android:id="@+id/encerrar_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginBottom="20dp"
+        android:clickable="true"
+        android:fontFamily="@font/bold"
+        android:paddingVertical="10dp"
+        android:text="@string/encerrar"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:icon="@drawable/log_out_icon"
+        app:iconGravity="textStart"
+        app:iconSize="25dp"
+        app:iconTint="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

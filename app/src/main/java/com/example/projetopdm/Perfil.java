@@ -105,9 +105,9 @@ public class Perfil extends AppCompatActivity {
         ImageView img = findViewById(R.id.perfil_btn2);
         TextView Nome = findViewById(R.id.name);
         TextView emailFuncionario = findViewById(R.id.email);
-        TextView textContacto = findViewById(R.id.contacto);
+        TextView textContacto = findViewById(R.id.phone);
         TextView textDepartamento= findViewById(R.id.departamento);
-        //TextView textLocalizacao = findViewById(R.id.localizacao);
+        //TextView textLocalizacao = findViewById(R.id.location);
 
 
         Nome.setText(nome);
@@ -153,17 +153,17 @@ public class Perfil extends AppCompatActivity {
                         public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                             JsonObject responseObj = response.body().get("Result").getAsJsonObject();
                             if (responseObj.get("Success").getAsBoolean()) {
-                                Toast.makeText(getApplicationContext(), "Funcionario encerrado", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "Sessão encerrada", Toast.LENGTH_LONG).show();
                                 Intent intent = new Intent(getApplicationContext(), Splash.class);
                                 startActivity(intent);
                             } else {
-                                Toast.makeText(getApplicationContext(), "Erro ao encerrar funcionario", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "Erro ao encerrar sessão", Toast.LENGTH_LONG).show();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<JsonObject> call, Throwable t) {
-                            Toast.makeText(getApplicationContext(), "Erro ao encerrar funcionario", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Erro ao encerrar sessão", Toast.LENGTH_LONG).show();
                         }
                     });
 
