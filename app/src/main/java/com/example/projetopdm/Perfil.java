@@ -3,6 +3,7 @@ package com.example.projetopdm;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -44,7 +45,9 @@ public class Perfil extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("AtivarAPI", true);
+        setResult(Activity.RESULT_OK, resultIntent);
         finish();
     }
     @Override
@@ -107,7 +110,7 @@ public class Perfil extends AppCompatActivity {
         TextView emailFuncionario = findViewById(R.id.email);
         TextView textContacto = findViewById(R.id.phone);
         TextView textDepartamento= findViewById(R.id.departamento);
-        //TextView textLocalizacao = findViewById(R.id.location);
+        TextView textLocalizacao = findViewById(R.id.localizacao);
 
 
         Nome.setText(nome);
@@ -116,6 +119,7 @@ public class Perfil extends AppCompatActivity {
         emailFuncionario.setText(email);
         textContacto.setText(contacto);
         textDepartamento.setText(Departamento);
+        textLocalizacao.setText(Localizacao);
 
         //estadoFuncionarioId=0;
 

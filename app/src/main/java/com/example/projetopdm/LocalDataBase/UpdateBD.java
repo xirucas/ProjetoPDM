@@ -36,11 +36,18 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
+
+
 public class UpdateBD {
     NotaRMADao notaRMADao;
     RMADao rmaDao;
     Context contextoprincipal;
     AppDatabase db;
+    public Boolean canReturn=false;
+
+    public interface UpdateListener {
+        void onUpdateComplete();
+    }
 
     public UpdateBD(Context x){
         this.contextoprincipal=x;
@@ -69,8 +76,9 @@ public class UpdateBD {
         return false;
     }
 
-    public void updateBaseDeDados(int RMAid){
+    public void updateBaseDeDados(int RMAid, UpdateListener listener){
         Log.e("Notas","aqui gayyyyyyyyy");
+
 
         ArrayList<NotaRMA> novos= new ArrayList<>();
         ArrayList<NotaRMA> modificados = new ArrayList<>();
@@ -166,6 +174,9 @@ public class UpdateBD {
                     }else {
                         Toast.makeText(contextoprincipal, "Erro no update de notas novas", Toast.LENGTH_LONG).show();
                     }
+                    if (modificados.isEmpty() && apagados.isEmpty()){
+                        listener.onUpdateComplete();
+                    }
                 }
 
                 @Override
@@ -221,7 +232,9 @@ public class UpdateBD {
                         }else {
                             Toast.makeText(contextoprincipal, "Erro no update de notas modificadas", Toast.LENGTH_LONG).show();
                         }
-
+                    if (apagados.isEmpty()){
+                        listener.onUpdateComplete();
+                    }
                 }
 
                 @Override
@@ -272,36 +285,12 @@ public class UpdateBD {
                     } else {
                         Toast.makeText(contextoprincipal, "Erro ao apagar notas", Toast.LENGTH_LONG).show();
                     }
+                    listener.onUpdateComplete();
                 }
 
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
                     Toast.makeText(contextoprincipal, "Erro ao apagar notas", Toast.LENGTH_LONG).show();
-                }
-            });
-
-        }
-
-        for (NotaRMA x:apagados){
-
-            Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().DeleteNotaRMA(x.getId());
-
-            call.enqueue(new Callback<JsonObject>() {
-                @Override
-                public void onResponse(Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
-                    JsonObject responseObj = response.body().get("Result").getAsJsonObject();
-                    if (responseObj.get("Success").getAsBoolean()) {
-                        Toast.makeText(contextoprincipal, "Nota apagada com sucesso", Toast.LENGTH_LONG).show();
-
-                        notaRMADao.deleteById(x.getId());
-                    } else {
-                        Toast.makeText(contextoprincipal, "Erro ao apagar nota", Toast.LENGTH_LONG).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<JsonObject> call, Throwable t) {
-                    Toast.makeText(contextoprincipal, "Erro ao apagar nota", Toast.LENGTH_LONG).show();
                 }
             });
 

@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
@@ -113,12 +114,14 @@ public class Notas extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         Intent resultIntent = new Intent();
         resultIntent.putExtra("AtivarAPI", true);
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
     }
+
+
+
 
 
     @Override
@@ -212,12 +215,14 @@ public class Notas extends AppCompatActivity {
         closePopup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                closePopup.setEnabled(false);
                 popup.setVisibility(View.INVISIBLE);
             }
         });
 
         backButton.setOnClickListener(new View.OnClickListener() {
             public void onClick (View v) {
+                backButton.setEnabled(false);
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("AtivarAPI", true);
                 setResult(Activity.RESULT_OK, resultIntent);
@@ -228,6 +233,7 @@ public class Notas extends AppCompatActivity {
         novaNova_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                novaNova_btn.setEnabled(false);
                 Intent intent = new Intent(getApplicationContext(), Nota.class);
                 intent.putExtra("RMAId", RMAId);
                 intent.putExtra("estadoRMA", rma.getEstadoRMAId());
@@ -239,6 +245,7 @@ public class Notas extends AppCompatActivity {
         change_status_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 String horaEntrada = "09:00";
                 String horaSaida = "18:00";
                 String horaPausa = "13:00";
@@ -246,7 +253,7 @@ public class Notas extends AppCompatActivity {
                 String horaAtual = new SimpleDateFormat("HH:mm").format(new Date());
 
                 //verificar se está dentro do horário de trabalho
-                if (TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaEntrada.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaEntrada.split(":")[1]))) <= TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaAtual.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaAtual.split(":")[1]))) &&
+                /*if (TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaEntrada.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaEntrada.split(":")[1]))) <= TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaAtual.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaAtual.split(":")[1]))) &&
                         TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaSaida.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaSaida.split(":")[1]))) >= TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaAtual.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaAtual.split(":")[1])))) {
                     //verificar se está dentro do horário de pausa
                     if (TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaPausa.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaPausa.split(":")[1]))) <= TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaAtual.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaAtual.split(":")[1]))) &&
@@ -268,13 +275,14 @@ public class Notas extends AppCompatActivity {
                             return;
                         }
                     }
-                }
+                }*/
+
 
 
                 String dataAtual = new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date());
 
                 if (isInternetAvailable()) {
-
+                    change_status_btn.setEnabled(false);
                     String request = "";
                     if (rmaX.getEstadoRMAId() == 2) { //1= Completo 2 = Novo 3= Em progresso
                         rmaX.setEstadoRMAId(3);
@@ -378,11 +386,11 @@ public class Notas extends AppCompatActivity {
                                 }
                                 change_status_btn.setText("Concluir RMA");
                                 change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.completo));
-
+                                change_status_btn.setEnabled(true);
                                 Toast.makeText(getApplicationContext(), "Estado do RMA alterado para: " + rmaX.getEstadoRMA(), Toast.LENGTH_LONG).show();
                             } else {
                                 Toast.makeText(getApplicationContext(), "Erro ao alterar estado do RMA", Toast.LENGTH_LONG).show();
-
+                                change_status_btn.setEnabled(true);
                             }
 
                         }
@@ -390,7 +398,7 @@ public class Notas extends AppCompatActivity {
                         @Override
                         public void onFailure(Call<JsonObject> call, Throwable t) {
                             Toast.makeText(getApplicationContext(), "Erro ao alterar estado do RMA", Toast.LENGTH_LONG).show();
-
+                            change_status_btn.setEnabled(true);
                         }
                     });
 
@@ -433,7 +441,7 @@ public class Notas extends AppCompatActivity {
               loadNotasAPI();
             }
             if (updateBD.mudancas(rmaX.getId())){
-               updateBD.updateBaseDeDados(rmaX.getId());
+
                 /*new CountDownTimer(3000, 1000) { // 30000ms = 30s total, 1000ms = 1s intervalo
 
                     public void onTick(long millisUntilFinished) {
@@ -445,7 +453,15 @@ public class Notas extends AppCompatActivity {
                     }
                 }.start();
                 */
-              loadNotasAPI();
+
+                updateBD.updateBaseDeDados(rmaX.getId(), new UpdateBD.UpdateListener() {
+                    @Override
+                    public void onUpdateComplete() {
+                        loadNotasAPI();
+                    }
+                });
+
+
 
 
             }

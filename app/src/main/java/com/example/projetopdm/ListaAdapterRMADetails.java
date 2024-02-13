@@ -110,6 +110,7 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
                 confirm.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        confirm.setEnabled(false);
                         bindingNotas.popup.setClickable(true);
                         if (!isInternetAvailable()){
                             NotaRMADao notaRMADao = bindingNotas.db.notaRMADao();
@@ -129,6 +130,7 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
                                 bindingNotas.listAdapter.notifyDataSetChanged();
                                 Toast.makeText(bindingNotas, "Nota eliminada com sucesso", Toast.LENGTH_SHORT).show();
                             }
+                            confirm.setEnabled(true);
                         }
                         if (isInternetAvailable()){
                             Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().DeleteNotaRMA(notaRMA.getId());
@@ -148,11 +150,12 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
                                     }else {
                                         Toast.makeText(bindingNotas, "Erro ao eliminar nota", Toast.LENGTH_SHORT).show();
                                     }
+                                    confirm.setEnabled(true);
                                 }
-
                                 @Override
                                 public void onFailure(Call<JsonObject> call, Throwable t) {
                                     Toast.makeText(bindingNotas, "Erro ao eliminar nota", Toast.LENGTH_SHORT).show();
+                                    confirm.setEnabled(true);
                                 }
                             });
 

@@ -69,6 +69,7 @@ public class ListAdapterRMA extends ArrayAdapter<RMA> {
             RMA_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    RMA_btn.setEnabled(false);
                     Intent intent = new Intent(binding.getApplicationContext(), Notas.class);
                     intent.putExtra("RMAId",rma.getId());
                     intent.putExtra("RMA",rma.getRMA());
