@@ -19,6 +19,8 @@ public class FuncionarioSharedPreferences {
         editor.putString("imagemFuncionario", funcionario.getImagemFuncionario());
         editor.putInt("estadoFuncionarioId", funcionario.getEstadoFuncionarioId());
         editor.putString("estadoFuncionario", funcionario.getEstadoFuncionario());
+        editor.putString("departamento", funcionario.getDepartamento());
+        editor.putString("localizacao", funcionario.getLocalizacao());
 
         editor.apply();
     }
@@ -36,6 +38,8 @@ public class FuncionarioSharedPreferences {
         funcionario.setImagemFuncionario(sharedPreferences.getString("imagemFuncionario", null));
         funcionario.setEstadoFuncionarioId(sharedPreferences.getInt("estadoFuncionarioId", -1));
         funcionario.setEstadoFuncionario(sharedPreferences.getString("estadoFuncionario", null));
+        funcionario.setDepartamento(sharedPreferences.getString("departamento", null));
+        funcionario.setLocalizacao(sharedPreferences.getString("localizacao", null));
         return funcionario;
     }
 }

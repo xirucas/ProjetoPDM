@@ -61,6 +61,8 @@ public class Perfil extends AppCompatActivity {
         TextView textRmasConcluidos = findViewById(R.id.rmasConcluidos);
         TextView textHorasConcluidos = findViewById(R.id.horasConcluidos);
 
+        //TextView textLocalizacao = findViewById(R.id.localizacao);
+
         layoutRMA.setVisibility(View.INVISIBLE);
 
         int Id = getIntent().getIntExtra("Id", 0);
@@ -74,6 +76,8 @@ public class Perfil extends AppCompatActivity {
         int estadoFuncionarioId = getIntent().getIntExtra("EstadoFuncionarioId", 0); //1 é online
         int rmaCompletos = getIntent().getIntExtra("RMACompletos", 0);
         String HorasTotais = getIntent().getStringExtra("HorasTotais");
+        String Departamento = getIntent().getStringExtra("Departamento");
+        String Localizacao = getIntent().getStringExtra("Localizacao");
 
         if (!HorasTotais.equals("")) {
             //separar em horas e minutos
@@ -96,16 +100,22 @@ public class Perfil extends AppCompatActivity {
             layoutRMA.setVisibility(View.VISIBLE);
         }
 
-        funcionario = new Funcionario(Id, GUID, nome, email, contacto, pin, imagemFuncionario, estadoFuncionarioId, estadoFuncionario);
+        funcionario = new Funcionario(Id, GUID, nome, email, contacto, pin, imagemFuncionario, estadoFuncionarioId, estadoFuncionario, Departamento, Localizacao);
 
         ImageView img = findViewById(R.id.perfil_btn2);
         TextView Nome = findViewById(R.id.name);
         TextView emailFuncionario = findViewById(R.id.email);
+        TextView textContacto = findViewById(R.id.contacto);
+        TextView textDepartamento= findViewById(R.id.departamento);
+        //TextView textLocalizacao = findViewById(R.id.localizacao);
+
 
         Nome.setText(nome);
         Bitmap bitmap = StringToBitMap(imagemFuncionario);
         img.setImageBitmap(bitmap);
         emailFuncionario.setText(email);
+        textContacto.setText(contacto);
+        textDepartamento.setText(Departamento);
 
         //estadoFuncionarioId=0;
 

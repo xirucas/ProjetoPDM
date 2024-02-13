@@ -12,13 +12,15 @@ public class Funcionario {
     int EstadoFuncionarioId;
 
     String EstadoFuncionario;
+    String Departamento;
+    String Localizacao;
 
 
     public Funcionario() {
 
     }
 
-    public Funcionario(int id, String GUID, String nome, String email, String contacto, String pin, String imagemFuncionario, int estadoFuncionarioId, String estadoFuncionario) {
+    public Funcionario(int id, String GUID, String nome, String email, String contacto, String pin, String imagemFuncionario, int estadoFuncionarioId, String estadoFuncionario, String departamento, String localizacao) {
         Id = id;
         this.GUID = GUID;
         Nome = nome;
@@ -28,6 +30,8 @@ public class Funcionario {
         ImagemFuncionario = imagemFuncionario;
         EstadoFuncionarioId = estadoFuncionarioId;
         EstadoFuncionario = estadoFuncionario;
+        Departamento = departamento;
+        Localizacao = localizacao;
     }
 
     public Funcionario(String GUID, String nome, String email, String contacto, String pin, String imagemFuncionario, int estadoFuncionarioId, String estadoFuncionario) {
@@ -111,6 +115,22 @@ public class Funcionario {
 
     public void setEstadoFuncionario(String estadoFuncionario) {
         EstadoFuncionario = estadoFuncionario;
+    }
+
+    public String getDepartamento() {
+        return Departamento;
+    }
+
+    public void setDepartamento(String departamento) {
+        Departamento = departamento;
+    }
+
+    public String getLocalizacao() {
+        return Localizacao;
+    }
+
+    public void setLocalizacao(String localizacao) {
+        Localizacao = localizacao;
     }
 
     @Override

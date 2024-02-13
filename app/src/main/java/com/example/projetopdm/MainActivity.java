@@ -300,9 +300,11 @@ public class MainActivity extends AppCompatActivity {
         String imagemFuncionario = getIntent().getStringExtra("ImagemFuncionario");
         String estadoFuncionario = getIntent().getStringExtra("EstadoFuncionario");
         int estadoFuncionarioId = getIntent().getIntExtra("EstadoFuncionarioId", 0);
+        String departamento = getIntent().getStringExtra("Departamento");
+        String localizacao = getIntent().getStringExtra("Localizacao");
 
         // Inicialização do objeto Funcionario com os dados obtidos
-        funcionario = new Funcionario(id, guid, nome, email, contacto, pin, imagemFuncionario, estadoFuncionarioId, estadoFuncionario);
+        funcionario = new Funcionario(id, guid, nome, email, contacto, pin, imagemFuncionario, estadoFuncionarioId, estadoFuncionario, departamento, localizacao);
         if (x!=null){
             if(!funcionario.getGUID().equals(x.getGUID())){
                 this.deleteDatabase("BaseDeDadosLocal");
@@ -355,6 +357,8 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("EstadoFuncionarioId", funcionario.getEstadoFuncionarioId());
             intent.putExtra("RMACompletos", rmasCompletos);
             intent.putExtra("HorasTotais", horasTotais);
+            intent.putExtra("Departamento", funcionario.getDepartamento());
+            intent.putExtra("Localizacao", funcionario.getLocalizacao());
             startActivity(intent);
         });
     }

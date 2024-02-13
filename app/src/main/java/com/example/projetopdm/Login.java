@@ -94,6 +94,8 @@ public class Login extends AppCompatActivity {
                         intent.putExtra("ImagemFuncionario", x.getImagemFuncionario());
                         intent.putExtra("EstadoFuncionario", x.getEstadoFuncionario());
                         intent.putExtra("EstadoFuncionarioId", x.getEstadoFuncionarioId());
+                        intent.putExtra("Departamento", x.getDepartamento());
+                        intent.putExtra("Localizacao", x.getLocalizacao());
                         startActivity(intent);
                         Toast.makeText(getApplicationContext(), "Logado via local", Toast.LENGTH_LONG).show();
                     }
@@ -130,7 +132,7 @@ public class Login extends AppCompatActivity {
                 + " \"Email\": \"" + funcionario.getEmail() + "\", "
                 + " \"Contacto\": \"" + funcionario.getContacto() + "\", "
                 + " \"Pin\": \"" + funcionario.getPin() + "\", "
-                + " \"EstadoFuncionarioId\": \"" + funcionario.getEstadoFuncionarioId() + "\" }";
+                + " \"EstadoFuncionarioId\": \"" + funcionario.getEstadoFuncionarioId() + "\"  }";
         JsonObject body = new JsonParser().parse(request).getAsJsonObject();
         Call<JsonObject> call2 = RetrofitClient.getInstance().getMyApi().CreateOrUpdateFuncionarioAPI(body);
 
@@ -149,6 +151,8 @@ public class Login extends AppCompatActivity {
                     intent.putExtra("ImagemFuncionario", funcionario.getImagemFuncionario());
                     intent.putExtra("EstadoFuncionario", funcionario.getEstadoFuncionario());
                     intent.putExtra("EstadoFuncionarioId", funcionario.getEstadoFuncionarioId());
+                    intent.putExtra("Departamento", funcionario.getDepartamento());
+                    intent.putExtra("Localizacao", funcionario.getLocalizacao());
                     startActivity(intent);
                     Toast.makeText(getApplicationContext(), "Logado", Toast.LENGTH_LONG).show();
                 } else {
@@ -187,6 +191,8 @@ public class Login extends AppCompatActivity {
                         funcionario.setEstadoFuncionario("Online");
                         funcionario.setEstadoFuncionarioId(1);
                     }
+                    funcionario.setDepartamento(FuncionarioObj.get("Departamento").getAsString());
+                    funcionario.setLocalizacao(FuncionarioObj.get("Localizacao").getAsString());
                 } else {
                     Toast.makeText(Login.this, "Error", Toast.LENGTH_SHORT).show();
                 }
