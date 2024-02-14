@@ -90,14 +90,23 @@ public class Perfil extends AppCompatActivity {
 
             //se for menos de uma hora
             if (Integer.parseInt(horasTrabalhadas) == 0) {
-                textHorasConcluidos.setText(minutos + "min");
+                textHorasConcluidos.setText(minutos + " minutos");
             }else if (Integer.parseInt(horasTrabalhadas) >= 8) {
                 //se for mais de 8 horas conta como dia
                 int dias = Integer.parseInt(horasTrabalhadas) / 8;
                 int horasRestantes = Integer.parseInt(horasTrabalhadas) % 8;
-                textHorasConcluidos.setText(dias + " dias " + horasRestantes + "h:" + minutos + "min");
+
+                if (dias > 1) {
+                    textHorasConcluidos.setText(dias + " dias " + horasRestantes + ":" +  minutos + " horas");
+                } else {
+                    textHorasConcluidos.setText(dias + " dia " + horasRestantes + ":" +  minutos + " horas");
+                }
             } else {
-                textHorasConcluidos.setText(horasTrabalhadas + "h:" + minutos + "min");
+                if (Integer.parseInt(horasTrabalhadas) > 1) {
+                    textHorasConcluidos.setText(horasTrabalhadas + ":" + minutos + " horas");
+                }else{
+                    textHorasConcluidos.setText(horasTrabalhadas + ":" + minutos + " hora");
+                }
             }
             textRmasConcluidos.setText(String.valueOf(rmaCompletos));
             layoutRMA.setVisibility(View.VISIBLE);

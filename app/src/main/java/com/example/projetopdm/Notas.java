@@ -64,10 +64,7 @@ import retrofit2.Response;
 import com.example.projetopdm.databinding.ActivityNotasBinding;
 import com.google.gson.JsonParser;
 
-
-
 public class Notas extends AppCompatActivity {
-
 
     public static final int MEU_REQUEST_CODE = 1;
     ActivityNotasBinding binding;
@@ -82,6 +79,7 @@ public class Notas extends AppCompatActivity {
     ListaAdapterRMADetails listAdapter;
     Button novaNova_btn;
     Button change_status_btn;
+    Button concluir;
     RetrofitClient retrofitClient;
     Context contextPrincipal;
     int estadoId;
@@ -90,7 +88,9 @@ public class Notas extends AppCompatActivity {
     ArrayList<NotaRMA> notasDoRMAX = new ArrayList<>();
     boolean mudancas = false;
     boolean atualizarLista=false;
+    Notas bindingNotas;
     RelativeLayout popup;
+    RelativeLayout popup_concluir;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -162,14 +162,23 @@ public class Notas extends AppCompatActivity {
 
             //se for menos de uma hora
             if (Integer.parseInt(horasTrabalhadas) == 0) {
-                rmaHorasTrabalhadas.setText("RMA concluído em: " + minutos + " min");
+                rmaHorasTrabalhadas.setText("RMA concluído em: \n" + minutos + " minutos");
             }else if (Integer.parseInt(horasTrabalhadas) >= 8) {
                 //se for mais de 8 horas conta como dia
                 int dias = Integer.parseInt(horasTrabalhadas) / 8;
                 int horasRestantes = Integer.parseInt(horasTrabalhadas) % 8;
-                rmaHorasTrabalhadas.setText("RMA concluído em: " + dias + " dias " + horasRestantes + "h:" + minutos + "min");
+
+                if (dias > 1) {
+                    rmaHorasTrabalhadas.setText("RMA concluído em: \n" + dias + " dias " + horasRestantes + ":" +  minutos + " horas");
+                } else {
+                    rmaHorasTrabalhadas.setText("RMA concluído em: \n" + dias + " dia " + horasRestantes + ":" +  minutos + " horas");
+                }
             } else {
-                rmaHorasTrabalhadas.setText("RMA concluído em: " + horasTrabalhadas + "h:" + minutos + "min");
+                if (Integer.parseInt(horasTrabalhadas) > 1) {
+                    rmaHorasTrabalhadas.setText("RMA concluído em: \n" + horasTrabalhadas + ":" + minutos + " horas");
+                }else{
+                    rmaHorasTrabalhadas.setText("RMA concluído em: \n" + horasTrabalhadas + ":" + minutos + " hora");
+                }
             }
         }else {
          rmaHorasTrabalhadas.setVisibility(View.GONE);
@@ -177,6 +186,7 @@ public class Notas extends AppCompatActivity {
 
 
         popup = findViewById(R.id.popup);
+        popup_concluir = findViewById(R.id.popup_concluir);
 
         popup.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -185,10 +195,20 @@ public class Notas extends AppCompatActivity {
             }
         });
 
+        popup_concluir.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+
         Button closePopup = findViewById(R.id.closePopup);
+        Button closePopupConcluido = findViewById(R.id.close_popup_concluir);
         novaNova_btn = (Button) findViewById(R.id.novaNota_btn);
         change_status_btn = (Button) findViewById(R.id.change_status_btn);
+        concluir = (Button) findViewById(R.id.concluir);
         popup.setVisibility(View.INVISIBLE);
+        popup_concluir.setVisibility(View.INVISIBLE);
         mudancas= false;
 
         retrofitClient = RetrofitClient.getInstance();
@@ -217,6 +237,14 @@ public class Notas extends AppCompatActivity {
             }
         });
 
+        closePopupConcluido.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closePopupConcluido.setEnabled(false);
+                popup_concluir.setVisibility(View.INVISIBLE);
+            }
+        });
+
         backButton.setOnClickListener(new View.OnClickListener() {
             public void onClick (View v) {
                 backButton.setEnabled(false);
@@ -239,6 +267,8 @@ public class Notas extends AppCompatActivity {
                 novaNova_btn.setEnabled(true);
             }
         });
+
+
 
         change_status_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -277,7 +307,7 @@ public class Notas extends AppCompatActivity {
 
 
 
-                String dataAtual = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(new Date());
+                String dataAtual = new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date());
 
                 if (isInternetAvailable()) {
                     change_status_btn.setEnabled(false);
@@ -298,107 +328,13 @@ public class Notas extends AppCompatActivity {
                                 + " \"EstadoRMA\": \"" + rmaX.getEstadoRMAId() + "\", "
                                 + " \"FuncionarioId\": \"" + rmaX.getFuncionarioId() + "\" }";
 
+                        changeStatusAPI(request);
+
                     } else if (rmaX.getEstadoRMAId() == 3) {
-                        rmaX.setEstadoRMAId(1);
-                        rmaX.setEstadoRMA("Completo");
-                        rmaX.setDataFecho(dataAtual);
 
-                        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-                        try {
-                            // Convertendo as strings para objetos Date
-                            Date dataAbertura = format.parse(rmaX.getDataAbertura());
-                            Date dataFechamento = format.parse(rmaX.getDataFecho());
-                            Date dataAberturaFinal = new Date(dataAbertura.getYear(), dataAbertura.getMonth(), dataAbertura.getDate(), dataAbertura.getHours(), dataAbertura.getMinutes());
-                            Date dataFechamentoFinal = new Date(dataFechamento.getYear(), dataFechamento.getMonth(), dataFechamento.getDate(), dataFechamento.getHours(), dataFechamento.getMinutes());
+                        popup_concluir.setVisibility(View.VISIBLE);
 
-                            /*long different = dataFechamento.getTime() - dataAbertura.getTime();
-
-                            long secondsInMilli = 1000;
-                            long minutesInMilli = secondsInMilli * 60;
-                            long hoursInMilli = minutesInMilli * 60;
-                            long daysInMilli = hoursInMilli * 24;
-
-                            long elapsedDays = different / daysInMilli;
-                            different = different % daysInMilli;
-
-                            long elapsedHours = different / hoursInMilli;
-                            different = different % hoursInMilli;
-
-                            long elapsedMinutes = different / minutesInMilli;
-                            different = different % minutesInMilli;
-
-                            String horasTrabalhadas ="";
-                            if (elapsedDays>0){
-                                horasTrabalhadas = (elapsedDays*8)+elapsedHours + ":" + elapsedMinutes;
-                            } else if (elapsedHours >= 8) {
-
-                                    horasTrabalhadas = (elapsedHours / 3) + ":" + elapsedMinutes;
-
-                            }else {
-                                horasTrabalhadas = elapsedHours + ":" + elapsedMinutes;
-                            }*/
-
-                            String horasTrabalhadas = "";
-                            //chamar worktimecalculator
-                            WorkTimeCalculator workTimeCalculator = new WorkTimeCalculator(dataAberturaFinal, dataFechamentoFinal);
-                            workTimeCalculator.setWeekends(Calendar.SATURDAY, Calendar.SUNDAY);
-                            workTimeCalculator.setWorkingTime("09:00", "18:00");
-                            Double dias = workTimeCalculator.getDays();
-                            Integer minutos = workTimeCalculator.getMinutes();
-                            //transformar os minutos em horas e minutos e os dias em horas
-                            int minutosRestantes = minutos % 60;
-                            int horas = (int) (dias * 8);
-                            horasTrabalhadas = horas + ":" + minutosRestantes;
-                            rmaX.setHorasTrabalhadas(horasTrabalhadas);
-
-                            request = "{"
-                                    + " \"Id\": \"" + rmaX.getId() + "\", "
-                                    + " \"RMA\": \"" + rmaX.getRMA() + "\", "
-                                    + " \"DescricaoCliente\": \"" + rmaX.getDescricaoCliente() + "\", "
-                                    + " \"DataCriacao\": \"" + rmaX.getDataCriacao() + "\", "
-                                    + " \"DataAbertura\": \"" + rmaX.getDataAbertura() + "\", "
-                                    + " \"DataFecho\": \"" + rmaX.getDataFecho() + "\", "
-                                    + " \"HorasTrabalhadas\": \"" + rmaX.getHorasTrabalhadas() + "\", "
-                                    + " \"EstadoRMA\": \"" + rmaX.getEstadoRMAId() + "\", "
-                                    + " \"FuncionarioId\": \"" + rmaX.getFuncionarioId() + "\" }";
-
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
                     }
-                    JsonObject body = new JsonParser().parse(request).getAsJsonObject();
-                    Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().CreateOrUpdate_RMA(body);
-
-                    call.enqueue(new Callback<JsonObject>() {
-                        @Override
-                        public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                            JsonObject responseObj = response.body().get("Result").getAsJsonObject();
-                            if (responseObj.get("Success").getAsBoolean()) {
-                                Intent resultIntent = new Intent();
-                                resultIntent.putExtra("AtivarAPI", true);
-                                setResult(Activity.RESULT_OK, resultIntent);
-
-                                if (rmaX.getEstadoRMAId() == 1) {
-                                    //encerrar esta janela e voltar para a main
-                                    finish();
-                                }
-                                change_status_btn.setText("Concluir RMA");
-                                change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.completo));
-                                change_status_btn.setEnabled(true);
-                                Toast.makeText(getApplicationContext(), "Estado do RMA alterado para: " + rmaX.getEstadoRMA(), Toast.LENGTH_LONG).show();
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Erro ao alterar estado do RMA", Toast.LENGTH_LONG).show();
-                                change_status_btn.setEnabled(true);
-                            }
-
-                        }
-
-                        @Override
-                        public void onFailure(Call<JsonObject> call, Throwable t) {
-                            Toast.makeText(getApplicationContext(), "Erro ao alterar estado do RMA", Toast.LENGTH_LONG).show();
-                            change_status_btn.setEnabled(true);
-                        }
-                    });
 
 
                 }else{
@@ -408,7 +344,56 @@ public class Notas extends AppCompatActivity {
             }
         });
 
+        concluir.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                String dataAtual = new SimpleDateFormat("dd-MM-yyyy HH:mm").format(new Date());
+                String request ="";
+                rmaX.setEstadoRMAId(1);
+                rmaX.setEstadoRMA("Completo");
+                rmaX.setDataFecho(dataAtual);
 
+
+                SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+                try {
+                    // Convertendo as strings para objetos Date
+                    Date dataAbertura = format.parse(rmaX.getDataAbertura());
+                    Date dataFechamento = format.parse(rmaX.getDataFecho());
+                    Date dataAberturaFinal = new Date(dataAbertura.getYear(), dataAbertura.getMonth(), dataAbertura.getDate(), dataAbertura.getHours(), dataAbertura.getMinutes());
+                    Date dataFechamentoFinal = new Date(dataFechamento.getYear(), dataFechamento.getMonth(), dataFechamento.getDate(), dataFechamento.getHours(), dataFechamento.getMinutes());
+
+
+                    String horasTrabalhadas = "";
+                    //chamar worktimecalculator
+                    WorkTimeCalculator workTimeCalculator = new WorkTimeCalculator(dataAberturaFinal, dataFechamentoFinal);
+                    workTimeCalculator.setWeekends(Calendar.SATURDAY, Calendar.SUNDAY);
+                    workTimeCalculator.setWorkingTime("09:00", "18:00");
+                    Double dias = workTimeCalculator.getDays();
+                    Integer minutos = workTimeCalculator.getMinutes();
+                    //transformar os minutos em horas e minutos e os dias em horas
+                    int minutosRestantes = minutos % 60;
+                    int horas = (int) (dias * 8);
+                    horasTrabalhadas = horas + ":" + minutosRestantes;
+                    rmaX.setHorasTrabalhadas(horasTrabalhadas);
+
+                    request = "{"
+                            + " \"Id\": \"" + rmaX.getId() + "\", "
+                            + " \"RMA\": \"" + rmaX.getRMA() + "\", "
+                            + " \"DescricaoCliente\": \"" + rmaX.getDescricaoCliente() + "\", "
+                            + " \"DataCriacao\": \"" + rmaX.getDataCriacao() + "\", "
+                            + " \"DataAbertura\": \"" + rmaX.getDataAbertura() + "\", "
+                            + " \"DataFecho\": \"" + rmaX.getDataFecho() + "\", "
+                            + " \"HorasTrabalhadas\": \"" + rmaX.getHorasTrabalhadas() + "\", "
+                            + " \"EstadoRMA\": \"" + rmaX.getEstadoRMAId() + "\", "
+                            + " \"FuncionarioId\": \"" + rmaX.getFuncionarioId() + "\" }";
+
+                    changeStatusAPI(request);
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         if (!isInternetAvailable()){
             Log.e("Notas","sem net, tentar carregar local");
@@ -421,9 +406,11 @@ public class Notas extends AppCompatActivity {
                 if (rmaX.getEstadoRMAId() == 2) {
                     change_status_btn.setText("Iniciar RMA");
                     change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.main_blue));
+
                 } else if (rmaX.getEstadoRMAId() == 3) {
                     change_status_btn.setText("Concluir RMA");
                     change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.completo));
+
                 }
             } else {
                 novaNova_btn.setEnabled(false);
@@ -459,18 +446,51 @@ public class Notas extends AppCompatActivity {
                         loadNotasAPI();
                     }
                 });
-
-
-
-
             }
         }
+    }
+
+    public void changeStatusAPI(String request){
+        JsonObject body = new JsonParser().parse(request).getAsJsonObject();
+        Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().CreateOrUpdate_RMA(body);
+
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                JsonObject responseObj = response.body().get("Result").getAsJsonObject();
+                if (responseObj.get("Success").getAsBoolean()) {
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("AtivarAPI", true);
+                    setResult(Activity.RESULT_OK, resultIntent);
+
+                    if (rmaX.getEstadoRMAId() == 1) {
+                        //encerrar esta janela e voltar para a main
+                        finish();
+                    }
+
+                    change_status_btn.setText("Concluir RMA");
+                    change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.completo));
+                    change_status_btn.setEnabled(true);
+
+                    Toast.makeText(getApplicationContext(), "Estado do RMA alterado para: " + rmaX.getEstadoRMA(), Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Erro ao alterar estado do RMA", Toast.LENGTH_LONG).show();
+                    change_status_btn.setEnabled(true);
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Erro ao alterar estado do RMA", Toast.LENGTH_LONG).show();
+                change_status_btn.setEnabled(true);
+            }
+        });
 
     }
 
     private void loadNotasAPI(){
         Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().GetRMAById(RMAId);
-
 
         call.enqueue(new Callback<JsonObject>(){
             @SuppressLint("SuspiciousIndentation")
@@ -560,14 +580,12 @@ public class Notas extends AppCompatActivity {
                             }
 
                             notaRMADao.insertAllNotas(rmaListEntity);
-
                         }
-                    }
 
+                    }
                     loadNotas();
 
                     listAdapter.notifyDataSetChanged();
-
 
                 }
                 loading.setVisibility(View.INVISIBLE);
