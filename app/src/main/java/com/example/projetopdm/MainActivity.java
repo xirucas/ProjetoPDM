@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
     int estadoId = 0;
     int rmasCompletos = 0;
     String horasTotais="";
+    Boolean isLoading = false;
 
 
     @Override
@@ -106,7 +107,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        finish();
+        if (!isLoading){
+            finish();
+        }
     }
 
 
@@ -119,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot()); // Set the root view of the binding object
         loading = findViewById(R.id.loading);
         loading.setVisibility(View.VISIBLE);
+        isLoading = true;
         initializeFuncionarioFromIntent();
         initializeDatabaseAndViewModel();
 
@@ -135,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
         Bitmap bitmap = StringToBitMap(funcionario.getImagemFuncionario());
         img.setImageBitmap(bitmap);
         loading.setVisibility(View.INVISIBLE);
+        isLoading = false;
 
         //filtrar pelo titulo
 
@@ -462,10 +467,11 @@ public class MainActivity extends AppCompatActivity {
                         rmaDao.insertAll(rmaListEnt);
                         SincronizarRMAsTask();
                     }
-                    if (response.body().get("RMACompletos").getAsInt()!=0){
-                        rmasCompletos = response.body().get("RMACompletos").getAsInt();
+                    if (response.body().get("RMACompletos") != null) {
+                        if (response.body().get("RMACompletos").getAsInt() != 0) {
+                            rmasCompletos = response.body().get("RMACompletos").getAsInt();
+                        }
                     }
-
                 }
 
             }

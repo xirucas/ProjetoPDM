@@ -78,13 +78,16 @@ public class Nota extends AppCompatActivity {
     private boolean isEditMode = false;
     int estadoRMA;
     private Context contextPrincipal;
+    Boolean isUpdating = false;
 
     Uri uri;
 
 
     @Override
     public void onBackPressed() {
-        finish();
+        if(!isUpdating){
+            finish();
+        }
     }
 
     @Override
@@ -250,6 +253,7 @@ public class Nota extends AppCompatActivity {
         titulo.setEnabled(false);
         nota.setEnabled(false);
         img_btn.setEnabled(false);
+        isUpdating = true;
 
 
         create_btn.setText("Editar Nota");
@@ -261,6 +265,7 @@ public class Nota extends AppCompatActivity {
         if (titulo.getText().toString().isEmpty() || nota.getText().toString().isEmpty() || nota.getText().toString().trim().equals("") || titulo.getText().toString().trim().equals("")) {
 
             Toast.makeText(Nota.this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
+            isUpdating = false;
             return; // Exit the method if validation fails
         }
 
@@ -344,16 +349,21 @@ public class Nota extends AppCompatActivity {
                         } else {
                             Toast.makeText(getApplicationContext(), "Nota criada com sucesso", Toast.LENGTH_LONG).show();
                         }
+                        isUpdating = false;
+                        create_btn.setEnabled(true);
                         finish();
 
                     } else {
                         Toast.makeText(getApplicationContext(), "Erro ao criar/editar nota", Toast.LENGTH_LONG).show();
                         create_btn.setEnabled(true);
+                        isUpdating = false;
                     }
                 }
 
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
+                    isUpdating = false;
+                    create_btn.setEnabled(true);
                     Toast.makeText(getApplicationContext(), "Erro ao criar/editar nota", Toast.LENGTH_LONG).show();
 
                 }
@@ -393,6 +403,7 @@ public class Nota extends AppCompatActivity {
             } else {
                 Toast.makeText(getApplicationContext(), "Nota criada com sucesso", Toast.LENGTH_LONG).show();
             }
+            isUpdating = false;
             finish();
         }
     }

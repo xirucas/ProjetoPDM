@@ -37,7 +37,6 @@ public class Login extends AppCompatActivity {
     Funcionario funcionario = new Funcionario();
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         finish();
     }
     @Override

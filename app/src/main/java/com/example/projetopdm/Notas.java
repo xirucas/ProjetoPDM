@@ -91,6 +91,8 @@ public class Notas extends AppCompatActivity {
     Notas bindingNotas;
     RelativeLayout popup;
     RelativeLayout popup_concluir;
+    Boolean isLoading = false;
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -114,10 +116,12 @@ public class Notas extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra("AtivarAPI", true);
-        setResult(Activity.RESULT_OK, resultIntent);
-        finish();
+        if (!isLoading){
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("AtivarAPI", true);
+            setResult(Activity.RESULT_OK, resultIntent);
+            finish();
+        }
     }
 
 
@@ -406,8 +410,12 @@ public class Notas extends AppCompatActivity {
                 if (rmaX.getEstadoRMAId() == 2) {
                     change_status_btn.setText("Iniciar RMA");
                     change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.main_blue));
+                    novaNova_btn.setEnabled(false);
+                    novaNova_btn.setVisibility(View.INVISIBLE);
 
                 } else if (rmaX.getEstadoRMAId() == 3) {
+                    novaNova_btn.setEnabled(true);
+                    novaNova_btn.setVisibility(View.VISIBLE);
                     change_status_btn.setText("Concluir RMA");
                     change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.completo));
 
@@ -419,6 +427,7 @@ public class Notas extends AppCompatActivity {
             }
 
             loading.setVisibility(View.INVISIBLE);
+            isLoading = false;
 
         }
 
@@ -471,6 +480,8 @@ public class Notas extends AppCompatActivity {
                     change_status_btn.setText("Concluir RMA");
                     change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.completo));
                     change_status_btn.setEnabled(true);
+                    novaNova_btn.setEnabled(true);
+                    novaNova_btn.setVisibility(View.VISIBLE);
 
                     Toast.makeText(getApplicationContext(), "Estado do RMA alterado para: " + rmaX.getEstadoRMA(), Toast.LENGTH_LONG).show();
                 } else {
@@ -520,7 +531,11 @@ public class Notas extends AppCompatActivity {
                         if (rma.getEstadoRMAId() == 2) {
                             change_status_btn.setText("Iniciar RMA");
                             change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.main_blue));
+                            novaNova_btn.setEnabled(false);
+                            novaNova_btn.setVisibility(View.INVISIBLE);
                         } else if (rma.getEstadoRMAId() == 3) {
+                            novaNova_btn.setEnabled(true);
+                            novaNova_btn.setVisibility(View.VISIBLE);
                             change_status_btn.setText("Concluir RMA");
                             change_status_btn.setBackgroundTintList(ContextCompat.getColorStateList(getApplicationContext(), R.color.completo));
                         }
@@ -589,6 +604,7 @@ public class Notas extends AppCompatActivity {
 
                 }
                 loading.setVisibility(View.INVISIBLE);
+                isLoading = false;
             }
 
             @Override
@@ -625,11 +641,13 @@ public class Notas extends AppCompatActivity {
             listAdapter = new ListaAdapterRMADetails(Notas.this,notasDoRMAX , Notas.this);
             binding.notas.setAdapter(listAdapter);
             loading.setVisibility(View.INVISIBLE);
+            isLoading = false;
         }else if (isInternetAvailable()){
 
             listAdapter = new ListaAdapterRMADetails(Notas.this, rmaList, Notas.this);
             binding.notas.setAdapter(listAdapter);
             loading.setVisibility(View.INVISIBLE);
+            isLoading = false;
         }
 
 
