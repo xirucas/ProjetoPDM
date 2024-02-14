@@ -236,6 +236,7 @@ public class Notas extends AppCompatActivity {
                 intent.putExtra("estadoRMA", rma.getEstadoRMAId());
                 intent.putExtra("Update","Novo");
                 startActivityForResult(intent, MEU_REQUEST_CODE);
+                novaNova_btn.setEnabled(true);
             }
         });
 

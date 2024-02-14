@@ -88,12 +88,9 @@ public class ListaAdapterRMADetails extends ArrayAdapter<NotaRMA> {
         Button deleteBt = view.findViewById(R.id.deleteBt);
 
         // Adicionar um OnClickListener ao LinearLayout
-        if (!(bindingNotas.estadoId == 2 || bindingNotas.estadoId == 3)){
-            if (!isInternetAvailable()){
+        if (!(bindingNotas.estadoId == 2 || bindingNotas.estadoId == 3) || !isInternetAvailable()){
                 deleteBt.setVisibility(View.INVISIBLE);
                 deleteBt.setEnabled(false);
-            }
-
         }
         deleteBt.setOnClickListener(new View.OnClickListener() {
             @Override

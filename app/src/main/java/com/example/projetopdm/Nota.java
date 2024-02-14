@@ -252,6 +252,7 @@ public class Nota extends AppCompatActivity {
         nota.setEnabled(false);
         img_btn.setEnabled(false);
 
+
         create_btn.setText("Editar Nota");
         create_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.edit_icon, 0, 0, 0);
         create_btn.setEnabled(false);
