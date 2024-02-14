@@ -239,6 +239,65 @@
 
     </RelativeLayout>
 
+    <RelativeLayout
+        android:id="@+id/popup_concluir"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#AB0E121B">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginHorizontal="10dp"
+            android:background="@drawable/card_round_corners"
+            android:backgroundTint="@color/secondary_blue"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="8dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="30dp">
+
+            <Button
+                android:id="@+id/close_popup_concluir"
+                style="?attr/materialIconButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="10dp"
+                app:icon="@drawable/close_icon"
+                app:iconSize="30dp"
+                app:iconTint="@color/black" />
+
+            <TextView
+                android:id="@+id/concluirid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/medium"
+                android:text="Tem a certeza que pretende concluir o RMA"
+                android:textAlignment="center"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/concluir"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="25dp"
+                android:backgroundTint="@color/completo"
+                android:fontFamily="@font/medium"
+                android:paddingVertical="10dp"
+                android:text="Concluir RMA"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
     <include
         android:id="@+id/loading"
         layout="@layout/loading_page"
