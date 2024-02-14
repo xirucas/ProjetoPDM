@@ -113,7 +113,6 @@ public class Nota extends AppCompatActivity {
 
         estadoRMA = getIntent().getIntExtra("estadoRMA", 0);
         Log.i("EstadoRMA", String.valueOf(estadoRMA));
-        Log.i("cu", " fe "+intent.getIntExtra("NotaId",0));
             if (getIntent().getIntExtra("NotaId", 0) != 0) {
                 titulo.setEnabled(false);
                 nota.setEnabled(false);
@@ -124,10 +123,10 @@ public class Nota extends AppCompatActivity {
 
 
                 x = notaRMADao.getNotaById(intent.getIntExtra("NotaId",0));
-                Log.i("cu2"," yh isso "+x.getId());
+
 
                 notaRMA= x.toNotaRMA();
-                Log.e("notas"," img + "+notaRMA.getImagemNota());
+
                 if (notaRMA.getImagemNota() != null && !notaRMA.getImagemNota().isEmpty()) {
                     uri = Uri.parse(notaRMA.getImagemNota());
                     imageView.setImageURI(uri);
@@ -259,7 +258,7 @@ public class Nota extends AppCompatActivity {
 
 
         // Check if both title and note are not empty
-        if (titulo.getText().toString().isEmpty() || nota.getText().toString().isEmpty()) {
+        if (titulo.getText().toString().isEmpty() || nota.getText().toString().isEmpty() || nota.getText().toString().trim().equals("") || titulo.getText().toString().trim().equals("")) {
 
             Toast.makeText(Nota.this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
             return; // Exit the method if validation fails
@@ -384,7 +383,7 @@ public class Nota extends AppCompatActivity {
                     x.setOffSync("modificado");
                 }
             }
-            Log.i("Notas","teste 5 "+x.getNota()+" "+ x.getDataCriacao()+" "+x.getTitulo());
+
             notaRMADao.insert(x);
             Intent resultIntent = new Intent();
             resultIntent.putExtra("AtivarAPI", true);
@@ -417,7 +416,7 @@ public class Nota extends AppCompatActivity {
             startActivity(intent);
         } else {
             // External storage management permission is granted or not needed
-            Toast.makeText(this, "Permission denied...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Sem premissoes suficientes", Toast.LENGTH_SHORT).show();
 
         }
     }

@@ -95,7 +95,6 @@ public class Splash extends AppCompatActivity {
 
     }
     private void ChamarApi(IntentResult result,ArrayList<String> guidList){
-        Log.e("Splash","nao é o ultimo utilizador vai presisar de net para acessar");
         Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().GetAllGUID();
         call.enqueue(new Callback<JsonObject>() {
             @Override
@@ -115,7 +114,7 @@ public class Splash extends AppCompatActivity {
                         startActivity(intent);
                     }
                     else{
-                        Toast.makeText(Splash.this, "QR inválido -> " + result.getContents(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Splash.this, "QR inválido", Toast.LENGTH_SHORT).show();
                     }
                 }
 

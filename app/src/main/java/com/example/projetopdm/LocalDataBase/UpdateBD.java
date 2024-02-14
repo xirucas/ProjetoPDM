@@ -77,7 +77,7 @@ public class UpdateBD {
     }
 
     public void updateBaseDeDados(int RMAid, UpdateListener listener){
-        Log.e("Notas","aqui gayyyyyyyyy");
+
 
 
         ArrayList<NotaRMA> novos= new ArrayList<>();
@@ -104,7 +104,7 @@ public class UpdateBD {
             int count=0;
             for (NotaRMA x:novos) {
                 String request ="";
-                Log.e("Notas","teste img  "+x.getImagemNota());
+
                 if (x.getImagemNota() != null) {
                     Uri uri = Uri.parse(x.getImagemNota());
                     Bitmap imagem = uriToBitmap(contextoprincipal, uri);

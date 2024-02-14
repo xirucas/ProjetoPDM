@@ -97,7 +97,6 @@ public class Login extends AppCompatActivity {
                         intent.putExtra("Departamento", x.getDepartamento());
                         intent.putExtra("Localizacao", x.getLocalizacao());
                         startActivity(intent);
-                        Toast.makeText(getApplicationContext(), "Logado via local", Toast.LENGTH_LONG).show();
 
                     } else if (isInternetAvailable()) {
 
@@ -157,7 +156,6 @@ public class Login extends AppCompatActivity {
                     intent.putExtra("Departamento", funcionario.getDepartamento());
                     intent.putExtra("Localizacao", funcionario.getLocalizacao());
                     startActivity(intent);
-                    Toast.makeText(getApplicationContext(), "Logado", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getApplicationContext(), "Erro a fazer login", Toast.LENGTH_LONG).show();
                 }
@@ -197,7 +195,7 @@ public class Login extends AppCompatActivity {
                     funcionario.setDepartamento(FuncionarioObj.get("Departamento").getAsString());
                     funcionario.setLocalizacao(FuncionarioObj.get("Localizacao").getAsString());
                 } else {
-                    Toast.makeText(Login.this, "Error", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Login.this, "Aconteceu algo errado ao tentar carregar o funcionario", Toast.LENGTH_SHORT).show();
                 }
                 Bitmap imagem = StringToBitMap(funcionario.getImagemFuncionario());
                 ImageView imageView = findViewById(R.id.perfil_btn);

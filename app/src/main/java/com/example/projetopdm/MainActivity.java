@@ -335,7 +335,6 @@ public class MainActivity extends AppCompatActivity {
 
         listAdapter = new ListAdapterRMA(MainActivity.this, rmaList, MainActivity.this);
         binding.listRMA.setAdapter(listAdapter);
-        Toast.makeText(MainActivity.this, "Dados sincronizados com sucesso! -->"+ rmaList.size(), Toast.LENGTH_SHORT).show();
         sincronizarRMAs();
 
     }
@@ -396,7 +395,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         List<RMAEntity> rmaEntities = rmaDao.getAllRMAs();
-        Toast.makeText(MainActivity.this, "aqui -->"+ rmaEntities.size(), Toast.LENGTH_SHORT).show();
 
         if (!isInternetAvailable()){
             rmaList = convertRMAEntityListToRMAList(rmaEntities);
@@ -408,7 +406,6 @@ public class MainActivity extends AppCompatActivity {
         listAdapter = new ListAdapterRMA(MainActivity.this, rmaList, MainActivity.this);
         binding.listRMA.setAdapter(listAdapter);
 
-        Toast.makeText(MainActivity.this, "Dados sincronizados com sucesso! -->"+ rmaList.size(), Toast.LENGTH_SHORT).show();
     }
 
     public void sincronizarRMAs () {

@@ -281,7 +281,7 @@ public class Notas extends AppCompatActivity {
                 String horaAtual = new SimpleDateFormat("HH:mm").format(new Date());
 
                 //verificar se está dentro do horário de trabalho
-                /*if (TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaEntrada.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaEntrada.split(":")[1]))) <= TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaAtual.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaAtual.split(":")[1]))) &&
+                if (TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaEntrada.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaEntrada.split(":")[1]))) <= TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaAtual.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaAtual.split(":")[1]))) &&
                         TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaSaida.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaSaida.split(":")[1]))) >= TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaAtual.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaAtual.split(":")[1])))) {
                     //verificar se está dentro do horário de pausa
                     if (TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaPausa.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaPausa.split(":")[1]))) <= TimeUnit.MILLISECONDS.toMinutes(TimeUnit.HOURS.toMillis(Long.parseLong(horaAtual.split(":")[0])) + TimeUnit.MINUTES.toMillis(Long.parseLong(horaAtual.split(":")[1]))) &&
@@ -303,7 +303,7 @@ public class Notas extends AppCompatActivity {
                             return;
                         }
                     }
-                }*/
+                }
 
 
 
@@ -396,7 +396,7 @@ public class Notas extends AppCompatActivity {
         });
 
         if (!isInternetAvailable()){
-            Log.e("Notas","sem net, tentar carregar local");
+
             loadNotas();
 
             if (rmaX.getEstadoRMAId() == 2 || rmaX.getEstadoRMAId() == 3) {
@@ -607,16 +607,16 @@ public class Notas extends AppCompatActivity {
         if(!isInternetAvailable()){
 
             notasDoRMAX.clear();
-            Log.e("Notas","id do rma "+ RMAId);
+
             for (NotaRMA x:convertNotaRMAEntityListToNotaRMAList(notaRMADao.getAllNotasRMA())) {
                 if (x.getRMAId()==RMAId){
                     if (notaRMADao.getNotaById(x.getId()).getOffSync() != null){
                         if (!notaRMADao.getNotaById(x.getId()).getOffSync().equals("apagado") || !notaRMADao.getNotaRMAById(x.getId()).getOffSync().equals("novoApagado")){
-                            Log.e("Notas","id do RMA da nota  "+ x.getRMAId());
+
                             notasDoRMAX.add(x);
                         }
                     }else {
-                        Log.e("Notas","id do RMA da nota  "+ x.getRMAId());
+
                         notasDoRMAX.add(x);
                     }
                 }
@@ -664,198 +664,16 @@ public class Notas extends AppCompatActivity {
         return Uri.fromFile(file);
     }
 
-    public void updateBaseDeDados(){
-        Log.e("Notas","aqui gayyyyyyyyy");
-
-        ArrayList<NotaRMA> novos= new ArrayList<>();
-        ArrayList<NotaRMA> modificados = new ArrayList<>();
-        ArrayList<NotaRMA> apagados = new ArrayList<>();
-
-        for (NotaRMAEntity x : notaRMADao.getNotasByRMAId(RMAId)) {
-            if (x.getOffSync()!=null){
-                if (x.getOffSync().equals("novo")){
-                    novos.add(x.toNotaRMA());
-                } else if (x.getOffSync().equals("modificado")) {
-                    modificados.add(x.toNotaRMA());
-                } else if (x.getOffSync().equals("apagado")) {
-                    apagados.add(x.toNotaRMA());
-                }
-            }
-        }
-        for (NotaRMA x:novos) {
-            String request ="";
-            Log.e("Notas","teste img  "+x.getImagemNota());
-            if (x.getImagemNota() != null) {
-                Uri uri = Uri.parse(x.getImagemNota());
-                Bitmap imagem = uriToBitmap(getApplicationContext(), uri);
-                String imagemString = bitmapToString(imagem);
-                x.setImagemNota(imagemString);
-                request = "{"
-                        + " \"Id\": \"" + 0 + "\", "
-                        + " \"Titulo\": \"" + x.getTitulo() + "\", "
-                        + " \"Nota\": \"" + x.getNota() + "\", "
-                        + " \"RMAId\": \"" + x.getRMAId() + "\", "
-                        + " \"IdImagem\": \"" + 0 + "\", "
-                        + " \"Imagem\": \"" + imagemString + "\" }";
-            } else {
-                request = "{"
-                        + " \"Id\": \"" + 0 + "\", "
-                        + " \"Titulo\": \"" + x.getTitulo() + "\", "
-                        + " \"Nota\": \"" + x.getNota() + "\", "
-                        + " \"RMAId\": \"" + x.getRMAId() + "\", "
-                        + " \"IdImagem\": \"" + 0 + "\", "
-                        + " \"Imagem\": \"" + "" + "\" }";
-            }
-
-            JsonObject body = new JsonParser().parse(request).getAsJsonObject();
-            Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().CreateOrUpdateNotaRMA(body);
-
-            call.enqueue(new Callback<JsonObject>() {
-                @Override
-                public void onResponse(Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
-                    JsonObject responseObj = response.body().get("Result").getAsJsonObject();
-                    if (responseObj.get("Success").getAsBoolean()) {
-                        Toast.makeText(getApplicationContext(), "Nota criada com sucesso", Toast.LENGTH_LONG).show();
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra("AtivarAPI", true);
-                        setResult(Activity.RESULT_OK, resultIntent);
-
-                        notaRMADao.deleteById(x.getId());
-                        int id= response.body().get("NotaRMAId").getAsInt();
-                        x.setId(id);
-                        notaRMADao.insert(x.toNotaRMAEntity());
-
-                        for (NotaRMA x:convertNotaRMAEntityListToNotaRMAList(notaRMADao.getNotasByRMAId(RMAId))) {
-                            if (x.getRMAId()==RMAId){
-                                if (notaRMADao.getNotaById(x.getId()).getOffSync() != null){
-                                    if (!notaRMADao.getNotaById(x.getId()).getOffSync().equals("apagado")){
-                                        Log.e("Notas","id do RMA da nota  "+ x.getRMAId());
-                                        notasDoRMAX.add(x);
-                                    }
-                                }else {
-                                    Log.e("Notas","id do RMA da nota  "+ x.getRMAId());
-                                    notasDoRMAX.add(x);
-                                }
-                            }
-                        }
-
-                        listAdapter = new ListaAdapterRMADetails(Notas.this,notasDoRMAX , Notas.this);
-                        binding.notas.setAdapter(listAdapter);
-                        //teste apagar depois
-
-
-
-
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Erro ao criar nota", Toast.LENGTH_LONG).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<JsonObject> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Erro ao criar nota", Toast.LENGTH_LONG).show();
-                }
-            });
-
-        }//passar os novos da local para a online
-        for (NotaRMA x:modificados){
-            String request ="";
-
-            if (x.getImagemNota() != null) {
-                Uri uri = Uri.parse(x.getImagemNota());
-                Bitmap imagem = uriToBitmap(getApplicationContext(), uri);
-                String imagemString = bitmapToString(imagem);
-                x.setImagemNota(imagemString);
-            }
-            request = "{"
-                    + " \"Id\": \"" + x.getId() + "\", "
-                    + " \"Titulo\": \"" + x.getTitulo() + "\", "
-                    + " \"Nota\": \"" + x.getNota() + "\", "
-                    + " \"RMAId\": \"" + x.getRMAId() + "\", "
-                    + " \"IdImagem\": \"" + x.getImagemNotaId() + "\", "
-                    + " \"Imagem\": \"" + x.getImagemNota() + "\" }";
-
-            JsonObject body = new JsonParser().parse(request).getAsJsonObject();
-            Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().CreateOrUpdateNotaRMA(body);
-
-            call.enqueue(new Callback<JsonObject>() {
-                @Override
-                public void onResponse(Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
-                    JsonObject responseObj = response.body().get("Result").getAsJsonObject();
-                    if (responseObj.get("Success").getAsBoolean()) {
-                        Toast.makeText(getApplicationContext(), "Nota alterada com sucesso", Toast.LENGTH_LONG).show();
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra("AtivarAPI", true);
-                        setResult(Activity.RESULT_OK, resultIntent);
-                        notaRMADao.deleteById(x.getId());
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Erro ao alterar nota", Toast.LENGTH_LONG).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<JsonObject> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Erro ao alterar nota", Toast.LENGTH_LONG).show();
-                }
-            });
-
-        }
-        for (NotaRMA x:apagados){
-
-            Call<JsonObject> call = RetrofitClient.getInstance().getMyApi().DeleteNotaRMA(x.getId());
-
-            call.enqueue(new Callback<JsonObject>() {
-                @Override
-                public void onResponse(Call<JsonObject> call, retrofit2.Response<JsonObject> response) {
-                    JsonObject responseObj = response.body().get("Result").getAsJsonObject();
-                    if (responseObj.get("Success").getAsBoolean()) {
-                        Toast.makeText(getApplicationContext(), "Nota apagada com sucesso", Toast.LENGTH_LONG).show();
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra("AtivarAPI", true);
-                        setResult(Activity.RESULT_OK, resultIntent);
-                        notaRMADao.deleteById(x.getId());
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Erro ao apagar nota", Toast.LENGTH_LONG).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<JsonObject> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "Erro ao apagar nota", Toast.LENGTH_LONG).show();
-                }
-            });
-
-        }
-
-    }
-
-    public boolean mudancasNaBD(){
-
-        boolean encontrouMod = false;
-        for (NotaRMAEntity x : notaRMADao.getNotasByRMAId(RMAId)) {
-            if (x.getOffSync()!=null){
-                if (x.getOffSync().equals("modificado") || x.getOffSync().equals("novo") || x.getOffSync().equals("apagado")){
-                    encontrouMod = true;
-                }
-            }
-        }
-
-        return encontrouMod;
-
-    }
-
-
-
     private ArrayList<NotaRMA> convertNotaRMAEntityListToNotaRMAList(List<NotaRMAEntity> notaRmaEntities) {
         ArrayList<NotaRMA> notaRmaList = new ArrayList<>();
         // Converter cada NotaRMAEntity para NotaRMA e adicionar à lista
         for (NotaRMAEntity entity : notaRmaEntities) {
 
             NotaRMA x= new NotaRMA(entity.getId(),entity.getTitulo(),entity.getDataCriacao(), entity.getNota(),entity.getImagemNotaId() ,entity.getImagemNota(), entity.getRMAId());
-            Log.i("Notas","titulo de cada puta "+ x.getTitulo());
+
             notaRmaList.add(x);
         }
-        Log.i("Notas","tamanho da puta "+notaRmaList.size());
+
         return notaRmaList;
     }
 
