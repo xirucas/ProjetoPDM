@@ -254,6 +254,7 @@ public class Nota extends AppCompatActivity {
         nota.setEnabled(false);
         img_btn.setEnabled(false);
         isUpdating = true;
+        backButton.setEnabled(false);
 
 
         create_btn.setText("Editar Nota");
@@ -266,6 +267,7 @@ public class Nota extends AppCompatActivity {
 
             Toast.makeText(Nota.this, "Preencha todos os campos", Toast.LENGTH_SHORT).show();
             isUpdating = false;
+            backButton.setEnabled(true);
             return; // Exit the method if validation fails
         }
 
@@ -351,11 +353,13 @@ public class Nota extends AppCompatActivity {
                         }
                         isUpdating = false;
                         create_btn.setEnabled(true);
+                        backButton.setEnabled(true);
                         finish();
 
                     } else {
                         Toast.makeText(getApplicationContext(), "Erro ao criar/editar nota", Toast.LENGTH_LONG).show();
                         create_btn.setEnabled(true);
+                        backButton.setEnabled(true);
                         isUpdating = false;
                     }
                 }
@@ -364,6 +368,7 @@ public class Nota extends AppCompatActivity {
                 public void onFailure(Call<JsonObject> call, Throwable t) {
                     isUpdating = false;
                     create_btn.setEnabled(true);
+                    backButton.setEnabled(true);
                     Toast.makeText(getApplicationContext(), "Erro ao criar/editar nota", Toast.LENGTH_LONG).show();
 
                 }
@@ -403,6 +408,7 @@ public class Nota extends AppCompatActivity {
             } else {
                 Toast.makeText(getApplicationContext(), "Nota criada com sucesso", Toast.LENGTH_LONG).show();
             }
+            backButton.setEnabled(true);
             isUpdating = false;
             finish();
         }
