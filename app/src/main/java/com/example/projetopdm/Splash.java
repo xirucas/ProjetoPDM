@@ -86,8 +86,6 @@ public class Splash extends AppCompatActivity {
                 }else {
                     Toast.makeText(Splash.this, "Não é o ultimo utilizador vai presisar de internet para acessar", Toast.LENGTH_SHORT).show();
                 }
-            } else {
-                alert("cancelado");
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);

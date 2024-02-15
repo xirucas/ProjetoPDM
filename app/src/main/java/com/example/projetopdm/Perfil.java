@@ -66,7 +66,10 @@ public class Perfil extends AppCompatActivity {
 
         //TextView textLocalizacao = findViewById(R.id.localizacao);
 
-        layoutRMA.setVisibility(View.INVISIBLE);
+        layoutRMA.setVisibility(View.VISIBLE);
+
+        textRmasConcluidos.setText("-");
+        textHorasConcluidos.setText("-");
 
         int Id = getIntent().getIntExtra("Id", 0);
         String nome = getIntent().getStringExtra("Nome");
@@ -109,7 +112,6 @@ public class Perfil extends AppCompatActivity {
                 }
             }
             textRmasConcluidos.setText(String.valueOf(rmaCompletos));
-            layoutRMA.setVisibility(View.VISIBLE);
         }
 
         funcionario = new Funcionario(Id, GUID, nome, email, contacto, pin, imagemFuncionario, estadoFuncionarioId, estadoFuncionario, Departamento, Localizacao);

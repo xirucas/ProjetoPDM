@@ -81,7 +81,8 @@ public class Login extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 EditText pin = findViewById(R.id.pin);
-                if (x.getGUID() != null) {
+
+                if (x.getGUID() != null && x.getGUID().equals(GUID)){
                     if (pin.getText().toString().equals(x.getPin())) {
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         intent.putExtra("Id", x.getId());
@@ -106,7 +107,11 @@ public class Login extends AppCompatActivity {
                         }
 
                     } else {
-                        Toast.makeText(Login.this, "Sem ligação à internet", Toast.LENGTH_SHORT).show();
+                        if (!pin.getText().toString().equals(x.getPin())) {
+                            Toast.makeText(Login.this, "Pin incorreto", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(Login.this, "Sem ligação à internet", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                 } else if (isInternetAvailable()) {
