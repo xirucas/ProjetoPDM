@@ -116,6 +116,7 @@ public class Nota extends AppCompatActivity {
 
         estadoRMA = getIntent().getIntExtra("estadoRMA", 0);
         Log.i("EstadoRMA", String.valueOf(estadoRMA));
+
             if (getIntent().getIntExtra("NotaId", 0) != 0) {
                 titulo.setEnabled(false);
                 nota.setEnabled(false);
@@ -124,9 +125,7 @@ public class Nota extends AppCompatActivity {
                 create_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.edit_icon, 0, 0, 0);
                 NotaRMAEntity x ;
 
-
                 x = notaRMADao.getNotaById(intent.getIntExtra("NotaId",0));
-
 
                 notaRMA= x.toNotaRMA();
 
@@ -141,6 +140,15 @@ public class Nota extends AppCompatActivity {
 
                 if (estadoRMA == 2 || estadoRMA == 3) {
                     create_btn.setVisibility(View.VISIBLE);
+
+                    //data nota
+                    String dataOriginal = notaRMA.getDataCriacao();
+                    DateTimeFormatter formatoOriginal = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                    LocalDateTime data = LocalDateTime.parse(dataOriginal, formatoOriginal);
+                    DateTimeFormatter novoFormato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+                    String novaDataFormatada = data.format(novoFormato);
+                    dataNota.setText(novaDataFormatada);
+
                     create_btn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -170,8 +178,6 @@ public class Nota extends AppCompatActivity {
                 }
 
 
-
-
             } else {
                 create_btn.setText("Guardar Nota");
                 create_btn.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.guardar_icon, 0, 0, 0);
@@ -190,8 +196,6 @@ public class Nota extends AppCompatActivity {
                 });
 
             }
-
-
 
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
